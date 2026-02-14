@@ -8,37 +8,30 @@ import { Textarea } from "@/components/ui/textarea"
 import { FormField, FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
+import { CustomerComboboxField } from "@/features/acceptances/components/add/customer-combobox-field";
+import { BrandComboboxField } from "@/features/brands/components/brand-combobox-field";
 
 // Mock data for dropdowns
 const deviceTypeOptions = ["SMARTPHONE", "TABLET", "LAPTOP", "DESKTOP", "OTHER"].map(v => ({ value: v, label: v }))
 const currentStatusOptions = ["IN REPAIR", "WAITING PARTS", "READY", "DELIVERED", "CANCELLED"].map(v => ({ value: v, label: v }))
-const customerOptions = [{ value: "john-doe", label: "John Doe" }, { value: "jane-smith", label: "Jane Smith" }];
-const brandOptions = [{ value: "apple", label: "Apple" }, { value: "samsung", label: "Samsung" }, { value: "google", label: "Google" }];
 const modelOptions = [{ value: "iphone-13", label: "iPhone 13" }, { value: "galaxy-s21", label: "Galaxy S21" }];
 const colorOptions = [{ value: "black", label: "Black" }, { value: "white", label: "White" }, { value: "red", label: "Red" }, { value: "blue", label: "Blue" }];
 
 export function CustomerDeviceFields() {
   const { control } = useFormContext<FormData>();
-//...
 
   const handleAdd = (field: string) => {
-    // In a real app, this would open a dialog to add a new entity
     alert(`Add new ${field}`);
   };
 
   return (
-    <div className="bg-white p-4 rounded-md shadow border space-y-3">
-      <ComboboxWithAdd
-        control={control}
-        name="customer_name"
-        label="Customer Name"
-        placeholder="Select Customer"
-        searchPlaceholder="Search customers..."
-        noResultsMessage="No customer found."
-        options={customerOptions}
-        onAdd={() => handleAdd("Customer")}
-        required
-      />
+    <>
+      <div className="bg-white p-4 rounded-md shadow border space-y-3">
+        <CustomerComboboxField
+          name="customer_name"
+          control={control}
+          required
+        />
 
       <FormField
         control={control}
@@ -54,15 +47,9 @@ export function CustomerDeviceFields() {
         )}
       />
 
-      <ComboboxWithAdd
-        control={control}
+      <BrandComboboxField
         name="brand"
-        label="Brand"
-        placeholder="Select Brand"
-        searchPlaceholder="Search brands..."
-        noResultsMessage="No brand found."
-        options={brandOptions}
-        onAdd={() => handleAdd("Brand")}
+        control={control}
         required
       />
 
@@ -159,6 +146,7 @@ export function CustomerDeviceFields() {
           </FormItem>
         )}
       />
-    </div>
+      </div>
+    </>
   );
 }

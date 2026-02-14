@@ -1,37 +1,17 @@
 // src/features/customers/mocks/customers.mock.ts
 
-import { Customer } from "../types/customer";
+import { Customer } from "../customer.schema";
 
-export const mockCustomers: Customer[] = [
-  {
-    id: "cust-001",
-    name: "Mario Rossi",
-    email: "mario.rossi@example.com",
-    mobile: "+39 333 1234567",
-    branch_tid: "roma-main",
-    isDealer: false,
-    isDesktopCustomer: true,
-    isCustomer: true,
-    active_inactive: true,
-    location: "Roma",
-    province: "RM",
-    address: "Via Roma 1",
-    "postal-code": "00100",
-    "fiscal-code": "RSSMRA80A01H501Z"
-  },
-  {
-    id: "cust-002",
-    name: "Giulia Bianchi",
-    email: "giulia.bianchi@example.com",
-    mobile: "+39 333 7654321",
-    branch_tid: "milano-main",
-    isDealer: true,
-    isDesktopCustomer: true,
-    isCustomer: true,
-    active_inactive: true,
-    location: "Milano",
-    province: "MI",
-    address: "Via Milano 2",
-    vat: "IT12345678901"
-  }
-];
+const generateCustomers = (count: number): Customer[] => {
+  return Array.from({ length: count }).map((_, i) => ({
+    id: `cust-${100 + i}`,
+    name: `Customer ${i + 1}`,
+    email: `customer${i + 1}@example.com`,
+    customerTypes: i % 3 === 0 ? "Dealer" : i % 2 === 0 ? "Online Customer" : "Desktop Customer",
+    mobile: `+39 333 ${1000000 + i}`,
+    branch: { name: i % 2 === 0 ? "Roma Termini" : "Milano Centrale" },
+    isActive: i % 5 !== 0,
+  }));
+};
+
+export const mockCustomers: Customer[] = generateCustomers(55);

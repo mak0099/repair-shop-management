@@ -1,7 +1,6 @@
 import { LayoutProvider } from "@/components/layout/layout-context"
 import { DashboardLayoutContent } from "@/components/layout/dashboard-layout"
-import QueryProvider from "@/components/providers/query-provider"
-import { MSWProvider } from "@/components/providers/msw-provider"
+import { MSWProvider } from "@/providers/msw-provider"
 
 export default function DashboardLayout({
   children,
@@ -10,11 +9,9 @@ export default function DashboardLayout({
 }) {
   return (
     <MSWProvider>
-      <QueryProvider>
-        <LayoutProvider>
-          <DashboardLayoutContent>{children}</DashboardLayoutContent>
-        </LayoutProvider>
-      </QueryProvider>
+      <LayoutProvider>
+        <DashboardLayoutContent>{children}</DashboardLayoutContent>
+      </LayoutProvider>
     </MSWProvider>
   )
 }

@@ -306,14 +306,6 @@ export const data = {
           title: "Regenerate",
           url: "/dashboard/tracking/regenerate",
         },
-        {
-          title: "Brands",
-          url: "/dashboard/tracking/brands",
-        },
-        {
-          title: "Models",
-          url: "/dashboard/tracking/models",
-        },
       ],
     },
     {
@@ -322,12 +314,36 @@ export const data = {
       icon: Package,
       items: [
         {
-          title: "Manage Products",
+          title: "Products",
           url: "/dashboard/ecommerce/products",
         },
         {
           title: "Add Product",
           url: "/dashboard/ecommerce/products/add",
+        },
+        {
+          title: "Categories",
+          url: "/dashboard/ecommerce/categories",
+        },
+        {
+          title: "Add Category",
+          url: "/dashboard/ecommerce/categories/add",
+        },
+        {
+          title: "Brands",
+          url: "/dashboard/ecommerce/brands",
+        },
+        {
+          title: "Add Brand",
+          url: "/dashboard/ecommerce/brands/add",
+        },
+        {
+          title: "Models",
+          url: "/dashboard/ecommerce/models",
+        },
+        {
+          title: "Add Model",
+          url: "/dashboard/ecommerce/models/add",
         },
         {
           title: "Home Stock List",

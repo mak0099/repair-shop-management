@@ -1,4 +1,4 @@
-import { Acceptance } from "../types/acceptance";
+import { Acceptance } from "../acceptance.schema";
 
 
 export const mockAcceptances: Acceptance[] = [

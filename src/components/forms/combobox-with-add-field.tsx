@@ -1,10 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Control, useController } from "react-hook-form"
-import { type FormData } from "@/types/forms"
+import { Control, FieldValues, Path } from "react-hook-form"
 
-import { Check, ChevronsUpDown, Plus } from "lucide-react"
+import { Check, ChevronsUpDown, Plus, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,101 +19,119 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 
-interface ComboboxWithAddProps {
-  control: Control<any>
-  name: any
+interface ComboboxWithAddProps<TFieldValues extends FieldValues> {
+  control: Control<TFieldValues>
+  name: Path<TFieldValues>
   label: string
   placeholder: string
   searchPlaceholder: string
-  noResultsMessage: string
+  noResultsMessage?: string
   options: { value: string; label: string }[]
-  onAdd: () => void
+  onAdd?: () => void
   required?: boolean
+  isLoading?: boolean
 }
 
-export function ComboboxWithAdd({
+export function ComboboxWithAdd<TFieldValues extends FieldValues>({
   control,
   name,
   label,
   placeholder,
   searchPlaceholder,
-  noResultsMessage,
+  noResultsMessage = "No results found.",
   options,
   onAdd,
   required,
-}: ComboboxWithAddProps) {
+  isLoading = false,
+}: ComboboxWithAddProps<TFieldValues>) {
   const [open, setOpen] = React.useState(false)
-  const {
-    field,
-  } = useController({
-    name,
-    control,
-  })
-
-  const selectedValue = options.find((option) => option.value === field.value)?.label
 
   return (
-    <FormItem>
-      <FormLabel className={cn("text-xs", required && "required")}>{label}</FormLabel>
-      <div className="flex items-end">
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <FormControl>
-              <Button
-                variant="outline"
-                role="combobox"
-                className={cn(
-                  "flex-1 justify-between rounded-r-none",
-                  !field.value && "text-muted-foreground"
-                )}
-              >
-                {selectedValue || placeholder}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </FormControl>
-          </PopoverTrigger>
-          <PopoverContent className="p-0" style={{ width: "var(--radix-popover-trigger-width)" }} align="start">
-            <Command>
-              <CommandInput placeholder={searchPlaceholder} />
-              <CommandList>
-                <CommandEmpty>{noResultsMessage}</CommandEmpty>
-                <CommandGroup>
-                  {options.map((option) => (
-                    <CommandItem
-                      value={option.label}
-                      key={option.value}
-                      onSelect={() => {
-                        field.onChange(option.value)
-                        setOpen(false)
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          option.value === field.value ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                      {option.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-        <Button 
-          type="button" 
-          variant="outline" 
-          size="icon" 
-          className="rounded-l-none border-l-0"
-          onClick={onAdd}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-      <FormMessage />
-    </FormItem>
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className="text-xs">
+            {label} {required && <span className="text-red-500">*</span>}
+          </FormLabel>
+          <div className="flex items-end">
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant="outline"
+                    disabled={isLoading}
+                    role="combobox"
+                    className={cn(
+                      "flex-1 justify-between",
+                      onAdd && "rounded-r-none",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    {field.value
+                      ? options.find((option) => option.value === field.value)?.label
+                      : placeholder}
+                    {isLoading ? (
+                      <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin" />
+                    ) : (
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    )}
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent className="p-0" style={{ width: "var(--radix-popover-trigger-width)" }} align="start">
+                <Command>
+                  <CommandInput placeholder={searchPlaceholder} />
+                  <CommandList>
+                    {isLoading ? (
+                      <div className="p-2 flex justify-center items-center">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      </div>
+                    ) : (
+                      <>
+                        <CommandEmpty>{noResultsMessage}</CommandEmpty>
+                        <CommandGroup>
+                          {options.map((option) => (
+                            <CommandItem
+                              value={option.label}
+                              key={option.value}
+                              onSelect={() => {
+                                field.onChange(option.value)
+                                setOpen(false)
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  option.value === field.value ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {option.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </>
+                    )}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            {onAdd && <Button 
+              type="button" 
+              variant="outline" 
+              size="icon" 
+              className="rounded-l-none border-l-0"
+              onClick={onAdd}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>}
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   )
 }

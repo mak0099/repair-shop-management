@@ -37,8 +37,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { useAcceptances } from "../api/acceptances.queries"
-import { Acceptance } from "../types/acceptance"
+import { useAcceptances } from "../acceptances.api"
+import { Acceptance } from "../acceptance.schema"
 
 export const columns: ColumnDef<Acceptance>[] = [
   {

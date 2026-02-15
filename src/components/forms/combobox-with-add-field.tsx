@@ -32,6 +32,7 @@ interface ComboboxWithAddProps<TFieldValues extends FieldValues> {
   onAdd?: () => void
   required?: boolean
   isLoading?: boolean
+  disabled?: boolean
 }
 
 export function ComboboxWithAdd<TFieldValues extends FieldValues>({
@@ -45,6 +46,7 @@ export function ComboboxWithAdd<TFieldValues extends FieldValues>({
   onAdd,
   required,
   isLoading = false,
+  disabled = false,
 }: ComboboxWithAddProps<TFieldValues>) {
   const [open, setOpen] = React.useState(false)
 
@@ -54,8 +56,8 @@ export function ComboboxWithAdd<TFieldValues extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-xs">
-            {label} {required && <span className="text-red-500">*</span>}
+          <FormLabel className={cn("text-xs", required && !disabled && "required")}>
+            {label} {required && !disabled && <span className="text-red-500">*</span>}
           </FormLabel>
           <div className="flex items-end">
             <Popover open={open} onOpenChange={setOpen}>
@@ -63,22 +65,23 @@ export function ComboboxWithAdd<TFieldValues extends FieldValues>({
                 <FormControl>
                   <Button
                     variant="outline"
-                    disabled={isLoading}
+                    disabled={isLoading || disabled}
                     role="combobox"
                     className={cn(
                       "flex-1 justify-between",
                       onAdd && "rounded-r-none",
-                      !field.value && "text-muted-foreground"
+                      !field.value && "text-muted-foreground",
+                      disabled && "cursor-default bg-muted/30 opacity-100 hover:bg-muted/30"
                     )}
                   >
                     {field.value
                       ? options.find((option) => option.value === field.value)?.label
-                      : placeholder}
-                    {isLoading ? (
-                      <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin" />
-                    ) : (
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    )}
+                      : (disabled ? "" : placeholder)}
+                    {isLoading
+                      ? (<Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin" />)
+                      : !disabled && (
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        )}
                   </Button>
                 </FormControl>
               </PopoverTrigger>
@@ -119,7 +122,7 @@ export function ComboboxWithAdd<TFieldValues extends FieldValues>({
                 </Command>
               </PopoverContent>
             </Popover>
-            {onAdd && <Button 
+            {onAdd && !disabled && <Button 
               type="button" 
               variant="outline" 
               size="icon" 

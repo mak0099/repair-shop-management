@@ -16,8 +16,7 @@ import {
   useUpdateManyBrands,
 } from "../brand.api"
 import { Brand } from "../brand.schema"
-import { useAddBrandModal } from "../add-brand-modal-context" // Import the new hook
-import { BRANDS_BASE_HREF } from "@/config/paths"
+import { useBrandModal } from "../brand-modal-context"
 import { STATUS_OPTIONS } from "../brand.constants"
 
 const INITIAL_FILTERS = {
@@ -32,7 +31,7 @@ export function BrandList() {
   const updateBrandMutation = usePartialUpdateBrand()
   const bulkDeleteMutation = useDeleteManyBrands()
   const bulkStatusUpdateMutation = useUpdateManyBrands()
-  const { openModal: openAddBrandModal } = useAddBrandModal()
+  const { openModal } = useBrandModal()
 
   const columns: ColumnDef<Brand>[] = useMemo(
     () => [
@@ -46,11 +45,12 @@ export function BrandList() {
       {
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
-      },
-      {
-        accessorKey: "isActive",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Active?" />,
-        cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
+        cell: ({ row }) => (
+          <div
+            className="font-medium cursor-pointer hover:underline"
+            onClick={() => openModal({ initialData: row.original, isViewMode: true })}
+          >{row.getValue("name")}</div>
+        ),
       },
       {
         accessorKey: "createdAt",
@@ -65,14 +65,15 @@ export function BrandList() {
           <ResourceActions
             resource={row.original}
             resourceName="Brand"
-            baseEditHref={BRANDS_BASE_HREF}
+            onView={(brand) => openModal({ initialData: brand, isViewMode: true })}
+            onEdit={(brand) => openModal({ initialData: brand })}
             deleteMutation={deleteBrandMutation}
             updateMutation={updateBrandMutation}
           />
         ),
       },
     ],
-    [deleteBrandMutation, updateBrandMutation]
+    [deleteBrandMutation, openModal, updateBrandMutation]
   )
 
   const filterDefinitions = [
@@ -89,7 +90,7 @@ export function BrandList() {
         title="Brands"
         resourceName="brands"
         description="Manage brand database"
-        onAdd={openAddBrandModal}
+        onAdd={() => openModal()}
         addLabel="Add Brand"
         columns={columns}
         useResourceQuery={useBrands}

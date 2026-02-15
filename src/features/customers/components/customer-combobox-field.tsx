@@ -2,9 +2,9 @@
 
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
-import { useCustomerOptions } from "../customer.api"
-import { useAddCustomerModal } from "../add-customer-modal-context"
+import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
+import { useCustomerOptions } from "../customer.api";
+import { useCustomerModal } from "../customer-modal-context";
 
 interface CustomerComboboxFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
@@ -22,7 +22,7 @@ export function CustomerComboboxField<TFieldValues extends FieldValues>({
   required = false,
 }: CustomerComboboxFieldProps<TFieldValues>) {
   const { setValue, trigger } = useFormContext<TFieldValues>()
-  const { openModal: openAddCustomerModal } = useAddCustomerModal()
+  const { openModal } = useCustomerModal()
   const { data: customerOptionsData, isLoading } = useCustomerOptions()
   const customers = customerOptionsData || []
 
@@ -32,7 +32,7 @@ export function CustomerComboboxField<TFieldValues extends FieldValues>({
   }))
 
   const handleAddCustomer = () => {
-    openAddCustomerModal({
+    openModal({
       onSuccess: (newCustomer) => {
         if (newCustomer?.id) {
           setValue(name, newCustomer.id as PathValue<TFieldValues, Path<TFieldValues>>)

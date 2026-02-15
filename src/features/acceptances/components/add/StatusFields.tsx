@@ -2,14 +2,13 @@
 
 import Image from "next/image"
 import { useFormContext } from "react-hook-form"
-import { type FormData } from "@/features/acceptances/types/forms";
+import { type FormData } from "@/features/acceptances/acceptance.schema";
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { X, Upload } from "lucide-react"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
 import { DatePickerField } from "@/components/forms/date-picker-field";
+import { TextField } from "@/components/forms/text-field";
 
 interface StatusFieldsProps {
   photoPreviews: { [key: string]: string }
@@ -53,18 +52,12 @@ export function StatusFields({
         />
 
         {pinUnlock === "Yes" && (
-          <FormField
+          <TextField
             control={control}
             name="pin_unlock_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs required">Pin Unlock Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter pin unlock number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Pin Unlock Number"
+            placeholder="Enter pin unlock number"
+            required
           />
         )}
 

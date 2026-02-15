@@ -29,12 +29,13 @@ export interface SelectOption {
 /**
  * Types for Master Settings / Lookups.
  */
-export type SettingType = 
-  | 'COLOR' 
-  | 'WARRANTY' 
-  | 'DEVICE_TYPE' 
-  | 'REPAIR_STATUS' 
-  | 'CHECKLIST_ACCESSORY';
+export type SettingType =
+  | "COLOR"
+  | "WARRANTY"
+  | "DEVICE_TYPE"
+  | "REPAIR_STATUS"
+  | "CHECKLIST_ACCESSORY"
+  | "EXPENSE_CAT";
 
 export interface MasterSetting extends BaseEntity {
   type: SettingType;

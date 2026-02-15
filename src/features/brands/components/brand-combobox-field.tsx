@@ -2,9 +2,9 @@
 
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
-import { useBrandOptions } from "../brand.api"
-import { useAddBrandModal } from "../add-brand-modal-context"
+import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
+import { useBrandOptions } from "../brand.api";
+import { useBrandModal } from "../brand-modal-context";
 
 interface BrandComboboxFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
@@ -22,7 +22,7 @@ export function BrandComboboxField<TFieldValues extends FieldValues>({
   required = false,
 }: BrandComboboxFieldProps<TFieldValues>) {
   const { setValue, trigger } = useFormContext<TFieldValues>()
-  const { openModal: openAddBrandModal } = useAddBrandModal()
+  const { openModal } = useBrandModal()
   const { data: brandOptionsData, isLoading } = useBrandOptions()
   const brands = brandOptionsData || []
 
@@ -32,7 +32,7 @@ export function BrandComboboxField<TFieldValues extends FieldValues>({
   }))
 
   const handleAddBrand = () => {
-    openAddBrandModal({
+    openModal({
       onSuccess: (newBrand) => {
         if (newBrand?.id) {
           setValue(name, newBrand.id as PathValue<TFieldValues, Path<TFieldValues>>)

@@ -1,14 +1,9 @@
+import { is } from "date-fns/locale"
+
 export const ROLE_OPTIONS = [
   { value: "all", label: "All Roles" },
-  { value: "desktop", label: "Desktop Customer" },
-  { value: "online", label: "Online Customer" },
-  { value: "dealer", label: "Dealer" },
-]
-
-export const BRANCH_OPTIONS = [
-  { value: "all", label: "All Branches" },
-  { value: "milano", label: "Milano Centrale" },
-  { value: "roma", label: "Roma Termini" },
+  { value: true, label: "Dealer" },
+  { value: false, label: "Customer" },
 ]
 
 export const STATUS_OPTIONS = [
@@ -33,7 +28,8 @@ export const INITIAL_FILTERS = {
   search: "",
   role: "all",
   branch: "all",
-  status: "all",
+  status: "active",
+  isDealer: "all",
   page: 1,
   pageSize: 10,
 }

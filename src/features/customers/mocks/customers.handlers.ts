@@ -1,9 +1,8 @@
 import { delay, http, HttpResponse } from "msw"
 
-import { Customer } from "../customer.schema"
+import { Customer, CustomerFormValues } from "../customer.schema"
 import { mockCustomers } from "./customers.mock"
 
-// Helper to access nested properties using a string path like "branch.name"
 function getNestedValue(obj: any, path: string): any {
   return path.split(".").reduce((o, k) => (o ? o[k] : undefined), obj)
 }
@@ -40,7 +39,7 @@ export const customerHandlers = [
     const search = url.searchParams.get("search")?.toLowerCase() || ""
     const sort = url.searchParams.get("_sort")
     const order = url.searchParams.get("_order")
-    const role = url.searchParams.get("role")
+    const isDealer = url.searchParams.get("isDealer")
     const branch = url.searchParams.get("branch")
     const status = url.searchParams.get("status")
 
@@ -50,11 +49,10 @@ export const customerHandlers = [
         (customer.email || "").toLowerCase().includes(search) ||
         (customer.mobile || "").toLowerCase().includes(search)
 
-      const roleMatch = !role || role === "all" || (customer.customerTypes || "").toLowerCase().includes(role.toLowerCase())
-      const branchMatch = !branch || branch === "all" || (customer.branch?.name || "").toLowerCase() === branch.toLowerCase()
+      const roleMatch = !isDealer || isDealer === "all" || customer.isDealer === (isDealer === "true")
       const statusMatch = !status || status === "all" || (customer.isActive ? "active" : "inactive") === status
 
-      return searchMatch && roleMatch && branchMatch && statusMatch
+      return searchMatch && roleMatch && statusMatch
     })
 
     const sortedData = applySort(filteredData, sort, order)
@@ -84,6 +82,20 @@ export const customerHandlers = [
       return new HttpResponse(null, { status: 404 })
     }
     return HttpResponse.json(customer)
+  }),
+
+  // POST (create) a customer
+  http.post("https://api.example.com/customers", async ({ request }) => {
+    await delay(500)
+    const data = (await request.json()) as CustomerFormValues
+    const newCustomer: Customer = {
+      id: `cust_${Date.now()}`,
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+    customers.unshift(newCustomer)
+    return HttpResponse.json(newCustomer, { status: 201 })
   }),
 
   // DELETE a customer

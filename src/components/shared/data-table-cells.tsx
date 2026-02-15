@@ -2,21 +2,20 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { CheckCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 
 interface StatusCellProps {
   isActive: boolean | undefined | null
 }
 
 export function StatusCell({ isActive }: StatusCellProps) {
-  if (isActive === null || typeof isActive === "undefined") {
-    return <Badge variant="secondary">Unknown</Badge>
-  }
-  return (
-    <Badge variant={isActive ? "default" : "destructive"}>{isActive ? "Active" : "Inactive"}</Badge>
-  )
+  return isActive ? (
+    <div className="flex items-center justify-start px-4">
+      <CheckCircle className="h-4 w-4 text-green-500" />
+    </div>
+  ) : null
 }
 
 interface DateCellProps {

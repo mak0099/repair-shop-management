@@ -1,18 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { Control, FieldValues, Path, PathValue, useFormContext } from "react-hook-form"
-import { Upload, X } from "lucide-react"
+import { Control, FieldValues, Path, useController } from "react-hook-form"
+import { Upload, X, Image as ImageIcon } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 
 interface ImageUploadFieldProps<TFieldValues extends FieldValues> {
   control: Control<TFieldValues>
   name: Path<TFieldValues>
   label: string
   initialImage?: string | null
+  className?: string
 }
 
 export function ImageUploadField<TFieldValues extends FieldValues>({
@@ -20,58 +22,95 @@ export function ImageUploadField<TFieldValues extends FieldValues>({
   name,
   label,
   initialImage,
+  className,
 }: ImageUploadFieldProps<TFieldValues>) {
-  const { setValue } = useFormContext<TFieldValues>()
+  const {
+    field: { value, onChange },
+    fieldState: { error },
+  } = useController({ name, control })
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(initialImage || null)
+  const [isInitialImageError, setInitialImageError] = useState(false)
 
   useEffect(() => {
     setPreview(initialImage || null)
+    setInitialImageError(false)
   }, [initialImage])
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      setValue(name, file as PathValue<TFieldValues, Path<TFieldValues>>, { shouldValidate: true })
+      onChange(file)
       const reader = new FileReader()
       reader.onloadend = () => {
         setPreview(reader.result as string)
+        setInitialImageError(false) // Clear any previous error
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const removeImage = () => {
-    setValue(name, null as PathValue<TFieldValues, Path<TFieldValues>>, { shouldValidate: true })
+  const handleRemoveImage = () => {
+    onChange(null)
     setPreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "" // Reset file input
+    }
   }
 
+  const hasImage = !!preview
+  const showFallback = !hasImage || (isInitialImageError && preview === initialImage)
+
   return (
-    <FormField
-      control={control}
-      name={name}
-      render={() => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
+    <FormItem className={className}>
+      <FormLabel>{label}</FormLabel>
+      <div className="flex items-center gap-4">
+        <div
+          className={cn(
+            "relative flex h-24 w-24 items-center justify-center rounded-md border border-dashed bg-muted/40 text-muted-foreground",
+            { "border-destructive": !!error }
+          )}
+        >
+          {showFallback ? (
+            <ImageIcon className="h-10 w-10" />
+          ) : (
+            <Image
+              src={preview!}
+              alt="Image preview"
+              fill
+              className="rounded-md object-contain"
+              onError={() => {
+                if (preview === initialImage) {
+                  setInitialImageError(true)
+                }
+              }}
+            />
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="mr-2 h-4 w-4" />
+            {hasImage ? "Change Image" : "Upload Image"}
+          </Button>
+          {hasImage && (
+            <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={handleRemoveImage}>
+              <X className="mr-2 h-4 w-4" />
+              Remove Image
+            </Button>
+          )}
           <FormControl>
-            <div className="relative w-32 h-32">
-              {preview ? (
-                <>
-                  <Image src={preview} alt="Image preview" fill className="object-contain rounded-md" />
-                  <Button type="button" variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={removeImage}>
-                    <X className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <label htmlFor={`${name}-upload`} className="w-full h-full border-2 border-dashed rounded-md flex items-center justify-center cursor-pointer hover:bg-accent">
-                  <Upload className="h-8 w-8 text-gray-400" />
-                  <input id={`${name}-upload`} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                </label>
-              )}
-            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/png, image/jpeg, image/gif, image/webp"
+            />
           </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+        </div>
+      </div>
+      <FormMessage />
+    </FormItem>
   )
 }

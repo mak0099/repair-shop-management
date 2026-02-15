@@ -2,25 +2,16 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
   BarChart3,
-  BookOpen,
-  Bot,
   CheckCircle,
-  Command,
-  Frame,
+  FileText,
   GalleryVerticalEnd,
   Home,
-  Map,
   Package,
-  PieChart,
-  Search,
   Settings2,
   ShoppingCart,
-  SquareTerminal,
-  Truck,
   Users,
-  Wrench,
+  History,
 } from "lucide-react"
 
 import { NavMain } from "@/components/layout/nav-main"
@@ -35,341 +26,110 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
 export const data = {
   user: {
     name: "Admin User",
     email: "admin@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "/avatars/user.jpg",
   },
   teams: [
     {
-      name: "Admin Panel",
+      name: "TELEFIX",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: "Professional Edition",
     },
   ],
   navMain: [
     {
-      title: "Home",
+      title: "Dashboard",
       url: "/dashboard",
       icon: Home,
       isActive: true,
       items: [
-        {
-          title: "Frontdesk",
-          url: "/dashboard/frontdesk",
-        },
-        {
-          title: "Branch Products List",
-          url: "/dashboard/branch-products",
-        },
+        { title: "Frontdesk View", url: "/dashboard/frontdesk" },
+        { title: "Quick Statistics", url: "/dashboard" },
       ],
     },
     {
-      title: "Acceptances",
+      title: "Repairs (Acceptance)",
       url: "/dashboard/acceptances",
       icon: CheckCircle,
       items: [
-        {
-          title: "Add New",
-          url: "/dashboard/acceptances/add",
-        },
-        {
-          title: "Search",
-          url: "/dashboard/acceptances/search",
-        },
-        {
-          title: "List",
-          url: "/dashboard/acceptances/list",
-        },
-        {
-          title: "Profit/Loss",
-          url: "/dashboard/acceptances/profit-loss",
-        },
-        {
-          title: "Deleted",
-          url: "/dashboard/acceptances/deleted",
-        },
-        {
-          title: "Generate Refund",
-          url: "/dashboard/acceptances/refund",
-        },
+        { title: "New Acceptance", url: "/dashboard/acceptances/add" },
+        { title: "Repair List", url: "/dashboard/acceptances/list" }, 
+        { title: "Recycle Bin", url: "/dashboard/acceptances/deleted" },
       ],
     },
     {
-      title: "Search",
-      url: "/dashboard/acceptances/search",
-      icon: Search,
+      title: "Inventory & Stock",
+      url: "/dashboard/inventory",
+      icon: Package,
+      items: [
+        { title: "Current Stock", url: "/dashboard/inventory/stock" },
+        { title: "Products & Items", url: "/dashboard/inventory/products" },
+        { title: "Used Devices (Tracking)", url: "/dashboard/inventory/tracking" }, // Added back
+        { title: "Categories", url: "/dashboard/inventory/categories" },
+        { title: "Brands", url: "/dashboard/inventory/brands" },
+        { title: "Models", url: "/dashboard/inventory/models" },
+        { title: "Box Locations", url: "/dashboard/inventory/box-numbers" },
+      ],
     },
     {
-      title: "Sale/Order System",
+      title: "Sales (POS)",
       url: "/dashboard/sales",
       icon: ShoppingCart,
       items: [
-        {
-          title: "Add General Sale",
-          url: "/dashboard/sales/add",
-        },
-        {
-          title: "Back Office E-Commerce Sale",
-          items: [
-            {
-              title: "Add E-Commerce Sale",
-              url: "/dashboard/sales/ecommerce/add",
-            },
-            {
-              title: "List",
-              url: "/dashboard/sales/ecommerce/list",
-            },
-          ],
-        },
-        {
-          title: "Order Spare Parts",
-          items: [
-            {
-              title: "Submit Order Parts",
-              url: "/dashboard/sales/parts/submit",
-            },
-            {
-              title: "List of Order Parts",
-              url: "/dashboard/sales/parts/list",
-            },
-          ],
-        },
-        {
-          title: "Online Sale",
-          items: [
-            {
-              title: "All Online Orders",
-              url: "/dashboard/sales/online/all",
-            },
-            {
-              title: "Pending Orders",
-              url: "/dashboard/sales/online/pending",
-            },
-            {
-              title: "Payment Received",
-              url: "/dashboard/sales/online/payment-received",
-            },
-            {
-              title: "Waiting to Deliver",
-              url: "/dashboard/sales/online/waiting-deliver",
-            },
-            {
-              title: "Completed Orders",
-              url: "/dashboard/sales/online/completed",
-            },
-          ],
-        },
+        { title: "New POS Sale", url: "/dashboard/sales/add" },
+        { title: "Sales History", url: "/dashboard/sales" },
+        { title: "Spare Parts Orders", url: "/dashboard/sales/parts" },
       ],
     },
     {
-      title: "Expenses",
-      url: "/dashboard/expenses",
+      title: "Finance & Accounts",
+      url: "/dashboard/finance",
       icon: BarChart3,
       items: [
-        {
-          title: "Product Purchase",
-          items: [
-            {
-              title: "Search",
-              url: "/dashboard/expenses/purchase/search",
-            },
-            {
-              title: "Add Product Purchase",
-              url: "/dashboard/inventory/purchase",
-            },
-          ],
-        },
-        {
-          title: "General Expenses",
-          items: [
-            {
-              title: "Search",
-              url: "/dashboard/expenses/general/search",
-            },
-            {
-              title: "Add New",
-              url: "/dashboard/expenses/general/add",
-            },
-          ],
-        },
+        { title: "Product Purchases", url: "/dashboard/finance/purchase" },
+        { title: "General Expenses", url: "/dashboard/finance/expenses" },
+        { title: "Daily Khata (Entry)", url: "/dashboard/finance/khata" },
       ],
     },
     {
-      title: "Options",
-      url: "/dashboard/options",
-      icon: Settings2,
+      title: "Business Reports",
+      url: "/dashboard/reports",
+      icon: FileText,
       items: [
-        {
-          title: "Branches",
-          items: [
-            {
-              title: "Search",
-              url: "/dashboard/options/branches/search",
-            },
-            {
-              title: "Add Branch",
-              url: "/dashboard/options/branches/add",
-            },
-          ],
-        },
-        {
-          title: "Managerial Tasks",
-          items: [
-            {
-              title: "Transactions",
-              url: "/dashboard/options/tasks/transactions",
-            },
-            {
-              title: "Khata Online",
-              url: "/dashboard/reports/khata",
-            },
-            {
-              title: "DDT Viewer",
-              url: "/dashboard/options/tasks/ddt-viewer",
-            },
-            {
-              title: "DDT Generator",
-              url: "/dashboard/options/tasks/ddt-generator",
-            },
-            {
-              title: "Attendances",
-              url: "/dashboard/options/tasks/attendances",
-            },
-            {
-              title: "Employee Performance",
-              url: "/dashboard/options/tasks/performance",
-            },
-            {
-              title: "Final Accounts",
-              url: "/dashboard/options/tasks/final-accounts",
-            },
-            {
-              title: "Current Balance",
-              url: "/dashboard/reports/balance",
-            },
-          ],
-        },
+        { title: "Profit/Loss Report", url: "/dashboard/reports/profit-loss" },
+        { title: "Sales Analytics", url: "/dashboard/reports/sales" },
+        { title: "Expense Summary", url: "/dashboard/reports/expenses" },
+        { title: "Cash Balance", url: "/dashboard/reports/balance" },
       ],
     },
     {
-      title: "System",
-      url: "/dashboard/system",
+      title: "People (CRM)",
+      url: "/dashboard/crm",
       icon: Users,
       items: [
-        {
-          title: "User Management",
-          url: "/dashboard/system/users",
-        },
-        {
-          title: "Add User",
-          url: "/dashboard/system/users/add",
-        },
-        {
-          title: "Customers",
-          url: "/dashboard/system/customers",
-        },
-        {
-          title: "Add Customer",
-          url: "/dashboard/system/customers/add",
-        },
-        {
-          title: "Suppliers",
-          url: "/dashboard/system/suppliers",
-        },
-        {
-          title: "Add Supplier",
-          url: "/dashboard/system/suppliers/add",
-        },
-        {
-          title: "Box Numbers",
-          url: "/dashboard/system/box-numbers",
-        },
+        { title: "Customers", url: "/dashboard/crm/customers" },
+        { title: "Suppliers", url: "/dashboard/crm/suppliers" },
       ],
     },
     {
-      title: "Tracking Device",
-      url: "/dashboard/tracking",
-      icon: Map,
+      title: "Administration",
+      url: "/dashboard/admin",
+      icon: Settings2,
       items: [
-        {
-          title: "List",
-          url: "/dashboard/tracking/list",
-        },
-        {
-          title: "Add Tracking Device",
-          url: "/dashboard/tracking/add",
-        },
-        {
-          title: "Regenerate",
-          url: "/dashboard/tracking/regenerate",
-        },
-      ],
-    },
-    {
-      title: "E-Commerce Dashboard",
-      url: "/dashboard/ecommerce",
-      icon: Package,
-      items: [
-        {
-          title: "Products",
-          url: "/dashboard/ecommerce/products",
-        },
-        {
-          title: "Add Product",
-          url: "/dashboard/ecommerce/products/add",
-        },
-        {
-          title: "Categories",
-          url: "/dashboard/ecommerce/categories",
-        },
-        {
-          title: "Add Category",
-          url: "/dashboard/ecommerce/categories/add",
-        },
-        {
-          title: "Brands",
-          url: "/dashboard/ecommerce/brands",
-        },
-        {
-          title: "Add Brand",
-          url: "/dashboard/ecommerce/brands/add",
-        },
-        {
-          title: "Models",
-          url: "/dashboard/ecommerce/models",
-        },
-        {
-          title: "Add Model",
-          url: "/dashboard/ecommerce/models/add",
-        },
-        {
-          title: "Home Stock List",
-          url: "/dashboard/ecommerce/stock",
-        },
+        { title: "Shop Profile", url: "/dashboard/admin/shop-profile" }, 
+        { title: "Master Settings", url: "/dashboard/admin/master-settings" },
+        { title: "Users Management", url: "/dashboard/admin/users" },
+        { title: "Roles & Permissions", url: "/dashboard/admin/permissions" },
       ],
     },
   ],
   projects: [
-    {
-      name: "Analytics",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Logs",
-      url: "#",
-      icon: Map,
-    },
+    { name: "Activity Logs", url: "/dashboard/logs", icon: History },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (

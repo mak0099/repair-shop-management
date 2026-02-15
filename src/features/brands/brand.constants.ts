@@ -33,7 +33,7 @@ export const INITIAL_FILTERS = {
   search: "",
   role: "all",
   branch: "all",
-  status: "all",
+  status: "active",
   page: 1,
   pageSize: 10,
 }

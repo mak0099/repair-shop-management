@@ -1,6 +1,7 @@
 "use client"
 
 import { flexRender, Table as TanstackTable } from "@tanstack/react-table"
+import { cn } from "@/lib/utils"
 
 import {
   Table,
@@ -48,6 +49,9 @@ export function DataTable<TData>({ table, isLoading }: DataTableProps<TData>) {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className={cn(
+                  (row.original as any).isActive === false && "text-muted-foreground/60"
+                )}
               >
                 {row.getVisibleCells().map((cell, index) => (
                   // Apply left padding only to the first visible cell

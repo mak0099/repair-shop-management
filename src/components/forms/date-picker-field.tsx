@@ -2,7 +2,7 @@
 
 import { format } from "date-fns"
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
-import { Control } from "react-hook-form"
+import { Control, FieldValues, Path } from "react-hook-form"
 import { useState } from "react"
 
 import { cn } from "@/lib/utils"
@@ -21,9 +21,9 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-interface DatePickerFieldProps {
-    control: Control<any>
-    name: string
+interface DatePickerFieldProps<TFieldValues extends FieldValues> {
+    control: Control<TFieldValues>
+    name: Path<TFieldValues>
     label: string
     placeholder?: string
     disabled?: (date: Date) => boolean
@@ -31,7 +31,7 @@ interface DatePickerFieldProps {
     className?: string
 }
 
-export function DatePickerField({
+export function DatePickerField<TFieldValues extends FieldValues>({
     control,
     name,
     label,
@@ -39,7 +39,7 @@ export function DatePickerField({
     disabled,
     required,
     className,
-}: DatePickerFieldProps) {
+}: DatePickerFieldProps<TFieldValues>) {
     const [open, setOpen] = useState(false)
 
     return (

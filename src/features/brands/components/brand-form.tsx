@@ -1,16 +1,17 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { useForm, FieldErrors } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
+import { TextField } from "@/components/forms/text-field"
+import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
+import { Form } from "@/components/ui/form"
 import { ImageUploadField } from "@/components/forms/image-upload-field"
 
 import { brandSchema, BrandFormValues } from "../brand.schema"
@@ -21,25 +22,46 @@ import { BRANDS_BASE_HREF } from "@/config/paths"
 interface BrandFormProps {
   initialData?: Brand | null
   onSuccess?: (data: Brand) => void
+  isViewMode?: boolean
 }
 
-export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
+export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMode = false }: BrandFormProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { mutate: createBrand, isPending: isCreating } = useCreateBrand()
   const { mutate: updateBrand, isPending: isUpdating } = useUpdateBrand()
 
+  const [mode, setMode] = useState<"view" | "edit" | "create">(
+    initialIsViewMode ? "view" : initialData ? "edit" : "create"
+  )
+  const isViewMode = mode === "view"
+
   const isPending = isCreating || isUpdating
-  const isEditMode = !!initialData
+  const isEditMode = !!initialData && mode !== "create"
 
   const form = useForm<BrandFormValues>({
     resolver: zodResolver(brandSchema),
-    defaultValues: initialData || {
-      name: "",
-      logo: null,
-      isActive: true,
-    },
+    defaultValues: initialData
+      ? { ...initialData, logo: undefined } // Set logo to undefined to avoid validation issues with URL string
+      : {
+          name: "",
+          logo: undefined,
+          isActive: true,
+        },
   })
+
+  const onFormError = (errors: FieldErrors<BrandFormValues>) => {
+    console.error("Brand form validation errors:", errors)
+    toast.error("Please fill all required fields correctly.")
+  }
+
+  const handleCancel = () => {
+    if (onSuccess) {
+      onSuccess(initialData as Brand)
+    } else {
+      router.push(BRANDS_BASE_HREF)
+    }
+  }
 
   function onSubmit(data: BrandFormValues) {
     if (isEditMode && initialData) {
@@ -80,48 +102,52 @@ export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="p-4 space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Brand Name <span className="text-red-500">*</span></FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., Apple" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <ImageUploadField
-          control={form.control}
-          name="logo"
-          label="Logo"
-          initialImage={initialData?.logo}
-        />
-        <FormField
-          control={form.control}
-          name="isActive"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
-              <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Is Active?</FormLabel>
-              </div>
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="relative p-4 space-y-4">
+        {isViewMode && (
+          <div className="absolute top-4 right-4 z-10">
+            <Button size="sm" type="button" onClick={(e) => {
+              e.preventDefault()
+              setMode("edit")
+            }}>
+              Edit
+            </Button>
+          </div>
+        )}
+        <div className={isViewMode ? "pt-10" : ""}>
+          <TextField
+            control={form.control}
+            name="name"
+            label="Brand Name"
+            placeholder="e.g., Apple"
+            required
+            readOnly={isViewMode}
+          />
+          <ImageUploadField
+            control={form.control}
+            name="logo"
+            label="Logo"
+            initialImage={initialData?.logo}
+          />
+          <CheckboxField
+            control={form.control}
+            name="isActive"
+            label="Is Active?"
+            className="rounded-md border p-3"
+            disabled={isViewMode}
+          />
+        </div>
         <div className="flex justify-end gap-2 pt-4">
-          <Button variant="outline" type="button" onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditMode ? "Save Changes" : "Save Brand"}
-          </Button>
+          {isViewMode ? (
+            <Button variant="outline" type="button" onClick={handleCancel}>Close</Button>
+          ) : (
+            <>
+              <Button variant="outline" type="button" onClick={handleCancel}>Cancel</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isEditMode ? "Save Changes" : "Save Brand"}
+              </Button>
+            </>
+          )}
         </div>
       </form>
     </Form>

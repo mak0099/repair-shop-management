@@ -2,14 +2,13 @@
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
 import { useFormContext } from "react-hook-form"
-import { type FormData } from "../../types/forms";
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { FormField, FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { type FormData } from "../../acceptance.schema";
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { CustomerComboboxField } from "@/features/acceptances/components/add/customer-combobox-field";
+import { CustomerComboboxField } from "@/features/customers/components/customer-combobox-field";
 import { BrandComboboxField } from "@/features/brands/components/brand-combobox-field";
+import { TextField } from "@/components/forms/text-field";
+import { TextareaField } from "@/components/forms/textarea-field";
 
 // Mock data for dropdowns
 const deviceTypeOptions = ["SMARTPHONE", "TABLET", "LAPTOP", "DESKTOP", "OTHER"].map(v => ({ value: v, label: v }))
@@ -27,31 +26,22 @@ export function CustomerDeviceFields() {
   return (
     <>
       <div className="bg-white p-4 rounded-md shadow border space-y-3">
-        <CustomerComboboxField
-          name="customer_name"
+        <CustomerComboboxField name="customer_id" control={control} required />
+
+        <TextField
+          control={control}
+          name="estimated_price"
+          label="Estimated Price"
+          type="number"
+          placeholder="Enter the estimated price"
+          inputClassName="h-10"
+        />
+
+        <BrandComboboxField
+          name="brand_id"
           control={control}
           required
         />
-
-      <FormField
-        control={control}
-        name="estimated_price"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs">Estimated Price</FormLabel>
-            <FormControl>
-              <Input type="number" placeholder="Enter the estimated price" {...field} className="h-10" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <BrandComboboxField
-        name="brand"
-        control={control}
-        required
-      />
 
       <ComboboxWithAdd
         control={control}
@@ -77,18 +67,13 @@ export function CustomerDeviceFields() {
       />
 
       <div className="flex items-end">
-        <FormField
+        <TextField
           control={control}
           name="accessories"
-          render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormLabel className="text-xs">Accessories</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., charger, case" {...field} className="rounded-r-none" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Accessories"
+          placeholder="e.g., charger, case"
+          className="flex-1"
+          inputClassName="rounded-r-none"
         />
         <Button type="button" variant="outline" size="icon" className="rounded-l-none border-l-0" onClick={() => handleAdd("Accessory")}>
           <Plus className="h-4 w-4" />
@@ -119,32 +104,18 @@ export function CustomerDeviceFields() {
         required
       />
 
-      <FormField
+      <TextareaField
         control={control}
         name="defect_description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs">Defect Description</FormLabel>
-            <FormControl>
-              <Textarea placeholder="Describe the defect presented by the device" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Defect Description"
+        placeholder="Describe the defect presented by the device"
       />
 
-      <FormField
+      <TextareaField
         control={control}
         name="notes"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs">Notes</FormLabel>
-            <FormControl>
-              <Textarea placeholder="Enter the condition of the device" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Notes"
+        placeholder="Enter the condition of the device"
       />
       </div>
     </>

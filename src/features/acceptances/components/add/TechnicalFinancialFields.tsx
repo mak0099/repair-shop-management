@@ -1,13 +1,11 @@
 "use client"
 
 import { useFormContext } from "react-hook-form";
-
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { type FormData } from "@/features/acceptances/types/forms";
+import { type FormData } from "@/features/acceptances/acceptance.schema";
 import { DatePickerField } from "@/components/forms/date-picker-field";
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
+import { TextField } from "@/components/forms/text-field";
+import { TextareaField } from "@/components/forms/textarea-field";
 
 const warrantyOptions = ["No Warranty", "3 Months", "6 Months", "12 Months", "Lifetime"].map(v => ({ value: v, label: v }));
 const technicianOptions = [
@@ -35,32 +33,19 @@ export function TechnicalFinancialFields() {
         disabled={(date: Date) => date > new Date() || date < new Date("1900-01-01")}
       />
 
-      <FormField
+      <TextField
         control={control}
         name="imei"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs required">IMEI/Serial No</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter IMEI" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="IMEI/Serial No"
+        placeholder="Enter IMEI"
+        required
       />
 
-      <FormField
+      <TextField
         control={control}
         name="secondary_imei"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs">Secondary IMEI</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter secondary IMEI" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Secondary IMEI"
+        placeholder="Enter secondary IMEI"
       />
 
       <ComboboxWithAdd
@@ -88,7 +73,7 @@ export function TechnicalFinancialFields() {
 
       <ComboboxWithAdd
         control={control}
-        name="replacement_device"
+        name="replacement_device_id"
         label="Replacement Device"
         placeholder="Select replacement device"
         searchPlaceholder="Search devices..."
@@ -97,46 +82,26 @@ export function TechnicalFinancialFields() {
         onAdd={() => handleAdd("Replacement Device")}
       />
 
-        <FormField
-          control={control}
-          name="dealer"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs">Dealer</FormLabel>
-              <FormControl>
-                <Input placeholder="For B2B partner reference" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <TextField
+        control={control}
+        name="dealer"
+        label="Dealer"
+        placeholder="For B2B partner reference"
+      />
 
-        <FormField
-          control={control}
-          name="price_offered"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs">Price Offered</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="XXXXX" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <TextField
+        control={control}
+        name="price_offered"
+        label="Price Offered"
+        type="number"
+        placeholder="XXXXX"
+      />
 
-      <FormField
+      <TextareaField
         control={control}
         name="reserved_notes"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs">Reserved Notes</FormLabel>
-            <FormControl>
-              <Textarea placeholder="Enter reserved notes" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Reserved Notes"
+        placeholder="Enter reserved notes"
       />
     </div>
   )

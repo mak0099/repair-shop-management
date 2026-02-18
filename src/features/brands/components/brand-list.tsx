@@ -65,6 +65,7 @@ export function BrandList() {
           <ResourceActions
             resource={row.original}
             resourceName="Brand"
+            resourceTitle={row.original.name}
             onView={(brand) => openModal({ initialData: brand, isViewMode: true })}
             onEdit={(brand) => openModal({ initialData: brand })}
             deleteMutation={deleteBrandMutation}

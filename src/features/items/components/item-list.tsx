@@ -80,6 +80,7 @@ export function ItemList() {
           <ResourceActions
             resource={row.original}
             resourceName="Item"
+            resourceTitle={row.original.name}
             onView={(item) => openModal({ initialData: item, isViewMode: true })}
             onEdit={(item) => openModal({ initialData: item })}
             deleteMutation={deleteItemMutation}

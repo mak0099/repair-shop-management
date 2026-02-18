@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw"
 
+import { applySort } from "@/mocks/mock-utils"
 import { Brand, BrandFormValues } from "../brand.schema"
 import { mockBrands } from "./brands.mock"
 
@@ -14,6 +15,8 @@ export const brandHandlers = [
     const status = url.searchParams.get("status") // 'active', 'inactive', 'all'
     const page = parseInt(url.searchParams.get("page") || "1", 10)
     const pageSize = parseInt(url.searchParams.get("pageSize") || "10", 10)
+    const sort = url.searchParams.get("_sort")
+    const order = url.searchParams.get("_order")
 
     let filteredBrands = brands
 
@@ -29,10 +32,12 @@ export const brandHandlers = [
       filteredBrands = filteredBrands.filter((brand) => brand.isActive === isActive)
     }
 
+    const sortedData = applySort(filteredBrands, sort, order)
+
     // Paginate results
-    const total = filteredBrands.length
+    const total = sortedData.length
     const totalPages = Math.ceil(total / pageSize)
-    const paginatedData = filteredBrands.slice((page - 1) * pageSize, page * pageSize)
+    const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize)
 
     return HttpResponse.json({ data: paginatedData, meta: { total, page, pageSize, totalPages } })
   }),
@@ -137,5 +142,11 @@ export const brandHandlers = [
     const { id } = params
     brands = brands.filter((b) => b.id !== id)
     return new HttpResponse(null, { status: 204 })
+  }),
+
+  // GET brand options for dropdowns
+  http.get("*/brands/options", () => {
+    const brandOptions = brands.map((b) => ({ id: b.id, name: b.name }))
+    return HttpResponse.json(brandOptions)
   }),
 ]

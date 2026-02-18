@@ -25,37 +25,50 @@ interface GlobalModalContextType {
 const GlobalModalContext = createContext<GlobalModalContextType | undefined>(undefined);
 
 export function GlobalModalProvider({ children }: { children: ReactNode }) {
-  const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
+  const [activeModals, setActiveModals] = useState<ActiveModal[]>([]);
 
   const openModal = useCallback((type: ModalType, props: ModalProps = {}) => {
-    setActiveModal({ type, props });
+    setActiveModals((prev) => [...prev, { type, props }]);
   }, []);
 
   const closeModal = useCallback(() => {
-    setActiveModal(null);
+    setActiveModals((prev) => prev.slice(0, -1));
   }, []);
 
-  const renderModalContent = () => {
-    if (!activeModal) return null;
+  const currentModal = activeModals.length > 0 ? activeModals[activeModals.length - 1] : null;
 
-    const { type, props } = activeModal;
+  const renderModalContents = () => {
+    return activeModals.map((modal, index) => {
+      const { type, props } = modal;
+      const modalConfig = modalRegistry.find((m) => m.type === type);
 
-    // Find the component from the registry
-    const modalConfig = modalRegistry.find((m) => m.type === type);
-    if (!modalConfig) {
-      console.error(`No modal registered for type: ${type}`);
-      return null;
-    }
+      if (!modalConfig) {
+        console.error(`No modal registered for type: ${type}`);
+        return null;
+      }
 
-    const ContentComponent = modalConfig.contentComponent;
-    return <ContentComponent onSuccess={props.onSuccess || closeModal} {...props} />;
+      const ContentComponent = modalConfig.contentComponent;
+      const isTopModal = index === activeModals.length - 1;
+
+      const handleClose = () => {
+        if (isTopModal) {
+          closeModal();
+        }
+      };
+
+      return (
+        <div key={`${type}-${index}`} style={{ display: isTopModal ? "block" : "none" }}>
+          <ContentComponent onSuccess={props.onSuccess || handleClose} {...props} />
+        </div>
+      );
+    });
   };
 
   return (
     <GlobalModalContext.Provider value={{ openModal, closeModal }}>
       {children}
-      <Modal title={activeModal?.props.title || "Modal"} description={activeModal?.props.description} isOpen={!!activeModal} onClose={closeModal} className={activeModal?.props.className}>
-        {renderModalContent()}
+      <Modal title={currentModal?.props.title || "Modal"} description={currentModal?.props.description} isOpen={!!currentModal} onClose={closeModal} className={currentModal?.props.className}>
+        {renderModalContents()}
       </Modal>
     </GlobalModalContext.Provider>
   );

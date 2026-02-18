@@ -22,6 +22,7 @@ export const useExpenseOptions = () => {
 }
 export const useCreateExpense = expenseApiHooks.useCreateWithFormData
 export const useUpdateExpense = expenseApiHooks.useUpdateWithFormData
+export const usePartialUpdateExpense = expenseApiHooks.useUpdate
 export const useDeleteExpense = expenseApiHooks.useDelete
 
 export const useDeleteManyExpenses = createBulkDeleteHook<Expense>("expenses")

@@ -89,8 +89,8 @@ export const expenseHandlers = [
     return HttpResponse.json(newExpense, { status: 201 })
   }),
 
-  // POST for update
-  http.post("*/expenses/:id", async ({ params, request }) => {
+  // PATCH an expense
+  http.patch("*/expenses/:id", async ({ params, request }) => {
     await delay(1000)
     const { id } = params;
     const formData = await request.formData()

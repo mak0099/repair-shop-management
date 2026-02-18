@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm, FieldErrors } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
@@ -13,7 +13,6 @@ import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
-import { BranchComboboxField } from "@/features/branches" // Assuming this exists
 
 import { userSchema, UserFormValues, User } from "../user.schema"
 import { useCreateUser, useUpdateUser } from "../user.api"
@@ -48,16 +47,17 @@ export function UserForm({ initialData, onSuccess, isViewMode: initialIsViewMode
       email: "",
       password: "",
       role: "TECHNICIAN",
-      branch_id: "",
       isActive: true,
     },
   })
-  
-  // Remove password from default values if in edit mode
-  if(isEditMode) {
-      form.reset({ ...initialData, password: "" });
-  }
 
+  useEffect(() => {
+    // In edit mode, reset the form with initial data but clear the password field.
+    // This effect runs when the component mounts or when initialData/mode changes.
+    if (isEditMode && initialData) {
+      form.reset({ ...initialData, password: "" })
+    }
+  }, [initialData, isEditMode, form.reset])
   const onFormError = (errors: FieldErrors<UserFormValues>) => {
     console.error("User form validation errors:", errors)
     toast.error("Please fill all required fields correctly.")
@@ -146,12 +146,6 @@ export function UserForm({ initialData, onSuccess, isViewMode: initialIsViewMode
             required
             disabled={isViewMode}
           />
-          {/* <BranchComboboxField
-            control={form.control}
-            name="branch_id"
-            required
-            disabled={isViewMode}
-          /> */}
           <CheckboxField
             control={form.control}
             name="isActive"
@@ -160,11 +154,6 @@ export function UserForm({ initialData, onSuccess, isViewMode: initialIsViewMode
             disabled={isViewMode}
           />
         </div>
-        {/* <BranchComboboxField
-          control={form.control}
-          name="branch_id"
-          required
-        /> */}
         <div className="flex justify-end gap-2 pt-4">
           {isViewMode ? (
             <Button variant="outline" type="button" onClick={handleCancel}>Close</Button>

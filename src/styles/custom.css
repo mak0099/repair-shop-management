@@ -1,4 +1,6 @@
 .required::after {
   content: "*";
   color: #ef4444; /* Tailwind red-500 */
+  display: inline-block; /* Ensures consistent box model behavior */
+  margin-left: -0.5em; /* Adjust this value to remove the gap */
 }

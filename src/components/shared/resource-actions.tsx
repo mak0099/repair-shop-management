@@ -15,9 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
 
-interface ResourceActionsProps<T extends { id: string; name: string; isActive?: boolean | null }> {
+interface ResourceActionsProps<T extends { id: string; isActive?: boolean | null }> {
   resource: T
   resourceName: string // e.g., "Customer", "Brand"
+  resourceTitle: string // The display name/title of the resource, e.g., resource.name or resource.title
   baseEditHref?: string // e.g., "/dashboard/system/customers"
   onView?: (resource: T) => void
   onEdit?: (resource: T) => void
@@ -25,9 +26,10 @@ interface ResourceActionsProps<T extends { id: string; name: string; isActive?: 
   updateMutation?: UseMutationResult<any, Error, { id: string; data: Partial<T> }, unknown>
 }
 
-export function ResourceActions<T extends { id: string; name: string; isActive?: boolean | null }>({
+export function ResourceActions<T extends { id: string; isActive?: boolean | null }>({
   resource,
   resourceName,
+  resourceTitle,
   baseEditHref,
   onView,
   onEdit,
@@ -137,7 +139,7 @@ export function ResourceActions<T extends { id: string; name: string; isActive?:
         open={isDeleteOpen}
         onOpenChange={setDeleteOpen}
         title={`Delete ${resourceName}`}
-        description={`Are you sure you want to delete ${resource.name}? This action cannot be undone.`}
+        description={`Are you sure you want to delete "${resourceTitle}"? This action cannot be undone.`}
         onConfirm={handleDelete}
         isLoading={isDeleting}
         variant="destructive"
@@ -148,7 +150,7 @@ export function ResourceActions<T extends { id: string; name: string; isActive?:
           open={isStatusChangeOpen}
           onOpenChange={setStatusChangeOpen}
           title={`${newStatus ? "Activate" : "Deactivate"} ${resourceName}`}
-          description={`Are you sure you want to ${newStatus ? "activate" : "deactivate"} ${resource.name}?`}
+          description={`Are you sure you want to ${newStatus ? "activate" : "deactivate"} "${resourceTitle}"?`}
           onConfirm={handleStatusChange}
           isLoading={isUpdating}
           variant={newStatus ? "default" : "destructive"}

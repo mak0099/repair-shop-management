@@ -1,9 +1,9 @@
 import { Expense } from "../expense.schema"
 
 const expenseData = [
-  { title: "Office Rent", amount: 1500, date: new Date("2024-01-05"), category_id: "setting-100", branch_id: "branch-100", notes: "Monthly rent for Milano office" },
-  { title: "Internet Bill", amount: 80, date: new Date("2024-01-10"), category_id: "setting-101", branch_id: "branch-100", notes: "Fiber internet connection" },
-  { title: "New Keyboards", amount: 250, date: new Date("2024-01-15"), category_id: "setting-102", branch_id: "branch-101", notes: "Mechanical keyboards for developers" },
+  { title: "Office Rent", amount: 1500, date: new Date("2024-01-05"), category_id: "setting-112", branch_id: "branch-100", notes: "Monthly rent for Milano office" }, // Corresponds to "Rent"
+  { title: "Internet Bill", amount: 80, date: new Date("2024-01-10"), category_id: "setting-110", branch_id: "branch-100", notes: "Fiber internet connection" }, // Corresponds to "Utilities"
+  { title: "New Keyboards", amount: 250, date: new Date("2024-01-15"), category_id: "setting-111", branch_id: "branch-101", notes: "Mechanical keyboards for developers" }, // Corresponds to "Office Supplies"
 ];
 
 const generateExpenses = (count: number): Expense[] => {

@@ -255,7 +255,7 @@ export default function ProfitLossPage() {
   const totalCost = data.reduce((acc, curr) => acc + curr.repairPrice + curr.refundAmount, 0)
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div>
         <h1 className="text-3xl font-bold">Acceptance Profit/Loss</h1>
         <p className="text-muted-foreground">Financial report for repair jobs (P-004)</p>

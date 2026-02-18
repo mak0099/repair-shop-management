@@ -57,7 +57,7 @@ export function ComboboxWithAdd<TFieldValues extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel className={cn("text-xs", required && !disabled && "required")}>
-            {label} {required && !disabled && <span className="text-red-500">*</span>}
+            {label}
           </FormLabel>
           <div className="flex items-end">
             <Popover open={open} onOpenChange={setOpen}>

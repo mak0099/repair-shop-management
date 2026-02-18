@@ -75,6 +75,7 @@ export function UserList() {
           <ResourceActions
             resource={row.original}
             resourceName="User"
+            resourceTitle={row.original.name}
             onView={(user) => openModal({ initialData: user, isViewMode: true })}
             onEdit={(user) => openModal({ initialData: user })}
             deleteMutation={deleteUserMutation}

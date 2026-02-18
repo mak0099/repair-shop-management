@@ -1,52 +1,72 @@
 import { Acceptance } from "../acceptance.schema";
+import { mockCustomers } from "@/features/customers/mocks/customers.mock";
+import { mockBrands } from "@/features/brands/mocks/brands.mock";
+import { mockModels } from "@/features/models/mocks/models.mock";
+import { mockUsers } from "@/features/users/mocks/users.mock";
 
-
-export const mockAcceptances: Acceptance[] = [
-  {
-    id: "rec-001",
-    acceptance_number: "41604-2026",
-    customer_name: "Mario Rossi",
-    estimated_price: 150,
-    brand: "Apple",
-    model: "iPhone 15 Pro",
-    color: "Titanium Gray",
-    accessories: "Original Box, No Charger",
-    device_type: "SMARTPHONE",
-    current_status: "IN REPAIR",
-    defect_description: "Screen is cracked and touch not responding in lower half.",
-    notes: "Minor scratches on the back panel.",
-    created_date: "2026-02-11T14:00:00Z",
-    imei: "354678109234567",
-    technician_id: "tech-01",
-    warranty: "3 Months",
-    important_information: true,
-    pin_unlock: true,
-    pin_unlock_number: "123456",
-    urgent: true,
-    urgent_date: "2026-02-12",
-    quote: false,
-    photos: ["/mock/iphone-front.jpg", "/mock/iphone-back.jpg"],
-    branch_id: "roma-main"
-  },
-  {
-    id: "rec-002",
-    acceptance_number: "41605-2026",
-    customer_name: "Giulia Bianchi",
-    estimated_price: 85,
-    brand: "Samsung",
-    model: "Galaxy S23",
-    color: "Phantom Black",
-    device_type: "SMARTPHONE",
-    current_status: "IN REPAIR",
-    defect_description: "Battery draining very fast.",
-    created_date: "2026-02-11T16:30:00Z",
-    imei: "987654321012345",
-    technician_id: "tech-02",
-    important_information: false,
-    pin_unlock: false,
-    urgent: false,
-    quote: true,
-    photos: [],
-    branch_id: "roma-main"
-  }
+const deviceTypes = ["SMARTPHONE", "TABLET", "LAPTOP", "DESKTOP", "OTHER"];
+const statuses = ["IN REPAIR", "WAITING PARTS", "READY", "DELIVERED", "CANCELLED"];
+const warranties = ["No Warranty", "3 Months", "6 Months", "12 Months", "Lifetime"];
+const yesNo: ("Yes" | "No")[] = ["Yes", "No"];
+const colors = ["Black", "White", "Titanium Gray", "Blue", "Red", "Green"];
+const accessories = ["Charger", "Cable", "Case", "No accessories", "Original Box"];
+const defects = [
+    "Screen is cracked and touch not responding in lower half.",
+    "Battery draining very fast, needs replacement.",
+    "Phone not turning on, possible motherboard issue.",
+    "Water damage, device is not responsive.",
+    "Charging port is loose and not charging properly.",
+    "Camera is blurry and out of focus.",
+    "Speaker volume is very low.",
 ];
+
+const getRandom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+
+const generateAcceptances = (count: number): Acceptance[] => {
+    return Array.from({ length: count }).map((_, i) => {
+        const customer = getRandom(mockCustomers);
+        const brand = getRandom(mockBrands);
+        const model = getRandom(mockModels.filter(m => m.brand_id === brand.id)) || getRandom(mockModels);
+        const technician = getRandom(mockUsers);
+        const urgent = getRandom(yesNo);
+        const pinUnlock = getRandom(yesNo);
+        const createdDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+
+        return {
+            id: `rec-${100 + i}`,
+            acceptance_number: `${41604 + i}-2026`,
+            customer_id: customer.id,
+            brand_id: brand.id,
+            model_id: model.id,
+            technician_id: technician.id,
+            created_date: createdDate,
+            estimated_price: Math.floor(Math.random() * 451) + 50,
+            color: getRandom(colors),
+            accessories: getRandom(accessories),
+            device_type: getRandom(deviceTypes),
+            current_status: getRandom(statuses),
+            defect_description: getRandom(defects),
+            notes: "Customer seems to be in a hurry. Please prioritize.",
+            imei: String(Math.floor(1e14 + Math.random() * 9e14)),
+            secondary_imei: Math.random() > 0.8 ? String(Math.floor(1e14 + Math.random() * 9e14)) : "",
+            warranty: getRandom(warranties),
+            important_information: getRandom(yesNo),
+            pin_unlock: pinUnlock,
+            pin_unlock_number: pinUnlock === "Yes" ? Math.floor(1000 + Math.random() * 9000).toString() : "",
+            urgent: urgent,
+            urgent_date: urgent === "Yes" ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000) : undefined,
+            quote: getRandom(yesNo),
+            photos: i % 3 === 0 ? ["/mock/iphone-front.jpg", "/mock/iphone-back.jpg"] : [],
+            branch_id: "roma-main",
+            createdAt: createdDate.toISOString(),
+            updatedAt: new Date().toISOString(),
+            isActive: true,
+            price_offered: Math.random() > 0.9 ? Math.floor(Math.random() * 200) : 0,
+            dealer: "",
+            replacement_device_id: "",
+            reserved_notes: ""
+        };
+    });
+};
+
+export const mockAcceptances: Acceptance[] = generateAcceptances(45);

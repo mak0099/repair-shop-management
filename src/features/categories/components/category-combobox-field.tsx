@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
@@ -28,12 +29,14 @@ export function CategoryComboboxField<TFieldValues extends FieldValues>({
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useCategoryModal()
   const { data: categoryOptionsData, isLoading } = useCategoryOptions(parentId)
-  const categories = categoryOptionsData || []
 
-  const categoryOptions = categories.map((c) => ({
-    value: c.id,
-    label: c.name,
-  }))
+  const categoryOptions = useMemo(() => {
+    const categories = categoryOptionsData || []
+    return categories.map((c) => ({
+      value: c.id,
+      label: c.name,
+    }))
+  }, [categoryOptionsData])
 
   const handleAddCategory = () => {
     openModal({

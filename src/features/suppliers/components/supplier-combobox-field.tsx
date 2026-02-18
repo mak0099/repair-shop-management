@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
@@ -12,6 +13,7 @@ interface SupplierComboboxFieldProps<TFieldValues extends FieldValues> {
   label?: string
   placeholder?: string
   required?: boolean
+  disabled?: boolean
 }
 
 export function SupplierComboboxField<TFieldValues extends FieldValues>({
@@ -20,16 +22,19 @@ export function SupplierComboboxField<TFieldValues extends FieldValues>({
   label = "Supplier",
   placeholder = "Select Supplier",
   required = false,
+  disabled = false,
 }: SupplierComboboxFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useSupplierModal()
   const { data: supplierOptionsData, isLoading } = useSupplierOptions()
-  const suppliers = supplierOptionsData || []
 
-  const supplierOptions = suppliers.map((s) => ({
-    value: s.id,
-    label: s.company_name,
-  }))
+  const supplierOptions = useMemo(() => {
+    const suppliers = supplierOptionsData || []
+    return suppliers.map((s) => ({
+      value: s.id,
+      label: s.company_name,
+    }))
+  }, [supplierOptionsData])
 
   const handleAddSupplier = () => {
     openModal({
@@ -54,6 +59,7 @@ export function SupplierComboboxField<TFieldValues extends FieldValues>({
         onAdd={handleAddSupplier}
         required={required}
         isLoading={isLoading}
+        disabled={disabled}
       />
     </>
   )

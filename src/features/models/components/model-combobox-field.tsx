@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
@@ -26,12 +27,14 @@ export function ModelComboboxField<TFieldValues extends FieldValues>({
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useModelModal()
   const { data: modelOptionsData, isLoading } = useModelOptions()
-  const models = modelOptionsData || []
 
-  const modelOptions = models.map((m) => ({
-    value: m.id,
-    label: m.name,
-  }))
+  const modelOptions = useMemo(() => {
+    const models = modelOptionsData || []
+    return models.map((m) => ({
+      value: m.id,
+      label: m.name,
+    }))
+  }, [modelOptionsData])
 
   const handleAddModel = () => {
     openModal({

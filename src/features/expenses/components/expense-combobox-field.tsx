@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
@@ -12,6 +13,7 @@ interface ExpenseComboboxFieldProps<TFieldValues extends FieldValues> {
   label?: string
   placeholder?: string
   required?: boolean
+  disabled?: boolean
 }
 
 export function ExpenseComboboxField<TFieldValues extends FieldValues>({
@@ -20,16 +22,19 @@ export function ExpenseComboboxField<TFieldValues extends FieldValues>({
   label = "Expense",
   placeholder = "Select Expense",
   required = false,
+  disabled = false,
 }: ExpenseComboboxFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useExpenseModal()
   const { data: expenseOptionsData, isLoading } = useExpenseOptions()
-  const expenses = expenseOptionsData || []
 
-  const expenseOptions = expenses.map((e) => ({
-    value: e.id,
-    label: e.title,
-  }))
+  const expenseOptions = useMemo(() => {
+    const expenses = expenseOptionsData || []
+    return expenses.map((e) => ({
+      value: e.id,
+      label: e.title,
+    }))
+  }, [expenseOptionsData])
 
   const handleAddExpense = () => {
     openModal({
@@ -54,6 +59,7 @@ export function ExpenseComboboxField<TFieldValues extends FieldValues>({
         onAdd={handleAddExpense}
         required={required}
         isLoading={isLoading}
+        disabled={disabled}
       />
     </>
   )

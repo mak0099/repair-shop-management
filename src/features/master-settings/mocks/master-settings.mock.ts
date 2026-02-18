@@ -12,6 +12,9 @@ const settingData: {type: SettingType, label: string, value: string}[] = [
   { type: "REPAIR_STATUS", label: "Completed", value: "completed" },
   { type: "CHECKLIST_ACCESSORY", label: "Charger", value: "charger" },
   { type: "CHECKLIST_ACCESSORY", label: "Box", value: "box" },
+  { type: "EXPENSE_CAT", label: "Utilities", value: "utilities" },
+  { type: "EXPENSE_CAT", label: "Office Supplies", value: "office_supplies" },
+  { type: "EXPENSE_CAT", label: "Rent", value: "rent" },
 ];
 
 const generateMasterSettings = (count: number): MasterSetting[] => {

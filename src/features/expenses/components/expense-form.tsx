@@ -156,7 +156,7 @@ export function ExpenseForm({ initialData, onSuccess, isViewMode: initialIsViewM
             <TextareaField control={form.control} name="notes" label="Notes" readOnly={isViewMode} placeholder="Add any relevant notes here..." />
           </div>
           <div className="md:col-span-2">
-            <ImageUploadField control={form.control} name="attachment_url" label="Attachment (Receipt)" initialImage={initialData?.attachment_url} />
+            <ImageUploadField control={form.control} name="attachment_url" label="Attachment (Receipt)" initialImage={initialData?.attachment_url} isViewMode={isViewMode} />
           </div>
         </div>
         <div className="md:col-span-2 flex justify-end gap-2 pt-4">

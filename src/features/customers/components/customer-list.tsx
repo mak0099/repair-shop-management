@@ -62,6 +62,7 @@ export function CustomerList() {
           <ResourceActions
             resource={row.original}
             resourceName="Customer"
+            resourceTitle={row.original.name}
             onView={(customer) => openModal({ initialData: customer, isViewMode: true })}
             onEdit={(customer) => openModal({ initialData: customer })}
             deleteMutation={deleteCustomerMutation}

@@ -73,6 +73,7 @@ export function MasterSettingList() {
           <ResourceActions
             resource={row.original}
             resourceName="Setting"
+            resourceTitle={row.original.label}
             onView={(setting) => openModal({ initialData: setting, isViewMode: true })}
             onEdit={(setting) => openModal({ initialData: setting })}
             deleteMutation={deleteMasterSettingMutation}

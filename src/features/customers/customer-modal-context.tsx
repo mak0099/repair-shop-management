@@ -1,69 +1,16 @@
 "use client"
 
-import React, { createContext, useCallback, useContext, ReactNode } from "react"
-
-import { useGlobalModal } from "@/components/shared/global-modal-context"
+import { createModalContext } from "@/lib/modal-context-factory"
 import { Customer } from "./customer.schema"
 
-interface CustomerModalOptions {
-  initialData?: Customer
-  onSuccess?: (data: Customer) => void
-  isViewMode?: boolean
-}
+const { ModalProvider, useModal } = createModalContext<Customer>({
+  featureName: "Customer",
+  formName: "customerForm",
+  modalClassName: "max-w-4xl max-h-[90vh] overflow-y-auto",
+  addDescription: "Create a new customer record.",
+  viewDescription: "View customer details.",
+  editDescription: "Update customer details.",
+})
 
-interface CustomerModalContextType {
-  openModal: (options?: CustomerModalOptions) => void
-  closeModal: () => void
-}
-
-const CustomerModalContext = createContext<CustomerModalContextType | undefined>(undefined)
-
-export function CustomerModalProvider({ children }: { children: ReactNode }) {
-  const { openModal: openGlobalModal, closeModal: closeGlobalModal } = useGlobalModal()
-
-  const openModal = useCallback(
-    (options?: CustomerModalOptions) => {
-      const { initialData, onSuccess, isViewMode } = options || {}
-      const isEditMode = !!initialData && !isViewMode
-
-      let title = "Add New Customer"
-      let description = "Create a new customer record."
-      if (isViewMode) {
-        title = "View Customer"
-        description = "View customer details."
-      } else if (isEditMode) {
-        title = "Edit Customer"
-        description = "Update customer details."
-      }
-
-      openGlobalModal("customerForm", {
-        title,
-        description,
-        className: "max-w-4xl max-h-[90vh] overflow-y-auto",
-        initialData: initialData,
-        isViewMode: isViewMode,
-        onSuccess: (data: unknown) => {
-          onSuccess?.(data as Customer)
-          closeGlobalModal()
-        },
-      })
-    },
-    [openGlobalModal, closeGlobalModal]
-  )
-
-  const closeModal = useCallback(() => closeGlobalModal(), [closeGlobalModal])
-
-  return (
-    <CustomerModalContext.Provider value={{ openModal, closeModal }}>
-      {children}
-    </CustomerModalContext.Provider>
-  )
-}
-
-export function useCustomerModal() {
-  const context = useContext(CustomerModalContext)
-  if (context === undefined) {
-    throw new Error("useCustomerModal must be used within a CustomerModalProvider")
-  }
-  return context
-}
+export const CustomerModalProvider = ModalProvider
+export const useCustomerModal = useModal

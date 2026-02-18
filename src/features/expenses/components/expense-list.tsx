@@ -12,6 +12,7 @@ import { ImageCell } from "@/components/shared/data-table-cells"
 import {
   useExpenses,
   useDeleteExpense,
+  usePartialUpdateExpense,
   useDeleteManyExpenses,
 } from "../expense.api"
 import { Expense } from "../expense.schema"
@@ -30,6 +31,7 @@ interface ExpenseInList extends Expense {
 
 export function ExpenseList() {
   const deleteExpenseMutation = useDeleteExpense()
+  const updateExpenseMutation = usePartialUpdateExpense()
   const bulkDeleteMutation = useDeleteManyExpenses()
   const { openModal } = useExpenseModal()
 
@@ -79,14 +81,16 @@ export function ExpenseList() {
           <ResourceActions
             resource={row.original}
             resourceName="Expense"
+            resourceTitle={row.original.title}
             onView={(expense) => openModal({ initialData: expense, isViewMode: true })}
             onEdit={(expense) => openModal({ initialData: expense })}
             deleteMutation={deleteExpenseMutation}
+            updateMutation={updateExpenseMutation}
           />
         ),
       },
     ],
-    [deleteExpenseMutation, openModal]
+    [deleteExpenseMutation, openModal, updateExpenseMutation]
   )
 
   return (

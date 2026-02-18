@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
@@ -12,6 +13,7 @@ interface UserComboboxFieldProps<TFieldValues extends FieldValues> {
   label?: string
   placeholder?: string
   required?: boolean
+  disabled?: boolean
 }
 
 export function UserComboboxField<TFieldValues extends FieldValues>({
@@ -20,16 +22,19 @@ export function UserComboboxField<TFieldValues extends FieldValues>({
   label = "User",
   placeholder = "Select User",
   required = false,
+  disabled = false,
 }: UserComboboxFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useUserModal()
   const { data: userOptionsData, isLoading } = useUserOptions()
-  const users = userOptionsData || []
 
-  const userOptions = users.map((u) => ({
-    value: u.id,
-    label: u.name,
-  }))
+  const userOptions = useMemo(() => {
+    const users = userOptionsData || []
+    return users.map((u) => ({
+      value: u.id,
+      label: u.name,
+    }))
+  }, [userOptionsData])
 
   const handleAddUser = () => {
     openModal({
@@ -54,6 +59,7 @@ export function UserComboboxField<TFieldValues extends FieldValues>({
         onAdd={handleAddUser}
         required={required}
         isLoading={isLoading}
+        disabled={disabled}
       />
     </>
   )

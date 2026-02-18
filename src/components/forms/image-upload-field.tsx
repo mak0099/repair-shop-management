@@ -15,6 +15,7 @@ interface ImageUploadFieldProps<TFieldValues extends FieldValues> {
   label: string
   initialImage?: string | null
   className?: string
+  isViewMode?: boolean
 }
 
 export function ImageUploadField<TFieldValues extends FieldValues>({
@@ -23,6 +24,7 @@ export function ImageUploadField<TFieldValues extends FieldValues>({
   label,
   initialImage,
   className,
+  isViewMode = false,
 }: ImageUploadFieldProps<TFieldValues>) {
   const {
     field: { value, onChange },
@@ -88,27 +90,29 @@ export function ImageUploadField<TFieldValues extends FieldValues>({
             />
           )}
         </div>
-        <div className="flex flex-col gap-2">
-          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-            <Upload className="mr-2 h-4 w-4" />
-            {hasImage ? "Change Image" : "Upload Image"}
-          </Button>
-          {hasImage && (
-            <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={handleRemoveImage}>
-              <X className="mr-2 h-4 w-4" />
-              Remove Image
+        {!isViewMode && (
+          <div className="flex flex-col gap-2">
+            <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+              <Upload className="mr-2 h-4 w-4" />
+              {hasImage ? "Change Image" : "Upload Image"}
             </Button>
-          )}
-          <FormControl>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              accept="image/png, image/jpeg, image/gif, image/webp"
-            />
-          </FormControl>
-        </div>
+            {hasImage && (
+              <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={handleRemoveImage}>
+                <X className="mr-2 h-4 w-4" />
+                Remove Image
+              </Button>
+            )}
+            <FormControl>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/png, image/jpeg, image/gif, image/webp"
+              />
+            </FormControl>
+          </div>
+        )}
       </div>
       <FormMessage />
     </FormItem>

@@ -5,6 +5,7 @@ export const MASTER_SETTING_TYPE_OPTIONS = [
   { value: "DEVICE_TYPE", label: "Device Type" },
   { value: "REPAIR_STATUS", label: "Repair Status" },
   { value: "CHECKLIST_ACCESSORY", label: "Checklist Accessory" },
+  { value: "EXPENSE_CAT", label: "Expense Category" },
 ]
 
 export const STATUS_OPTIONS = [

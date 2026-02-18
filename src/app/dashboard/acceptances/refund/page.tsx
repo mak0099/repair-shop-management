@@ -35,7 +35,7 @@ export default function GenerateRefundPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div>
         <h1 className="text-3xl font-bold">Generate Refund</h1>
         <p className="text-muted-foreground">Process refunds for repair jobs (P-006)</p>

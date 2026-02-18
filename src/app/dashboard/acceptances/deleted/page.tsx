@@ -224,7 +224,7 @@ export default function DeletedAcceptancesPage() {
   })
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div>
         <h1 className="text-3xl font-bold">Deleted Acceptances</h1>
         <p className="text-muted-foreground">Manage and restore deleted repair jobs (P-005)</p>

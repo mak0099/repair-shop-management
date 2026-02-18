@@ -18,9 +18,6 @@ import {
 import { Model } from "../model.schema"
 import { useModelModal } from "../model-modal-context"
 import { STATUS_OPTIONS } from "../model.constants"
-import { Brand } from "@/features/brands"
-
-import { Brand } from "@/features/brands"
 
 const MODELS_BASE_HREF = "/dashboard/options/models"
 
@@ -79,6 +76,7 @@ export function ModelList() {
           <ResourceActions
             resource={row.original}
             resourceName="Model"
+            resourceTitle={row.original.name}
             onView={(model) => openModal({ initialData: model, isViewMode: true })}
             onEdit={(model) => openModal({ initialData: model })}
             deleteMutation={deleteModelMutation}

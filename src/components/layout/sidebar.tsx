@@ -56,7 +56,7 @@ export const data = {
       icon: CheckCircle,
       items: [
         { title: "New Acceptance", url: "/dashboard/acceptances/add" },
-        { title: "Repair List", url: "/dashboard/acceptances/list" }, 
+        { title: "Acceptance List", url: "/dashboard/acceptances" }, 
         { title: "Recycle Bin", url: "/dashboard/acceptances/deleted" },
       ],
     },

@@ -80,6 +80,7 @@ export function CategoryList() {
           <ResourceActions
             resource={row.original}
             resourceName="Category"
+            resourceTitle={row.original.name}
             onView={(category) => openModal({ initialData: category, isViewMode: true })}
             onEdit={(category) => openModal({ initialData: category })}
             deleteMutation={deleteCategoryMutation}

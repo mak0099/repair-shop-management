@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
@@ -14,6 +15,7 @@ interface MasterSettingComboboxFieldProps<TFieldValues extends FieldValues> {
   label?: string
   placeholder?: string
   required?: boolean
+  disabled?: boolean
 }
 
 export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
@@ -23,16 +25,19 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
   label = "Value",
   placeholder = "Select a value",
   required = false,
+  disabled = false,
 }: MasterSettingComboboxFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useMasterSettingModal()
   const { data: optionsData, isLoading } = useMasterSettingOptions(type)
-  const options = optionsData || []
 
-  const comboboxOptions = options.map((o) => ({
-    value: o.value, // Using value field for the combobox value
-    label: o.label,
-  }))
+  const comboboxOptions = useMemo(() => {
+    const options = optionsData || []
+    return options.map((o) => ({
+      value: o.value, // Using value field for the combobox value
+      label: o.label,
+    }))
+  }, [optionsData])
 
   const handleAdd = () => {
     openModal({
@@ -57,6 +62,7 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
         onAdd={handleAdd}
         required={required}
         isLoading={isLoading}
+        disabled={disabled}
       />
     </>
   )

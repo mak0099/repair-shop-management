@@ -18,6 +18,8 @@ import { SupplierModalProvider } from "@/features/suppliers/supplier-modal-conte
 import { SupplierForm } from "@/features/suppliers/components/supplier-form"
 import { ExpenseModalProvider } from "@/features/expenses/expense-modal-context"
 import { ExpenseForm } from "@/features/expenses/components/expense-form"
+import { AcceptanceForm } from "@/features/acceptances/components/acceptance-form"
+import { AcceptanceModalProvider } from "@/features/acceptances/acceptance-modal-context"
 
 // 1. Define a structure for each modal configuration
 interface ModalConfig {
@@ -72,6 +74,11 @@ export const modalRegistry: readonly ModalConfig[] = [
     type: "expenseForm",
     contentComponent: ExpenseForm,
     providerComponent: ExpenseModalProvider,
+  },
+  {
+    type: "acceptanceForm",
+    contentComponent: AcceptanceForm,
+    providerComponent: AcceptanceModalProvider,
   },
 ] as const // Using 'as const' for better type inference
 

@@ -42,9 +42,8 @@ export function TextField<TFieldValues extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel className={cn("text-xs", labelClassName)}>
-            {label}{" "}
-            {required && !readOnly && <span className="text-red-500">*</span>}
+          <FormLabel className={cn("text-xs", labelClassName, required && !readOnly && "required")}>
+            {label}
           </FormLabel>
           <FormControl>
             <Input

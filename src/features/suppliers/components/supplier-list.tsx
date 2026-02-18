@@ -78,6 +78,7 @@ export function SupplierList() {
           <ResourceActions
             resource={row.original}
             resourceName="Supplier"
+            resourceTitle={row.original.company_name}
             onView={(supplier) => openModal({ initialData: supplier, isViewMode: true })}
             onEdit={(supplier) => openModal({ initialData: supplier })}
             deleteMutation={deleteSupplierMutation}

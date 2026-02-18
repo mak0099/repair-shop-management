@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export default function SubmitOrderPartsPage() {
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div>
         <h1 className="text-3xl font-bold">Submit Order Parts</h1>
         <p className="text-muted-foreground">Order spare parts for repairs</p>

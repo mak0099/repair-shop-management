@@ -127,6 +127,7 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
             name="logo"
             label="Logo"
             initialImage={initialData?.logo}
+            isViewMode={isViewMode}
           />
           <CheckboxField
             control={form.control}

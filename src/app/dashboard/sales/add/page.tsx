@@ -48,7 +48,7 @@ export default function AddGeneralSalePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div>
         <h1 className="text-3xl font-bold">Add General Sale</h1>
         <p className="text-muted-foreground">Record a simple sale for non-inventoried items or services</p>

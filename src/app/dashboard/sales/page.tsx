@@ -6,7 +6,7 @@ import { ShoppingCart, Plus, Search, Package, Truck, DollarSign } from "lucide-r
 
 export default function SalesPage() {
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div>
         <h1 className="text-3xl font-bold">Sale/Order System</h1>
         <p className="text-muted-foreground">Manage all sales and order operations</p>

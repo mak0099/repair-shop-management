@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
@@ -12,6 +13,7 @@ interface CustomerComboboxFieldProps<TFieldValues extends FieldValues> {
   label?: string
   placeholder?: string
   required?: boolean
+  disabled?: boolean
 }
 
 export function CustomerComboboxField<TFieldValues extends FieldValues>({
@@ -20,16 +22,19 @@ export function CustomerComboboxField<TFieldValues extends FieldValues>({
   label = "Customer Name",
   placeholder = "Select Customer",
   required = false,
+  disabled = false,
 }: CustomerComboboxFieldProps<TFieldValues>) {
-  const { setValue, trigger } = useFormContext<TFieldValues>()
+  const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useCustomerModal()
   const { data: customerOptionsData, isLoading } = useCustomerOptions()
-  const customers = customerOptionsData || []
 
-  const customerOptions = customers.map((c) => ({
-    value: c.id,
-    label: `${c.name} (${c.mobile})`,
-  }))
+  const customerOptions = useMemo(() => {
+    const customers = customerOptionsData || []
+    return customers.map((c) => ({
+      value: c.id,
+      label: `${c.name} (${c.mobile})`,
+    }))
+  }, [customerOptionsData])
 
   const handleAddCustomer = () => {
     openModal({
@@ -54,6 +59,7 @@ export function CustomerComboboxField<TFieldValues extends FieldValues>({
         onAdd={handleAddCustomer}
         required={required}
         isLoading={isLoading}
+        disabled={disabled}
       />
     </>
   )

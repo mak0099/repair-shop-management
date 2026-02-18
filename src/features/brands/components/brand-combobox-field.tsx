@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
@@ -12,6 +13,7 @@ interface BrandComboboxFieldProps<TFieldValues extends FieldValues> {
   label?: string
   placeholder?: string
   required?: boolean
+  disabled?: boolean
 }
 
 export function BrandComboboxField<TFieldValues extends FieldValues>({
@@ -20,16 +22,19 @@ export function BrandComboboxField<TFieldValues extends FieldValues>({
   label = "Brand",
   placeholder = "Select Brand",
   required = false,
+  disabled = false,
 }: BrandComboboxFieldProps<TFieldValues>) {
   const { setValue, trigger } = useFormContext<TFieldValues>()
   const { openModal } = useBrandModal()
   const { data: brandOptionsData, isLoading } = useBrandOptions()
-  const brands = brandOptionsData || []
 
-  const brandOptions = brands.map((b) => ({
-    value: b.id,
-    label: b.name,
-  }))
+  const brandOptions = useMemo(() => {
+    const brands = brandOptionsData || []
+    return brands.map((b) => ({
+      value: b.id,
+      label: b.name,
+    }))
+  }, [brandOptionsData])
 
   const handleAddBrand = () => {
     openModal({
@@ -54,6 +59,7 @@ export function BrandComboboxField<TFieldValues extends FieldValues>({
         onAdd={handleAddBrand}
         required={required}
         isLoading={isLoading}
+        disabled={disabled}
       />
     </>
   )

@@ -1,12 +1,8 @@
-import { AcceptanceList } from "@/features/acceptances/components/AcceptanceList"
+import { AcceptanceList } from "@/features/acceptances"
 
 export default function AcceptanceListPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Acceptance List</h1>
-        <p className="text-muted-foreground">TanStack Table with sorting, filtering, status badges, and actions</p>
-      </div>
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <AcceptanceList />
     </div>
   )

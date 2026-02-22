@@ -8,7 +8,8 @@ export const attributeValueSchema = z.object({
 
 export const attributeSchema = z.object({
   id: z.string(),
-  name: z.string(), // RAM, ROM, Color
+  name: z.string(), 
+  key: z.string(), // যেমন: "RAM", "ROM", "COLOR", "GRADE"
   values: z.array(attributeValueSchema),
   description: z.string().optional(),
 });

@@ -30,7 +30,7 @@ export const itemSchema = z.object({
   purchasePrice: z.coerce.number().min(0).default(0),
   salePrice: z.coerce.number().min(0).default(0),
   initialStock: z.coerce.number().default(0),
-  homeStock: z.string().optional(),
+  storageNote: z.string().optional(),
   sku: z.string().optional(),
 
   // Logistics & Status Flags

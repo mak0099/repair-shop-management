@@ -1,16 +1,18 @@
 import { z } from "zod";
-import { BaseEntity, SettingType } from "@/types/common";
 
-/**
- * Validates global lookup settings like Color, Warranty, etc.
- */
-export const masterSettingSchema = z.object({
-  type: z.enum(['COLOR', 'WARRANTY', 'DEVICE_TYPE', 'REPAIR_STATUS', 'CHECKLIST_ACCESSORY', 'EXPENSE_CAT']),
-  label: z.string().min(1, "Label is required"),
+export const masterSettingValueSchema = z.object({
+  id: z.string().optional(),
   value: z.string().min(1, "Value is required"),
   isActive: z.boolean().default(true),
 });
 
-export type MasterSettingFormValues = z.infer<typeof masterSettingSchema>;
+export const masterSettingSchema = z.object({
+  id: z.string(),
+  name: z.string(), 
+  key: z.string(), // example: "PAYMENT_METHODS", "DEVICE_TYPES"
+  values: z.array(masterSettingValueSchema),
+  description: z.string().optional(),
+});
 
-export interface MasterSetting extends BaseEntity, MasterSettingFormValues {}
+export type MasterSetting = z.infer<typeof masterSettingSchema>;
+export type MasterSettingValue = z.infer<typeof masterSettingValueSchema>;

@@ -2,21 +2,31 @@
 
 import { useForm, useFieldArray, FormProvider } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, Trash2, Save, Loader2 } from "lucide-react"
+import { Plus, Trash2, Save, Loader2, Tag } from "lucide-react"
 import { toast } from "sonner"
 
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { TextField } from "@/components/forms/text-field"
 import { attributeSchema, Attribute } from "../attribute.schema"
-import { useUpdateAttribute } from "../attribute.api";
+import { useUpdateAttribute } from "../attribute.api"
 
-export function AttributeForm({ initialData, onSuccess }: { initialData?: Attribute, onSuccess: (data: Attribute) => void }) {
+interface AttributeFormProps {
+  initialData?: Attribute;
+  onSuccess: (data: Attribute) => void;
+}
+
+export function AttributeForm({ initialData, onSuccess }: AttributeFormProps) {
+  // Attribute specific update hook
   const { mutate: updateAttribute, isPending } = useUpdateAttribute()
 
   const form = useForm<Attribute>({
     resolver: zodResolver(attributeSchema),
-    defaultValues: initialData || { name: "", values: [] }
+    defaultValues: {
+      ...initialData,
+      name: initialData?.name || "",
+      values: initialData?.values || [],
+    }
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -29,10 +39,11 @@ export function AttributeForm({ initialData, onSuccess }: { initialData?: Attrib
       toast.error("Cannot update attribute without an ID.");
       return;
     }
+
     updateAttribute({ id: initialData.id, data }, {
-      onSuccess: (updatedAttribute) => {
-        toast.success(`"${updatedAttribute.name}" values updated!`)
-        onSuccess(updatedAttribute)
+      onSuccess: (updatedData) => {
+        toast.success(`Attribute "${updatedData.name}" updated successfully!`)
+        onSuccess(updatedData)
       },
       onError: (err) => toast.error(err.message)
     })
@@ -42,12 +53,14 @@ export function AttributeForm({ initialData, onSuccess }: { initialData?: Attrib
     <FormProvider {...form}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <div className="bg-slate-50 p-3 rounded-md border border-dashed text-center">
-            <span className="text-xs font-bold uppercase text-slate-500 tracking-widest">
-              Managing Values for: {initialData?.name}
+          {/* Header Info Section */}
+          <div className="bg-blue-50/50 p-3 rounded-md border border-dashed border-blue-200 text-center">
+            <span className="text-xs font-bold uppercase text-blue-700 tracking-widest flex items-center justify-center gap-2">
+              <Tag className="h-3 w-3" /> Attribute Settings: {initialData?.name}
             </span>
           </div>
 
+          {/* Dynamic Options List */}
           <div className="max-h-[350px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
             {fields.map((field, index) => (
               <div key={field.id} className="flex gap-2 items-end group animate-in fade-in slide-in-from-top-1">
@@ -55,9 +68,9 @@ export function AttributeForm({ initialData, onSuccess }: { initialData?: Attrib
                   <TextField 
                     control={form.control} 
                     name={`values.${index}.value`} 
-                    label={index === 0 ? "Value Name" : ""} 
-                    placeholder="e.g. 8GB, Golden, etc." 
-                    inputClassName="h-9"
+                    label={index === 0 ? "Option Value" : ""} 
+                    placeholder="e.g. Red, XL, 128GB..." 
+                    inputClassName="h-9 focus-visible:ring-blue-500"
                   />
                 </div>
                 <Button 
@@ -74,24 +87,26 @@ export function AttributeForm({ initialData, onSuccess }: { initialData?: Attrib
 
             {fields.length === 0 && (
               <div className="text-center py-6 text-muted-foreground text-sm border rounded-md border-dashed">
-                No values added yet.
+                No options added to this attribute yet.
               </div>
             )}
           </div>
 
+          {/* Add Entry Button */}
           <Button 
             type="button" 
             variant="outline" 
-            className="w-full border-dashed h-9 text-xs" 
+            className="w-full border-dashed h-9 text-xs hover:bg-blue-50" 
             onClick={() => append({ value: "" })}
           >
-            <Plus className="mr-2 h-4 w-4" /> Add New {initialData?.name} Value
+            <Plus className="mr-2 h-4 w-4" /> Add New {initialData?.name} Option
           </Button>
 
+          {/* Action Buttons */}
           <div className="flex gap-3 pt-4 border-t">
             <Button type="submit" className="flex-1 bg-slate-900" disabled={isPending}>
               {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-              Save Changes
+              Save Attribute
             </Button>
           </div>
         </form>

@@ -3,7 +3,7 @@ import { delay, http, HttpResponse } from "msw"
 import { applySort } from "@/mocks/mock-utils"
 import { Expense, ExpenseFormValues } from "../expense.schema"
 import { mockExpenses } from "./expenses.mock"
-import { mockMasterSettings } from "@/features/master-settings/mocks/master-settings.mock"
+import { mockMasterSettings } from "@/features/master-settings/mocks/master-setting.mock"
 
 let expenses = [...mockExpenses]
 

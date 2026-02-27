@@ -1,0 +1,1 @@
+export { SaleReportManager } from "./components/sale-report-manager";

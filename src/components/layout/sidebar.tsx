@@ -103,8 +103,8 @@ export const data = {
       icon: FileText,
       items: [
         { title: "Profit/Loss Report", url: "/dashboard/reports/profit-loss" },
-        { title: "Sales Analytics", url: "/dashboard/reports/sales" },
-        { title: "Expense Summary", url: "/dashboard/reports/expenses" },
+        { title: "Sale Report", url: "/dashboard/reports/sale-report" },
+        { title: "Expense Report", url: "/dashboard/reports/expense-report" },
         { title: "Cash Balance", url: "/dashboard/reports/balance" },
       ],
     },

@@ -28,7 +28,12 @@ export const useAttribute = attributeApiHooks.useGetOne;
 export const useUpdateAttribute = attributeApiHooks.useUpdate;
 
 export const useDeleteAttribute = attributeApiHooks.useDelete;
-export const useDeleteManyAttributes = createBulkDeleteHook<Attribute>("attributes");
+
+/**
+ * Bulk operation hooks.
+ * FIX: Removed <Attribute> from createBulkDeleteHook to match its new non-generic signature.
+ */
+export const useDeleteManyAttributes = createBulkDeleteHook("attributes");
 export const useUpdateManyAttributes = createBulkUpdateHook<Attribute>("attributes");
 
 // Options for dropdowns if needed in other modules

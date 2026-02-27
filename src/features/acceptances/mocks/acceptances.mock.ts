@@ -30,7 +30,8 @@ const generateAcceptances = (count: number): Acceptance[] => {
         const technician = getRandom(mockUsers);
         const urgent = getRandom(yesNo);
         const pinUnlock = getRandom(yesNo);
-        const createdDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+        // Date generated here
+        const dateObj = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
 
         return {
             id: `rec-${100 + i}`,
@@ -39,7 +40,8 @@ const generateAcceptances = (count: number): Acceptance[] => {
             brand_id: brand.id,
             model_id: model.id,
             technician_id: technician.id,
-            created_date: createdDate,
+            // Fixed field name: matching Acceptance interface
+            acceptance_date: dateObj, 
             estimated_price: Math.floor(Math.random() * 451) + 50,
             color: getRandom(colors),
             accessories: getRandom(accessories),
@@ -58,7 +60,7 @@ const generateAcceptances = (count: number): Acceptance[] => {
             quote: getRandom(yesNo),
             photos: i % 3 === 0 ? ["/mock/iphone-front.jpg", "/mock/iphone-back.jpg"] : [],
             branch_id: "roma-main",
-            createdAt: createdDate.toISOString(),
+            createdAt: dateObj.toISOString(),
             updatedAt: new Date().toISOString(),
             isActive: true,
             price_offered: Math.random() > 0.9 ? Math.floor(Math.random() * 200) : 0,

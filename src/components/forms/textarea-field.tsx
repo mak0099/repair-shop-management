@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Control, FieldValues, Path } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
@@ -10,10 +11,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Textarea, TextareaProps } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea"
 
 interface TextareaFieldProps<TFieldValues extends FieldValues>
-  extends Omit<TextareaProps, "name"> {
+  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "name"> {
   control: Control<TFieldValues>
   name: Path<TFieldValues>
   label: string

@@ -69,7 +69,7 @@ export const acceptanceHandlers = [
       id: `rec-${Math.random().toString(36).substring(7)}`,
       ...body,
       acceptance_number: `${Math.floor(Math.random() * 10000)}-${new Date().getFullYear()}`,
-      created_date: new Date(),
+      acceptance_date: new Date(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

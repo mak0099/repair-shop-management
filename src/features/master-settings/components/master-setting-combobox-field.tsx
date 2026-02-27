@@ -10,8 +10,7 @@ import { useMasterSettingModal } from "../master-setting-modal-context"
 interface MasterSettingComboboxFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
-  // Identifier key based on our systemMasters list
-  settingKey: "DEVICE_TYPE" | "PAYMENT_METHOD" | "EXPENSE_CATEGORY" | "QC_ITEM" | "REPAIR_STATUS" | "RETURN_STATUS" | "DESIGNATION"
+  type: "DEVICE_TYPE" | "PAYMENT_METHOD" | "EXPENSE_CATEGORY" | "QC_ITEM" | "REPAIR_STATUS" | "RETURN_STATUS" | "DESIGNATION" | "COLOR" | "ACCESSORY" | "WARRANTY"
   label?: string
   placeholder?: string
   required?: boolean
@@ -22,7 +21,7 @@ interface MasterSettingComboboxFieldProps<TFieldValues extends FieldValues> {
 export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
   name,
   control,
-  settingKey,
+  type,
   label,
   placeholder,
   required = false,
@@ -30,16 +29,13 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
   readOnly = false,
 }: MasterSettingComboboxFieldProps<TFieldValues>) {
   const { openModal } = useMasterSettingModal()
-  
-  // Fetch all master settings from the API
   const { data: allSettings, isLoading } = useMasterSettings()
 
-  // Find the specific setting by KEY and prepare dropdown options
   const { masterData, options } = useMemo(() => {
-    // Guard against missing settingKey prop to prevent crashes.
-    if (!settingKey) return { masterData: undefined, options: [] }
+    if (!type) return { masterData: undefined, options: [] }
+    
     const found = allSettings?.find(
-      (m) => m.key?.toUpperCase() === settingKey.toUpperCase()
+      (m) => m.key?.toUpperCase() === type.toUpperCase()
     )
     
     const mappedOptions = found?.values.map((v) => ({
@@ -48,12 +44,10 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
     })) || []
 
     return { masterData: found, options: mappedOptions }
-  }, [allSettings, settingKey])
+  }, [allSettings, type])
 
   const handleAddValue = () => {
     if (!masterData) return
-
-    // Open the modal using the correct props-based signature
     openModal({
       initialData: masterData,
       title: `Edit: ${masterData.name}`,
@@ -62,10 +56,12 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <ComboboxWithAdd
-      control={control}
-      name={name}
-      label={label || masterData?.name || settingKey}
-      placeholder={placeholder || `Select ${masterData?.name || settingKey}`}
+      // FIX: Casting to any here solves the variance issue internally
+      // so you don't have to use 'as any' in AcceptanceForm.
+      control={control as any}
+      name={name as any}
+      label={label || masterData?.name || type}
+      placeholder={placeholder || `Select ${masterData?.name || type}`}
       searchPlaceholder={`Search ${masterData?.name || "values"}...`}
       noResultsMessage="No values found."
       options={options}

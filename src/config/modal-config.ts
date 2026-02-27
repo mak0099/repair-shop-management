@@ -18,7 +18,11 @@ import { BoxNumberForm } from "@/features/box-numbers"
 // 1. Define a structure for each modal configuration
 interface ModalConfig {
   type: string
-  contentComponent: React.ComponentType<Record<string, unknown>> // The form component
+  // We use `any` here because each form component (e.g., AttributeForm, BrandForm)
+  // has its own specific props interface for `initialData`. Trying to enforce a
+  // single generic type here leads to assignability issues. This is a pragmatic
+  // trade-off for creating a dynamic modal registry.
+  contentComponent: React.ComponentType<any>
 }
 
 // 2. Create the configuration array. This is the ONLY file you'll need to edit for new modals.

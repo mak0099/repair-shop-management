@@ -61,9 +61,9 @@ export function AcceptanceList() {
         cell: ({ row }) => row.original.customer?.name ?? "N/A",
       },
       {
-        accessorKey: "created_date",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Created Date" />,
-        cell: ({ row }) => <DateCell date={row.getValue("created_date")} />,
+        accessorKey: "acceptance_date",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Acceptance Date" />,
+        cell: ({ row }) => <DateCell date={row.getValue("acceptance_date")} />,
       },
       {
         accessorKey: "device_type",

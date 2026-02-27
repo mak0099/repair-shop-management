@@ -1,18 +1,19 @@
 "use client"
 
 import { useMemo } from "react"
-import { useFormContext, Control, FieldValues, Path } from "react-hook-form"
+import { Control, FieldValues, Path } from "react-hook-form"
 
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
 import { useAttributes } from "../attribute.api"
 import { useAttributeModal } from "../attribute-modal-context"
-import { AttributeForm } from "./attribute-form"
 
 interface AttributeComboboxFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
-  // Identifier key from our systemAttributes list (e.g., "RAM", "COLOR")
-  attributeKey: "RAM" | "ROM" | "COLOR" | "GRADE" | "WARRANTY" | "ACCESSORIES" // Updated type
+  /**
+   * Unique identifier key to filter the correct attribute category (e.g., RAM, COLOR).
+   */
+  attributeKey: "RAM" | "ROM" | "COLOR" | "GRADE" | "WARRANTY" | "ACCESSORIES"
   label?: string
   placeholder?: string
   required?: boolean
@@ -20,30 +21,43 @@ interface AttributeComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
+/**
+ * A generic combobox field for system attributes that integrates with React Hook Form.
+ * It uses the 'attributeKey' to filter specific data from the attributes list.
+ */
 export function AttributeComboboxField<TFieldValues extends FieldValues>({
   name,
   control, 
-  attributeKey, // Renamed from attributeName
+  attributeKey,
   label,
   placeholder,
   required = false,
   disabled = false,
   readOnly = false,
 }: AttributeComboboxFieldProps<TFieldValues>) {
-  const { closeModal, openModal } = useAttributeModal()
+  const { openModal } = useAttributeModal()
   
-  // Fetch all attributes from the API
+  /**
+   * Fetching attributes using the standardized hook.
+   * allAttributes is expected to be of type PaginatedResponse<Attribute>.
+   */
   const { data: allAttributes, isLoading } = useAttributes()
 
-  // Filter data by the unique KEY and map values to combobox options
+  /**
+   * Derives the specific attribute data and maps its values into combobox options.
+   * This logic is memoized to prevent unnecessary re-computations during re-renders.
+   */
   const { attrData, options } = useMemo(() => {
-    const found = allAttributes?.find(
-      (a) => a.key === attributeKey // Changed lookup to use 'key'
+    /**
+     * Accessing the '.data' array from the paginated response to find the matching category.
+     */
+    const found = allAttributes?.data?.find(
+      (attr) => attr.key === attributeKey
     )
     
-    const mappedOptions = found?.values.map((v) => ({
-      value: v.value, // We store the string value directly (e.g., "8GB")
-      label: v.value,
+    const mappedOptions = found?.values.map((val) => ({
+      value: val.value,
+      label: val.value,
     })) || []
 
     return { attrData: found, options: mappedOptions } 
@@ -51,19 +65,21 @@ export function AttributeComboboxField<TFieldValues extends FieldValues>({
 
   const handleAddValue = () => {
     if (!attrData) return
-
-    // Opens the attribute management modal for the specific category
-    openModal({ initialData: attrData }) // Pass attrData directly
+    openModal({ initialData: attrData })
   }
 
   return (
     <ComboboxWithAdd
+      /**
+       * By passing the generic TFieldValues types directly, we maintain 
+       * full type safety without resorting to 'any'.
+       */
       control={control}
       name={name}
-      label={label || attrData?.name || attributeKey} // Use attrData.name for label, fallback to attributeKey
-      placeholder={placeholder || `Select ${attrData?.name || attributeKey}`} // Use attrData.name for placeholder, fallback to attributeKey
-      searchPlaceholder={`Search ${attrData?.name || "options"}...`} // Use attrData.name for search placeholder
-      noResultsMessage={`No ${attrData?.name || "options"} found.`} // Use attrData.name for no results message
+      label={label || attrData?.name || attributeKey}
+      placeholder={placeholder || `Select ${attrData?.name || attributeKey}`}
+      searchPlaceholder={`Search ${attrData?.name || "options"}...`}
+      noResultsMessage={`No ${attrData?.name || "options"} found.`}
       options={options}
       onAdd={handleAddValue}
       required={required}

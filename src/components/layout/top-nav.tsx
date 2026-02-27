@@ -72,13 +72,13 @@ export function AppTopNav() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     {item.items.map((subItem) =>
-                      'items' in subItem ? (
+                      'items' in subItem && Array.isArray(subItem.items) ? (
                         <DropdownMenuSub key={subItem.title}>
                           <DropdownMenuSubTrigger>
                             {subItem.title}
                           </DropdownMenuSubTrigger>
                           <DropdownMenuSubContent>
-                            {subItem.items && subItem.items.map((nestedItem) => (
+                            {subItem.items.map((nestedItem) => (
                               <DropdownMenuItem key={nestedItem.title} asChild>
                                 <Link href={nestedItem.url || "#"}>
                                   {nestedItem.title}

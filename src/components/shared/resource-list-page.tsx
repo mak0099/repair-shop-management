@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback } from "react"
 import Link from "next/link"
 import { Plus, CircleDot, Download, Trash, Loader2 } from "lucide-react"
-import type { ColumnDef, SortingState, Table, UseMutationResult } from "@tanstack/react-table"
-import type { UseQueryResult } from "@tanstack/react-query"
+import type { ColumnDef, SortingState, Table } from "@tanstack/react-table"
+import type { UseQueryResult, UseMutationResult } from "@tanstack/react-query"
 import { toast } from "sonner"
 import * as xlsx from "xlsx"
-import { singular } from "pluralize"
+import pluralize from "pluralize"
 
 import { Button } from "@/components/ui/button"
 import { DataTableFilterToolbar } from "@/components/shared/data-table-filter-toolbar"
@@ -113,7 +113,7 @@ interface ResourceFilters {
   page: number
   pageSize: number
   search: string
-  [key: string]: string | number
+  [key: string]: string | number | undefined
 }
 
 interface ResourceListPageProps<TData extends { id: string }, TValue> {
@@ -132,7 +132,12 @@ interface ResourceListPageProps<TData extends { id: string }, TValue> {
   onTableReady?: (table: Table<TData>) => void
   resourceName?: string
   bulkDeleteMutation?: UseMutationResult<unknown, Error, string[], unknown>
-  bulkStatusUpdateMutation?: UseMutationResult<unknown, Error, { ids: string[]; data: { isActive: boolean } }, unknown>
+  bulkStatusUpdateMutation?: UseMutationResult<
+    unknown,
+    Error, 
+    { ids: string[]; data: Record<string, unknown> }, 
+    unknown
+  >
   config?: ResourceListConfig
 }
 
@@ -229,7 +234,7 @@ export function ResourceListPage<TData extends { id: string }, TValue>({
     onTableReady?.(table)
   })
 
-  const singularResourceName = resourceName ? singular(resourceName) : "item"
+  const singularResourceName = resourceName ? pluralize.singular(resourceName) : "item"
   const pluralResourceName = resourceName || "items"
 
   const handleBulkDelete = () => {
@@ -288,7 +293,7 @@ export function ResourceListPage<TData extends { id: string }, TValue>({
 
   const dynamicFilters = filterDefinitions.map((def) => ({
     ...def,
-    value: filters[def.key],
+    value: String(filters[def.key] ?? ""),
     onChange: (value: string) => setFilters({ ...filters, [def.key]: value, page: 1 }),
   }))
 
@@ -325,35 +330,35 @@ export function ResourceListPage<TData extends { id: string }, TValue>({
         bulkActions={
           showAnyBulkAction
             ? (table) => (
-                <>
-                  {showBulkStatusUpdate && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-8" disabled={bulkStatusUpdateMutation?.isPending}>
-                          {bulkStatusUpdateMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CircleDot className="mr-2 h-4 w-4" />}
-                          Status ({table.getFilteredSelectedRowModel().rows.length})
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
-                        <DropdownMenuItem onClick={() => handleBulkStatusChange(true)}>Set Active</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleBulkStatusChange(false)}>Set Inactive</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                  {showExport && (
-                    <Button variant="outline" size="sm" className="h-8" onClick={handleExport}>
-                      <Download className="mr-2 h-4 w-4" />
-                      Export
-                    </Button>
-                  )}
-                  {showBulkDelete && (
-                    <Button variant="destructive" size="sm" className="h-8" onClick={handleBulkDelete} disabled={bulkDeleteMutation?.isPending}>
-                      {bulkDeleteMutation?.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash className="mr-2 h-4 w-4" />}
-                      Delete ({table.getFilteredSelectedRowModel().rows.length})
-                    </Button>
-                  )}
-                </>
-              )
+              <>
+                {showBulkStatusUpdate && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8" disabled={bulkStatusUpdateMutation?.isPending}>
+                        {bulkStatusUpdateMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CircleDot className="mr-2 h-4 w-4" />}
+                        Status ({table.getFilteredSelectedRowModel().rows.length})
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange(true)}>Set Active</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange(false)}>Set Inactive</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+                {showExport && (
+                  <Button variant="outline" size="sm" className="h-8" onClick={handleExport}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Export
+                  </Button>
+                )}
+                {showBulkDelete && (
+                  <Button variant="destructive" size="sm" className="h-8" onClick={handleBulkDelete} disabled={bulkDeleteMutation?.isPending}>
+                    {bulkDeleteMutation?.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash className="mr-2 h-4 w-4" />}
+                    Delete ({table.getFilteredSelectedRowModel().rows.length})
+                  </Button>
+                )}
+              </>
+            )
             : undefined
         }
       >
@@ -363,8 +368,8 @@ export function ResourceListPage<TData extends { id: string }, TValue>({
         <ConfirmDialog
           open={itemIdsToDelete.length > 0}
           onOpenChange={(open) => !open && setItemIdsToDelete([])}
-          title={`Delete ${pluralResourceName}`}
-          description={`Are you sure you want to delete ${itemIdsToDelete.length} ${singular(pluralResourceName, itemIdsToDelete.length)}? This action cannot be undone.`}
+          title={`Delete ${pluralize(singularResourceName, itemIdsToDelete.length)}`}
+          description={`Are you sure you want to delete ${itemIdsToDelete.length} ${pluralize(singularResourceName, itemIdsToDelete.length)}? This action cannot be undone.`}
           onConfirm={confirmBulkDelete}
           isLoading={bulkDeleteMutation?.isPending}
           variant="destructive"

@@ -8,7 +8,7 @@ let categories = [...mockCategories]
 
 export const categoryHandlers = [
   // GET all categories with pagination and search
-  http.get("https://api.example.com/categories", async ({ request }) => {
+  http.get("*/categories", async ({ request }) => {
     await delay(500)
     const url = new URL(request.url)
     const page = Number(url.searchParams.get("page") || "1")
@@ -48,6 +48,23 @@ export const categoryHandlers = [
     })
   }),
 
+  // GET category options for dropdowns
+  http.get("*/categories/options", async ({ request }) => {
+    await delay(300)
+    const url = new URL(request.url)
+    const parentId = url.searchParams.get("parentId")
+
+    let options = categories
+    if(parentId) {
+        options = categories.filter(c => c.parent_id === parentId)
+    } else {
+        options = categories.filter(c => !c.parent_id)
+    }
+
+    const categoryOptions = options.map((c) => ({ id: c.id, name: c.name }))
+    return HttpResponse.json(categoryOptions)
+  }),
+
   // GET a single category by ID
   http.get("*/categories/:id", ({ params }) => {
     const { id } = params
@@ -60,7 +77,7 @@ export const categoryHandlers = [
   }),
 
   // POST a new category
-  http.post("https://api.example.com/categories", async ({ request }) => {
+  http.post("*/categories", async ({ request }) => {
     await delay(1000)
     const data = (await request.json()) as CategoryFormValues
 
@@ -104,7 +121,7 @@ export const categoryHandlers = [
   }),
 
   // PATCH (bulk update) categories
-  http.patch("https://api.example.com/categories", async ({ request }) => {
+  http.patch("*/categories", async ({ request }) => {
     await delay(1000)
     const { ids, data } = (await request.json()) as { ids: string[]; data: Partial<Omit<Category, "id">> }
 
@@ -119,27 +136,10 @@ export const categoryHandlers = [
   }),
 
   // DELETE (bulk) categories
-  http.delete("https://api.example.com/categories", async ({ request }) => {
+  http.delete("*/categories", async ({ request }) => {
     await delay(1000)
     const { ids } = (await request.json()) as { ids: string[] }
     categories = categories.filter((c) => !ids.includes(c.id))
     return HttpResponse.json({ status: "ok" })
-  }),
-
-  // GET category options for dropdowns
-  http.get("*/categories/options", async ({ request }) => {
-    await delay(300)
-    const url = new URL(request.url)
-    const parentId = url.searchParams.get("parentId")
-
-    let options = categories
-    if(parentId) {
-        options = categories.filter(c => c.parent_id === parentId)
-    } else {
-        options = categories.filter(c => !c.parent_id)
-    }
-
-    const categoryOptions = options.map((c) => ({ id: c.id, name: c.name }))
-    return HttpResponse.json(categoryOptions)
   }),
 ]

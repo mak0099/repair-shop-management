@@ -8,7 +8,7 @@ let users = [...mockUsers]
 
 export const userHandlers = [
   // GET all users with pagination and search
-  http.get("https://api.example.com/users", async ({ request }) => {
+  http.get("*/users", async ({ request }) => {
     await delay(500)
     const url = new URL(request.url)
     const page = Number(url.searchParams.get("page") || "1")
@@ -47,6 +47,13 @@ export const userHandlers = [
     })
   }),
 
+  // GET user options for dropdowns
+  http.get("*/users/options", async () => {
+    await delay(300)
+    const userOptions = users.map((u) => ({ id: u.id, name: u.name }))
+    return HttpResponse.json(userOptions)
+  }),
+
   // GET a single user by ID
   http.get("*/users/:id", ({ params }) => {
     const { id } = params
@@ -58,7 +65,7 @@ export const userHandlers = [
   }),
 
   // POST a new user
-  http.post("https://api.example.com/users", async ({ request }) => {
+  http.post("*/users", async ({ request }) => {
     await delay(1000)
     const data = (await request.json()) as UserFormValues
     
@@ -105,7 +112,7 @@ export const userHandlers = [
   }),
 
   // PATCH (bulk update) users
-  http.patch("https://api.example.com/users", async ({ request }) => {
+  http.patch("*/users", async ({ request }) => {
     await delay(1000)
     const { ids, data } = (await request.json()) as { ids: string[]; data: Partial<Omit<User, "id">> }
 
@@ -120,17 +127,10 @@ export const userHandlers = [
   }),
 
   // DELETE (bulk) users
-  http.delete("https://api.example.com/users", async ({ request }) => {
+  http.delete("*/users", async ({ request }) => {
     await delay(1000)
     const { ids } = (await request.json()) as { ids: string[] }
     users = users.filter((u) => !ids.includes(u.id))
     return HttpResponse.json({ status: "ok" })
-  }),
-
-  // GET user options for dropdowns
-  http.get("*/users/options", async () => {
-    await delay(300)
-    const userOptions = users.map((u) => ({ id: u.id, name: u.name }))
-    return HttpResponse.json(userOptions)
   }),
 ]

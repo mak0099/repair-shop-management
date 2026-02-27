@@ -8,7 +8,7 @@ let permissions = [...mockPermissions]
 
 export const permissionHandlers = [
   // GET all permissions with pagination and search
-  http.get("https://api.example.com/permissions", async ({ request }) => {
+  http.get("*/permissions", async ({ request }) => {
     await delay(500)
     const url = new URL(request.url)
     const page = Number(url.searchParams.get("page") || "1")
@@ -43,6 +43,13 @@ export const permissionHandlers = [
     })
   }),
 
+  // GET permission options for dropdowns
+  http.get("*/permissions/options", async () => {
+    await delay(300)
+    const permissionOptions = permissions.map((p) => ({ id: p.id, name: p.name }))
+    return HttpResponse.json(permissionOptions)
+  }),
+
   // GET a single permission by ID
   http.get("*/permissions/:id", ({ params }) => {
     const { id } = params
@@ -54,7 +61,7 @@ export const permissionHandlers = [
   }),
 
   // POST a new permission
-  http.post("https://api.example.com/permissions", async ({ request }) => {
+  http.post("*/permissions", async ({ request }) => {
     await delay(1000)
     const data = (await request.json()) as PermissionFormValues
 
@@ -98,7 +105,7 @@ export const permissionHandlers = [
   }),
 
   // PATCH (bulk update) permissions
-  http.patch("https://api.example.com/permissions", async ({ request }) => {
+  http.patch("*/permissions", async ({ request }) => {
     await delay(1000)
     const { ids, data } = (await request.json()) as { ids: string[]; data: Partial<Omit<Permission, "id">> }
 
@@ -113,17 +120,10 @@ export const permissionHandlers = [
   }),
 
   // DELETE (bulk) permissions
-  http.delete("https://api.example.com/permissions", async ({ request }) => {
+  http.delete("*/permissions", async ({ request }) => {
     await delay(1000)
     const { ids } = (await request.json()) as { ids: string[] }
     permissions = permissions.filter((p) => !ids.includes(p.id))
     return HttpResponse.json({ status: "ok" })
-  }),
-
-  // GET permission options for dropdowns
-  http.get("*/permissions/options", async () => {
-    await delay(300)
-    const permissionOptions = permissions.map((p) => ({ id: p.id, name: p.name }))
-    return HttpResponse.json(permissionOptions)
   }),
 ]

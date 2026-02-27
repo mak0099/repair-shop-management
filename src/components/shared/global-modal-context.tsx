@@ -1,8 +1,8 @@
 "use client";
 
 import React, { createContext, useState, useCallback, useContext, ReactNode } from "react";
-import { Modal } from "@/components/shared/modal";
-import { modalRegistry, ModalType } from "@/config/modal-config";
+import { Modal } from "@/components/shared/modal"; // Assuming this path is correct
+import { getModalRegistry, ModalType } from "@/config/modal-config";
 
 interface ModalProps {
   onSuccess?: (data?: unknown) => void;
@@ -40,7 +40,7 @@ export function GlobalModalProvider({ children }: { children: ReactNode }) {
   const renderModalContents = () => {
     return activeModals.map((modal, index) => {
       const { type, props } = modal;
-      const modalConfig = modalRegistry.find((m) => m.type === type);
+      const modalConfig = getModalRegistry().find((m) => m.type === type);
 
       if (!modalConfig) {
         console.error(`No modal registered for type: ${type}`);

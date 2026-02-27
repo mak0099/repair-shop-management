@@ -13,6 +13,7 @@ import { TextareaField } from "@/components/forms/textarea-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 import { supplierSchema, SupplierFormValues, Supplier } from "../supplier.schema"
 import { useCreateSupplier, useUpdateSupplier } from "../supplier.api"
@@ -105,27 +106,42 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="relative p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {isViewMode && (
-          <div className="absolute top-4 right-4 z-10">
-            <Button size="sm" type="button" onClick={(e) => { e.preventDefault(); setMode("edit"); }}>
-              Edit
-            </Button>
-          </div>
-        )}
-        <div className={isViewMode ? "pt-10 grid grid-cols-1 md:grid-cols-2 gap-4" : "grid grid-cols-1 md:grid-cols-2 gap-4"}>
-          <TextField control={form.control} name="company_name" label="Company Name" required readOnly={isViewMode} placeholder="e.g., Apple Inc." />
-          <TextField control={form.control} name="contact_person" label="Contact Person" readOnly={isViewMode} placeholder="e.g., Tim Cook" />
-          <TextField control={form.control} name="email" label="Email" type="email" readOnly={isViewMode} placeholder="e.g., supplier@apple.com" />
-          <TextField control={form.control} name="phone" label="Phone" required readOnly={isViewMode} placeholder="e.g., +1234567890" />
-          <TextField control={form.control} name="vat_number" label="VAT Number" readOnly={isViewMode} placeholder="e.g., IT12345678901" />
-          <TextField control={form.control} name="city" label="City" readOnly={isViewMode} placeholder="e.g., Cupertino" />
-          <div className="md:col-span-2">
+      <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-4">
+        <Card>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TextField
+                control={form.control}
+                name="company_name"
+                label="Company Name"
+                required
+                readOnly={isViewMode}
+                placeholder="e.g., Apple Inc."
+              />
+              <TextField
+                control={form.control}
+                name="contact_person"
+                label="Contact Person"
+                readOnly={isViewMode}
+                placeholder="e.g., Tim Cook"
+              />
+              <TextField
+                control={form.control}
+                name="vat_number"
+                label="VAT Number"
+                readOnly={isViewMode}
+                placeholder="e.g., IT12345678901"
+              />
+              <TextField control={form.control} name="email" label="Email" type="email" readOnly={isViewMode} placeholder="e.g., supplier@apple.com" />
+              <TextField control={form.control} name="phone" label="Phone" required readOnly={isViewMode} placeholder="e.g., +1234567890" />
+              <TextField control={form.control} name="city" label="City" readOnly={isViewMode} placeholder="e.g., Cupertino" />
+              <CheckboxField control={form.control} name="isActive" label="Is Active?" disabled={isViewMode} className="rounded-md border p-3" />
+            </div>
             <TextareaField control={form.control} name="address" label="Address" readOnly={isViewMode} placeholder="e.g., 1 Apple Park Way" />
-          </div>
-          <CheckboxField control={form.control} name="isActive" label="Is Active?" className="rounded-md border p-3" disabled={isViewMode} />
-        </div>
-        <div className="md:col-span-2 flex justify-end gap-2 pt-4">
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end gap-2 pt-4">
           {isViewMode ? (
             <Button variant="outline" type="button" onClick={handleCancel}>
               Close

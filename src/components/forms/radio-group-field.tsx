@@ -36,19 +36,19 @@ export function RadioGroupField({
     { value: "No", label: "No" },
   ],
   className,
-  layout = "vertical", // Default to vertical as it's safer and more common
+  layout = "horizontal",
   readOnly = false,
 }: RadioGroupFieldProps) {
   // Layout classes for the main FormItem container
   const formItemLayoutClass = {
-    horizontal: "grid grid-cols-1 items-center gap-x-4 gap-y-2 md:grid-cols-3",
+    horizontal: "grid grid-cols-1 items-center gap-x-4 gap-y-2 md:grid-cols-2",
     vertical: "space-y-2",
     "partial-horizontal": "space-y-2",
   }[layout]
 
   // Layout classes for the FormLabel
   const formLabelLayoutClass = {
-    horizontal: "text-left md:text-right",
+    horizontal: "text-left",
     vertical: "",
     "partial-horizontal": "",
   }[layout]
@@ -62,7 +62,7 @@ export function RadioGroupField({
 
   // Layout classes for the FormControl wrapper
   const formControlLayoutClass = {
-    horizontal: "md:col-span-2",
+    horizontal: "",
     vertical: "",
     "partial-horizontal": "",
   }[layout]
@@ -98,7 +98,7 @@ export function RadioGroupField({
           </FormControl>
           <FormMessage
             className={cn(
-              layout === "horizontal" && "md:col-span-3 md:col-start-2"
+              layout === "horizontal" && "md:col-start-2"
             )}
           />
         </FormItem>

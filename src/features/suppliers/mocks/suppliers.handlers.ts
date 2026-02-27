@@ -8,7 +8,7 @@ let suppliers = [...mockSuppliers]
 
 export const supplierHandlers = [
   // GET all suppliers with pagination and search
-  http.get("https://api.example.com/suppliers", async ({ request }) => {
+  http.get("*/suppliers", async ({ request }) => {
     await delay(500)
     const url = new URL(request.url)
     const page = Number(url.searchParams.get("page") || "1")
@@ -56,7 +56,7 @@ export const supplierHandlers = [
   }),
 
   // POST a new supplier
-  http.post("https://api.example.com/suppliers", async ({ request }) => {
+  http.post("*/suppliers", async ({ request }) => {
     await delay(1000)
     const data = (await request.json()) as SupplierFormValues
 
@@ -100,7 +100,7 @@ export const supplierHandlers = [
   }),
 
   // PATCH (bulk update) suppliers
-  http.patch("https://api.example.com/suppliers", async ({ request }) => {
+  http.patch("*/suppliers", async ({ request }) => {
     await delay(1000)
     const { ids, data } = (await request.json()) as { ids: string[]; data: Partial<Omit<Supplier, "id">> }
 
@@ -115,7 +115,7 @@ export const supplierHandlers = [
   }),
 
   // DELETE (bulk) suppliers
-  http.delete("https://api.example.com/suppliers", async ({ request }) => {
+  http.delete("*/suppliers", async ({ request }) => {
     await delay(1000)
     const { ids } = (await request.json()) as { ids: string[] }
     suppliers = suppliers.filter((s) => !ids.includes(s.id))
@@ -123,9 +123,20 @@ export const supplierHandlers = [
   }),
 
   // GET supplier options for dropdowns
-  http.get("*/suppliers/options", async () => {
+  http.get("*/suppliers/options", async ({ request }) => {
     await delay(300)
-    const supplierOptions = suppliers.map((s) => ({ id: s.id, company_name: s.company_name }))
-    return HttpResponse.json(supplierOptions)
+    const url = new URL(request.url)
+    const search = url.searchParams.get("search")?.toLowerCase() || ""
+
+    const filtered = suppliers.filter(
+      (s) => s.isActive && s.company_name.toLowerCase().includes(search)
+    )
+
+    const options = filtered.map((s) => ({
+      id: s.id,
+      name: s.company_name, // Standardize to 'name' for comboboxes
+    }))
+
+    return HttpResponse.json(options)
   }),
 ]

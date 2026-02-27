@@ -123,6 +123,7 @@ export const data = {
       icon: Settings2,
       items: [
         { title: "Shop Profile", url: "/dashboard/admin/shop-profile" },
+        { title: "Invoice Setup", url: "/dashboard/admin/invoice-setup" },
         { title: "Master Settings", url: "/dashboard/admin/master-settings" },
         { title: "Users Management", url: "/dashboard/admin/users" },
         { title: "Roles & Permissions", url: "/dashboard/admin/permissions" },

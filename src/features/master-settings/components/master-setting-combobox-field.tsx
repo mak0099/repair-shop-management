@@ -6,7 +6,6 @@ import { Control, FieldValues, Path } from "react-hook-form"
 import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
 import { useMasterSettings } from "../master-setting.api"
 import { useMasterSettingModal } from "../master-setting-modal-context"
-import { MasterSettingForm } from "./master-setting-form"
 
 interface MasterSettingComboboxFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
@@ -30,15 +29,17 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
   disabled = false,
   readOnly = false,
 }: MasterSettingComboboxFieldProps<TFieldValues>) {
-  const { closeModal, openModal } = useMasterSettingModal()
+  const { openModal } = useMasterSettingModal()
   
   // Fetch all master settings from the API
   const { data: allSettings, isLoading } = useMasterSettings()
 
   // Find the specific setting by KEY and prepare dropdown options
   const { masterData, options } = useMemo(() => {
+    // Guard against missing settingKey prop to prevent crashes.
+    if (!settingKey) return { masterData: undefined, options: [] }
     const found = allSettings?.find(
-      (m) => m.key.toUpperCase() === settingKey.toUpperCase()
+      (m) => m.key?.toUpperCase() === settingKey.toUpperCase()
     )
     
     const mappedOptions = found?.values.map((v) => ({
@@ -52,17 +53,11 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
   const handleAddValue = () => {
     if (!masterData) return
 
-    // Opens the management modal for this master category
-    openModal(
-      masterData as any,
-      "edit",
-      <MasterSettingForm 
-        initialData={masterData as any} 
-        onSuccess={() => {
-          closeModal()
-        }} 
-      />
-    )
+    // Open the modal using the correct props-based signature
+    openModal({
+      initialData: masterData,
+      title: `Edit: ${masterData.name}`,
+    })
   }
 
   return (

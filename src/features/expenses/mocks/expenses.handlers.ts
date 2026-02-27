@@ -9,7 +9,7 @@ let expenses = [...mockExpenses]
 
 export const expenseHandlers = [
   // GET all expenses with pagination and search
-  http.get("https://api.example.com/expenses", async ({ request }) => {
+  http.get("*/expenses", async ({ request }) => {
     await delay(500)
     const url = new URL(request.url)
     const page = Number(url.searchParams.get("page") || "1")
@@ -47,6 +47,13 @@ export const expenseHandlers = [
     })
   }),
 
+  // GET expense options for dropdowns
+  http.get("*/expenses/options", async () => {
+    await delay(300)
+    const expenseOptions = expenses.map((e) => ({ id: e.id, title: e.title }))
+    return HttpResponse.json(expenseOptions)
+  }),
+
   // GET a single expense by ID
   http.get("*/expenses/:id", ({ params }) => {
     const { id } = params
@@ -59,7 +66,7 @@ export const expenseHandlers = [
   }),
 
   // POST a new expense
-  http.post("https://api.example.com/expenses", async ({ request }) => {
+  http.post("*/expenses", async ({ request }) => {
     await delay(1000)
     const formData = await request.formData()
     const attachmentFile = formData.get("attachment_url");
@@ -137,17 +144,10 @@ export const expenseHandlers = [
   }),
 
   // DELETE (bulk) expenses
-  http.delete("https://api.example.com/expenses", async ({ request }) => {
+  http.delete("*/expenses", async ({ request }) => {
     await delay(1000)
     const { ids } = (await request.json()) as { ids: string[] }
     expenses = expenses.filter((e) => !ids.includes(e.id))
     return HttpResponse.json({ status: "ok" })
-  }),
-
-  // GET expense options for dropdowns
-  http.get("*/expenses/options", async () => {
-    await delay(300)
-    const expenseOptions = expenses.map((e) => ({ id: e.id, title: e.title }))
-    return HttpResponse.json(expenseOptions)
   }),
 ]

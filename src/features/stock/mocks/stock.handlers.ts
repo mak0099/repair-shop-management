@@ -6,7 +6,7 @@ let stocks = [...mockStock]
 
 export const stockHandlers = [
   // GET all stocks with pagination and search
-  http.get("https://api.example.com/stock", async ({ request }) => {
+  http.get("*/stock", async ({ request }) => {
     await delay(500)
     const url = new URL(request.url)
     const page = Number(url.searchParams.get("page") || "1")
@@ -58,7 +58,7 @@ export const stockHandlers = [
   }),
 
   // GET stock options for dropdowns
-  http.get("https://api.example.com/stock/options", async ({ request }) => {
+  http.get("*/stock/options", async ({ request }) => {
     await delay(300)
     const url = new URL(request.url)
     const search = url.searchParams.get("search")?.toLowerCase() || ""
@@ -80,7 +80,7 @@ export const stockHandlers = [
   }),
   
   // GET a single stock item by ID
-  http.get("https://api.example.com/stock/:id", async ({ params }) => {
+  http.get("*/stock/:id", async ({ params }) => {
     await delay(300)
     const { id } = params
     const stock = stocks.find((s) => s.id === id)

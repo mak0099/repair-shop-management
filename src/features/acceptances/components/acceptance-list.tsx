@@ -17,7 +17,7 @@ import {
 } from "../acceptance.api"
 import { Acceptance } from "../acceptance.schema"
 import { useAcceptanceModal } from "../acceptance-modal-context"
-import { STATUS_OPTIONS } from "../acceptance.constants"
+import { REPAIR_STATUS_OPTIONS } from "../acceptance.constants"
 import { Customer } from "@/features/customers"
 import { Brand } from "@/features/brands"
 import { Model } from "@/features/models"
@@ -32,7 +32,8 @@ const INITIAL_FILTERS = {
   search: "",
   page: 1,
   pageSize: 10,
-  status: "all",
+  isActive: "true",
+  current_status: "all",
 }
 
 export function AcceptanceList() {
@@ -81,7 +82,7 @@ export function AcceptanceList() {
       },
       {
         accessorKey: "current_status",
-        header: "Status",
+        header: "Repair Status",
         cell: ({ row }) => {
           const status = row.getValue("current_status") as string
           return <Badge variant="outline">{status}</Badge>
@@ -119,9 +120,17 @@ export function AcceptanceList() {
 
   const filterDefinitions = [
     {
-      key: "status",
+      key: "isActive",
       title: "Status",
-      options: STATUS_OPTIONS,
+      options: [
+        { label: "Active", value: "true" },
+        { label: "Inactive", value: "false" },
+      ],
+    },
+    {
+      key: "current_status",
+      title: "Repair Status",
+      options: REPAIR_STATUS_OPTIONS,
     },
   ]
 

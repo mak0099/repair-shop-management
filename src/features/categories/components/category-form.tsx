@@ -13,7 +13,7 @@ import { TextareaField } from "@/components/forms/textarea-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
-import { CategoryComboboxField } from "./category-combobox-field"
+import { CategorySelectField } from "./category-select-field"
 
 import { categorySchema, type CategoryFormValues, type Category } from "../category.schema"
 import { useCreateCategory, useUpdateCategory } from "../category.api"
@@ -129,7 +129,7 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
             className="min-h-[100px]"
           />
           
-          <CategoryComboboxField
+          <CategorySelectField
             control={control}
             name="parentId" // Updated from parent_id
             label="Parent Category"

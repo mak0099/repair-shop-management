@@ -9,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/forms/text-field";
 import { TextareaField } from "@/components/forms/textarea-field";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { SelectField } from "@/components/forms/select-field"; // Use ComboboxWithAdd if SelectField is missing
+// import { SelectField } from "@/components/forms/select-field"; // Use SelectField if SelectField is missing
 
 import { InvoiceSetup } from "../invoice-setup.schema";
 import { useUpdateInvoiceSetup } from "../invoice-setup.api"; // Removed useInvoiceSetup

@@ -18,7 +18,7 @@ export const acceptanceHandlers = [
     const page = Number(url.searchParams.get("page") || "1");
     const pageSize = Number(url.searchParams.get("pageSize") || "10");
     const search = url.searchParams.get("search")?.toLowerCase() || "";
-    const status = url.searchParams.get("status");
+    const status = url.searchParams.get("current_status");
 
     // Populate related data for display in the list
     const populatedAcceptances = acceptances.map(acceptance => {
@@ -33,7 +33,7 @@ export const acceptanceHandlers = [
         };
     });
 
-    let filteredData = populatedAcceptances.filter(acceptance => {
+    const filteredData = populatedAcceptances.filter(acceptance => {
         const searchMatch = search 
             ? acceptance.acceptance_number.toLowerCase().includes(search) ||
               acceptance.customer?.name.toLowerCase().includes(search) ||

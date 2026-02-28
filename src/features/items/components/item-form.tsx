@@ -14,9 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { itemSchema, type ItemFormValues } from "../item.schema"
 import { useCreateItem } from "../item.api"
-import { CategoryComboboxField } from "@/features/categories/components/category-combobox-field"
-import { BrandComboboxField } from "@/features/brands/components/brand-combobox-field"
-import { ModelComboboxField } from "@/features/models/components/model-combobox-field"
+import { CategorySelectField } from "@/features/categories/components/category-select-field"
+import { BrandSelectField } from "@/features/brands/components/brand-select-field"
+import { ModelSelectField } from "@/features/models/components/model-select-field"
 
 export function ItemForm({ onSuccess }: { onSuccess?: () => void }) {
   const { mutate: createItem, isPending } = useCreateItem()
@@ -61,10 +61,10 @@ export function ItemForm({ onSuccess }: { onSuccess?: () => void }) {
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                 <TextField control={form.control} name="name" label="Product Name" required />
-                <CategoryComboboxField control={form.control} name="categoryId" label="Category" required />
+                <CategorySelectField control={form.control} name="categoryId" label="Category" required />
                 <div className="grid grid-cols-2 gap-4">
-                  <BrandComboboxField control={form.control} name="brandId" label="Brand" required />
-                  <ModelComboboxField control={form.control} name="modelId" label="Model" />
+                  <BrandSelectField control={form.control} name="brandId" label="Brand" required />
+                  <ModelSelectField control={form.control} name="modelId" label="Model" />
                 </div>
                 <div className="grid grid-cols-2 gap-4 pt-2 border-t">
                   <TextField control={form.control} name="purchasePrice" label="Cost" type="number" />

@@ -2,11 +2,11 @@
 
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
+import { SelectField } from "@/components/forms/select-field";
 import { useBoxNumberOptions } from "../box-number.api";
 import { useBoxNumberModal } from "../box-number-modal-context";
 
-interface BoxNumberComboboxFieldProps<TFieldValues extends FieldValues> {
+interface BoxNumberSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -16,7 +16,7 @@ interface BoxNumberComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function BoxNumberComboboxField<TFieldValues extends FieldValues>({
+export function BoxNumberSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Box Number",
@@ -24,7 +24,7 @@ export function BoxNumberComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: BoxNumberComboboxFieldProps<TFieldValues>) {
+}: BoxNumberSelectFieldProps<TFieldValues>) {
   const { setValue, trigger } = useFormContext<TFieldValues>()
   const { openModal } = useBoxNumberModal()
   const { data: boxNumberOptionsData, isLoading } = useBoxNumberOptions()
@@ -49,7 +49,7 @@ export function BoxNumberComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <>
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

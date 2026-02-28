@@ -29,7 +29,7 @@ export function DataTableCard<TData>({
   const selectedRowCount = table.getFilteredSelectedRowModel().rows.length
 
   return (
-    <Card className="gap-2 py-4">
+    <Card className="gap-2 py-4 overflow-hidden min-w-0">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         {selectedRowCount > 0 && bulkActions ? (
           <div className="flex items-center gap-x-3">

@@ -1,6 +1,6 @@
 export * from "./components/user-list"
 export * from "./components/user-form"
-export * from "./components/user-combobox-field"
+export * from "./components/user-select-field"
 export * from "./user.schema"
 export * from "./user.api"
 export * from "./user-modal-context"

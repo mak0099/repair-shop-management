@@ -8,10 +8,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
+import { FieldLabel } from "./field-label"
 
 interface TextareaFieldProps<TFieldValues extends FieldValues>
   extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "name"> {
@@ -40,9 +40,12 @@ export function TextareaField<TFieldValues extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel className={cn("text-xs", labelClassName, required && !readOnly && "required")}>
-            {label}
-          </FormLabel>
+          <FieldLabel 
+            label={label} 
+            required={required} 
+            readOnly={readOnly} 
+            className={labelClassName} 
+          />
           <FormControl>
             <Textarea
               readOnly={readOnly}

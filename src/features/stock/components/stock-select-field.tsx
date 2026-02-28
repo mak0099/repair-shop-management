@@ -4,10 +4,10 @@ import { useMemo } from "react"
 import { FieldValues, Control, Path } from "react-hook-form"
 import { Smartphone } from "lucide-react"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 import { useStockOptions } from "../stock.api"
 
-interface StockComboboxFieldProps<TFieldValues extends FieldValues> {
+interface StockSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -17,7 +17,7 @@ interface StockComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function StockComboboxField<TFieldValues extends FieldValues>({
+export function StockSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Select Unit (IMEI)",
@@ -25,7 +25,7 @@ export function StockComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: StockComboboxFieldProps<TFieldValues>) {
+}: StockSelectFieldProps<TFieldValues>) {
   // Fetching stock options (Items that are currently in inventory)
   const { data: stockOptionsData, isLoading } = useStockOptions()
 
@@ -40,7 +40,7 @@ export function StockComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <div className="relative">
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

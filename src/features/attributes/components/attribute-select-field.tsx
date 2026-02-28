@@ -3,11 +3,11 @@
 import { useMemo } from "react"
 import { Control, FieldValues, Path } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 import { useAttributes } from "../attribute.api"
 import { useAttributeModal } from "../attribute-modal-context"
 
-interface AttributeComboboxFieldProps<TFieldValues extends FieldValues> {
+interface AttributeSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   /**
@@ -25,7 +25,7 @@ interface AttributeComboboxFieldProps<TFieldValues extends FieldValues> {
  * A generic combobox field for system attributes that integrates with React Hook Form.
  * It uses the 'attributeKey' to filter specific data from the attributes list.
  */
-export function AttributeComboboxField<TFieldValues extends FieldValues>({
+export function AttributeSelectField<TFieldValues extends FieldValues>({
   name,
   control, 
   attributeKey,
@@ -34,7 +34,7 @@ export function AttributeComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: AttributeComboboxFieldProps<TFieldValues>) {
+}: AttributeSelectFieldProps<TFieldValues>) {
   const { openModal } = useAttributeModal()
   
   /**
@@ -69,7 +69,7 @@ export function AttributeComboboxField<TFieldValues extends FieldValues>({
   }
 
   return (
-    <ComboboxWithAdd
+    <SelectField
       /**
        * By passing the generic TFieldValues types directly, we maintain 
        * full type safety without resorting to 'any'.

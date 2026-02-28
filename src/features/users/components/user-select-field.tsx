@@ -3,11 +3,11 @@
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 import { useUserOptions } from "../user.api"
 import { useUserModal } from "../user-modal-context"
 
-interface UserComboboxFieldProps<TFieldValues extends FieldValues> {
+interface UserSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -17,7 +17,7 @@ interface UserComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function UserComboboxField<TFieldValues extends FieldValues>({
+export function UserSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "User",
@@ -25,7 +25,7 @@ export function UserComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: UserComboboxFieldProps<TFieldValues>) {
+}: UserSelectFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useUserModal()
   const { data: userOptionsData, isLoading } = useUserOptions()
@@ -50,7 +50,7 @@ export function UserComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <>
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

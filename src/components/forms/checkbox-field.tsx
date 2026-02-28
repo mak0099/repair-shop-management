@@ -7,10 +7,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormDescription,
 } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
+import { FieldLabel } from "./field-label"
 
 interface CheckboxFieldProps<TFieldValues extends FieldValues> {
   control: Control<TFieldValues>
@@ -48,9 +48,7 @@ export function CheckboxField<TFieldValues extends FieldValues>({
             />
           </FormControl>
           <div className="space-y-1 leading-none">
-            <FormLabel className={cn(!disabled && "cursor-pointer")}>
-              {label}
-            </FormLabel>
+            <FieldLabel label={label} className={cn(!disabled && "cursor-pointer")} />
             {description && <FormDescription>{description}</FormDescription>}
           </div>
         </FormItem>

@@ -14,8 +14,8 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { DatePickerField } from "@/components/forms/date-picker-field"
 import { ImageUploadField } from "@/components/forms/image-upload-field"
-import { MasterSettingComboboxField } from "@/features/master-settings"
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { MasterSettingSelectField } from "@/features/master-settings"
+import { SelectField } from "@/components/forms/select-field"
 
 import { expenseSchema, type ExpenseFormValues, type Expense } from "../expense.schema"
 import { useCreateExpense, useUpdateExpense } from "../expense.api"
@@ -133,7 +133,7 @@ export function ExpenseForm({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <MasterSettingComboboxField
+              <MasterSettingSelectField
                 control={form.control}
                 name="categoryId"
                 type="EXPENSE_CATEGORY"
@@ -141,7 +141,7 @@ export function ExpenseForm({
                 required
                 disabled={isViewMode}
               />
-              <ComboboxWithAdd 
+              <SelectField 
                 control={form.control} 
                 name="paymentMethod" 
                 label="Payment Method" 

@@ -3,11 +3,11 @@
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 import { useCategoryOptions } from "../category.api"
 import { useCategoryModal } from "../category-modal-context"
 
-interface CategoryComboboxFieldProps<TFieldValues extends FieldValues> {
+interface CategorySelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -18,7 +18,7 @@ interface CategoryComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function CategoryComboboxField<TFieldValues extends FieldValues>({
+export function CategorySelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Category",
@@ -27,7 +27,7 @@ export function CategoryComboboxField<TFieldValues extends FieldValues>({
   parentId,
   disabled = false,
   readOnly = false,
-}: CategoryComboboxFieldProps<TFieldValues>) {
+}: CategorySelectFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useCategoryModal()
   const { data: categoryOptionsData, isLoading } = useCategoryOptions(parentId)
@@ -52,7 +52,7 @@ export function CategoryComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <>
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

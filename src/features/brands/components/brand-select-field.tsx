@@ -3,11 +3,11 @@
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
+import { SelectField } from "@/components/forms/select-field";
 import { useBrandOptions } from "../brand.api";
 import { useBrandModal } from "../brand-modal-context";
 
-interface BrandComboboxFieldProps<TFieldValues extends FieldValues> {
+interface BrandSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -17,7 +17,7 @@ interface BrandComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function BrandComboboxField<TFieldValues extends FieldValues>({
+export function BrandSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Brand",
@@ -25,7 +25,7 @@ export function BrandComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: BrandComboboxFieldProps<TFieldValues>) {
+}: BrandSelectFieldProps<TFieldValues>) {
   const { setValue, trigger } = useFormContext<TFieldValues>()
   const { openModal } = useBrandModal()
   const { data: brandOptionsData, isLoading } = useBrandOptions()
@@ -50,7 +50,7 @@ export function BrandComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <>
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

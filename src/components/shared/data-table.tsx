@@ -2,6 +2,7 @@
 
 import { flexRender, Table as TanstackTable } from "@tanstack/react-table"
 import { cn } from "@/lib/utils"
+import { Loader2 } from "lucide-react"
 
 import {
   Table,
@@ -21,7 +22,7 @@ export function DataTable<TData>({ table, isLoading }: DataTableProps<TData>) {
   const columnsLength = table.getVisibleFlatColumns().length
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border overflow-x-auto w-full max-w-full">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -50,7 +51,7 @@ export function DataTable<TData>({ table, isLoading }: DataTableProps<TData>) {
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 className={cn(
-                  (row.original as any).isActive === false && "text-muted-foreground/60"
+                  (row.original as Record<string, unknown>).isActive === false && "text-muted-foreground/60"
                 )}
               >
                 {row.getVisibleCells().map((cell, index) => (
@@ -61,6 +62,15 @@ export function DataTable<TData>({ table, isLoading }: DataTableProps<TData>) {
                 ))}
               </TableRow>
             ))
+          ) : isLoading ? (
+            <TableRow>
+              <TableCell colSpan={columnsLength} className="h-24 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading...
+                </div>
+              </TableCell>
+            </TableRow>
           ) : (
             <TableRow>
               <TableCell colSpan={columnsLength} className="h-24 text-center">

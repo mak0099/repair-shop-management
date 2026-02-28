@@ -14,7 +14,7 @@ import { Form } from "@/components/ui/form"
 import { TextField } from "@/components/forms/text-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 
 import { customerSchema, type CustomerFormValues, type Customer } from "../customer.schema"
 import { useCreateCustomer, useUpdateCustomer } from "../customer.api"
@@ -100,7 +100,7 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
               <TextField control={form.control} name="address" label="Street Address" readOnly={isViewMode} className="md:col-span-3" />
               <TextField control={form.control} name="location" label="City/Comune" readOnly={isViewMode} className="md:col-span-1" />
 
-              <ComboboxWithAdd
+              <SelectField
                 control={form.control}
                 name="province"
                 label="Province"

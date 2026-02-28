@@ -3,11 +3,11 @@
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
+import { SelectField } from "@/components/forms/select-field";
 import { useCustomerOptions } from "../customer.api";
 import { useCustomerModal } from "../customer-modal-context";
 
-interface CustomerComboboxFieldProps<TFieldValues extends FieldValues> {
+interface CustomerSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -17,7 +17,7 @@ interface CustomerComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function CustomerComboboxField<TFieldValues extends FieldValues>({
+export function CustomerSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Customer Name",
@@ -25,7 +25,7 @@ export function CustomerComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: CustomerComboboxFieldProps<TFieldValues>) {
+}: CustomerSelectFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useCustomerModal()
   const { data: customerOptionsData, isLoading } = useCustomerOptions()
@@ -50,7 +50,7 @@ export function CustomerComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <>
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

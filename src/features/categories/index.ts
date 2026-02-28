@@ -1,6 +1,6 @@
 export * from "./components/category-list"
 export * from "./components/category-form"
-export * from "./components/category-combobox-field"
+export * from "./components/category-select-field"
 export * from "./category.schema"
 export * from "./category.api"
 export * from "./category-modal-context"

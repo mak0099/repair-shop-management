@@ -12,7 +12,6 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import {
@@ -20,6 +19,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { FieldLabel } from "./field-label"
 
 interface DatePickerFieldProps<TFieldValues extends FieldValues> {
     control: Control<TFieldValues>
@@ -50,7 +50,7 @@ export function DatePickerField<TFieldValues extends FieldValues>({
             name={name}
             render={({ field }) => (
                 <FormItem className={cn("flex flex-col", className)}>
-                    <FormLabel className={cn("text-xs", required && "required")}>{label}</FormLabel>
+                    <FieldLabel label={label} required={required} readOnly={readOnly} />
                     
                     {readOnly ? (
                         <FormControl>

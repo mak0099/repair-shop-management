@@ -222,7 +222,7 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
   const showAnyBulkAction = resourceName && (showBulkStatusUpdate || showBulkDelete || showExport);
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-4 w-full max-w-full">
       <PageHeader title={title} description={description}>
         {showAddButton && (
           onAdd ? (

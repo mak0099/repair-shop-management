@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TextField } from "@/components/forms/text-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 
 import { barcodeSchema, type BarcodeRequest } from "../barcode.schema"
 import { ItemSearchField } from "./item-search-field"
@@ -63,7 +63,7 @@ export function BarcodeGenerator() {
                     type="number" 
                   />
 
-                  <ComboboxWithAdd
+                  <SelectField
                     control={control}
                     name="labelSize"
                     label="Label Size"

@@ -3,11 +3,11 @@
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 import { useSupplierOptions } from "../supplier.api"
 import { useSupplierModal } from "../supplier-modal-context"
 
-interface SupplierComboboxFieldProps<TFieldValues extends FieldValues> {
+interface SupplierSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -17,7 +17,7 @@ interface SupplierComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function SupplierComboboxField<TFieldValues extends FieldValues>({
+export function SupplierSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Supplier",
@@ -25,7 +25,7 @@ export function SupplierComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: SupplierComboboxFieldProps<TFieldValues>) {
+}: SupplierSelectFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useSupplierModal()
   const { data: supplierOptionsData, isLoading } = useSupplierOptions()
@@ -50,7 +50,7 @@ export function SupplierComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <>
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

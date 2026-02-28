@@ -19,14 +19,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { FieldLabel } from "./field-label"
 
 /**
  * Professional Generic Interface for Combobox.
  * TFieldValues links directly to the specific form schema (e.g. CustomerFormValues).
  */
-interface ComboboxWithAddProps<TFieldValues extends FieldValues> {
+interface SelectFieldProps<TFieldValues extends FieldValues> {
   control: Control<TFieldValues>
   name: Path<TFieldValues>
   label: string
@@ -42,7 +43,7 @@ interface ComboboxWithAddProps<TFieldValues extends FieldValues> {
   className?: string
 }
 
-export function ComboboxWithAdd<TFieldValues extends FieldValues>({
+export function SelectField<TFieldValues extends FieldValues>({
   control,
   name,
   label,
@@ -56,7 +57,7 @@ export function ComboboxWithAdd<TFieldValues extends FieldValues>({
   disabled = false,
   readOnly = false,
   className,
-}: ComboboxWithAddProps<TFieldValues>) {
+}: SelectFieldProps<TFieldValues>) {
   const [open, setOpen] = React.useState(false)
   
   // Find selected label for display
@@ -70,9 +71,7 @@ export function ComboboxWithAdd<TFieldValues extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className={cn("space-y-1.5", className)}>
-          <FormLabel className={cn("text-[11px] font-bold uppercase tracking-wider text-slate-500", required && "after:content-['*'] after:ml-0.5 after:text-red-500")}>
-            {label}
-          </FormLabel>
+          <FieldLabel label={label} required={required} readOnly={readOnly} />
 
           {readOnly ? (
             <FormControl>

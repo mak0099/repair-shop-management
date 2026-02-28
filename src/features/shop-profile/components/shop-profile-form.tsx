@@ -10,7 +10,7 @@ import { Form } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TextField } from "@/components/forms/text-field";
 import { TextareaField } from "@/components/forms/textarea-field";
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field";
+import { SelectField } from "@/components/forms/select-field";
 
 import { shopProfileSchema, ShopProfile } from "../shop-profile.schema";
 import { useCreateShopProfile, useUpdateShopProfile } from "../shop-profile.api";
@@ -89,7 +89,7 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
             <CardTitle className="text-lg font-semibold text-slate-800">Financial & Invoice Settings</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-6">
-            <ComboboxWithAdd
+            <SelectField
               control={form.control}
               name="currency"
               label="Primary Currency"

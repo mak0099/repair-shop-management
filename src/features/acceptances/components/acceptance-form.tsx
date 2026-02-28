@@ -2,26 +2,25 @@
 
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import Image from "next/image"
 import { FormProvider, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Upload, X } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
-import { BrandComboboxField } from "@/features/brands/components/brand-combobox-field"
-import { CustomerComboboxField } from "@/features/customers/components/customer-combobox-field"
-import { ItemComboboxField } from "@/features/items/components/item-combobox-field"
-import { MasterSettingComboboxField } from "@/features/master-settings/components/master-setting-combobox-field"
-import { ModelComboboxField } from "@/features/models/components/model-combobox-field"
-import { UserComboboxField } from "@/features/users/components/user-combobox-field"
+import { BrandSelectField } from "@/features/brands"
+import { CustomerSelectField } from "@/features/customers"
+import { ItemSelectField } from "@/features/items"
+import { MasterSettingSelectField } from "@/features/master-settings"
+import { ModelSelectField } from "@/features/models"
+import { UserSelectField } from "@/features/users"
 
 import { DatePickerField } from "@/components/forms/date-picker-field"
+import { ImageUploadField } from "@/components/forms/image-upload-field"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
-import { Label } from "@/components/ui/label"
 import { useCreateAcceptance, useUpdateAcceptance } from "../acceptance.api"
 import { Acceptance, formSchema, FormData } from "../acceptance.schema"
 
@@ -46,8 +45,6 @@ export function AcceptanceForm({
   const isViewMode = mode === "view"
   const isPending = isCreating || isUpdating
   const isEditMode = !!initialData && mode !== "create"
-
-  const [photoPreviews, setPhotoPreviews] = useState<{ [key: string]: string }>({})
 
   // FIX 1: Fixed acceptance_date mapping to avoid "undefined" error
   const form = useForm<FormData>({
@@ -92,26 +89,6 @@ export function AcceptanceForm({
     }
   }, [brandId, setValue, formState.dirtyFields.brand_id])
 
-  const handlePhotoUpload = (fieldName: string, file: File | null) => {
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setPhotoPreviews((prev) => ({ ...prev, [fieldName]: reader.result as string }))
-      }
-      reader.readAsDataURL(file)
-      form.setValue(fieldName as keyof FormData, file)
-    }
-  }
-
-  const removePhoto = (fieldName: string) => {
-    setPhotoPreviews((prev) => {
-      const newPreviews = { ...prev }
-      delete newPreviews[fieldName]
-      return newPreviews
-    })
-    form.setValue(fieldName as keyof FormData, null)
-  }
-
   function onSubmit(data: FormData) {
     const callbacks = {
       onSuccess: (res: Acceptance) => {
@@ -145,20 +122,20 @@ export function AcceptanceForm({
               <div className="md:col-span-1 space-y-4">
                 <div className="bg-white p-4 rounded-md shadow border space-y-3">
                   {/* FIX 2: Added 'as any' to control for variance issues */}
-                  <CustomerComboboxField name="customer_id" control={control} required readOnly={isViewMode} />
+                  <CustomerSelectField name="customer_id" control={control} required readOnly={isViewMode} />
                   <TextField control={control} name="estimated_price" label="Estimated Price" type="number" readOnly={isViewMode} />
-                  <BrandComboboxField name="brand_id" control={control} required readOnly={isViewMode} />
-                  <ModelComboboxField
+                  <BrandSelectField name="brand_id" control={control} required readOnly={isViewMode} />
+                  <ModelSelectField
                     name="model_id"
                     control={control}
                     brandId={brandId}
                     required
                     readOnly={isViewMode || !brandId}
                   />
-                  <MasterSettingComboboxField control={control} name="color" type="COLOR" label="Color" readOnly={isViewMode} />
-                  <MasterSettingComboboxField control={control} name="accessories" type="ACCESSORY" label="Accessories" readOnly={isViewMode} />
-                  <MasterSettingComboboxField control={control} name="device_type" type="DEVICE_TYPE" label="Device Type" required readOnly={isViewMode} />
-                  <MasterSettingComboboxField control={control} name="current_status" type="REPAIR_STATUS" label="Status" required readOnly={isViewMode} />
+                  <MasterSettingSelectField control={control} name="color" type="COLOR" label="Color" readOnly={isViewMode} />
+                  <MasterSettingSelectField control={control} name="accessories" type="ACCESSORY" label="Accessories" readOnly={isViewMode} />
+                  <MasterSettingSelectField control={control} name="device_type" type="DEVICE_TYPE" label="Device Type" required readOnly={isViewMode} />
+                  <MasterSettingSelectField control={control} name="current_status" type="REPAIR_STATUS" label="Status" required readOnly={isViewMode} />
                   <TextareaField control={control} name="defect_description" label="Defect" readOnly={isViewMode} />
                 </div>
               </div>
@@ -169,15 +146,15 @@ export function AcceptanceForm({
                   <DatePickerField
                     control={control}
                     name="acceptance_date"
-                    label="Created Date"
+                    label="Acceptance Date"
                     required
                     readOnly={isViewMode}
                   />
                   <TextField control={control} name="imei" label="IMEI/Serial" required readOnly={isViewMode} />
                   <TextField control={control} name="secondary_imei" label="Secondary IMEI" readOnly={isViewMode} />
-                  <UserComboboxField control={control} name="technician_id" label="Technician" required readOnly={isViewMode} />
-                  <MasterSettingComboboxField control={control} name="warranty" type="WARRANTY" label="Warranty" readOnly={isViewMode} />
-                  <ItemComboboxField control={control} name="replacement_device_id" label="Replacement" readOnly={isViewMode} />
+                  <UserSelectField control={control} name="technician_id" label="Technician" required readOnly={isViewMode} />
+                  <MasterSettingSelectField control={control} name="warranty" type="WARRANTY" label="Warranty" readOnly={isViewMode} />
+                  <ItemSelectField control={control} name="replacement_device_id" label="Replacement" readOnly={isViewMode} />
                   <TextField control={control} name="dealer" label="Dealer" readOnly={isViewMode} />
                   <TextField control={control} name="price_offered" label="Price Offered" type="number" readOnly={isViewMode} />
                   <TextareaField control={control} name="reserved_notes" label="Reserved Notes" readOnly={isViewMode} />
@@ -214,39 +191,16 @@ export function AcceptanceForm({
 
                 <div className="bg-white p-4 rounded-md shadow border grid grid-cols-2 gap-3">
                   {[1, 2, 3, 4, 5].map((num) => {
-                    const fieldName = `photo_${num}`
-                    const preview = photoPreviews[fieldName]
                     return (
-                      <div key={num} className="space-y-1">
-                        <Label className="text-[10px]">Photo {num}</Label>
-                        <div className="relative h-20 w-full border rounded bg-slate-50 overflow-hidden group">
-                          {preview ? (
-                            <>
-                              <Image src={preview} alt="preview" fill className="object-cover" />
-                              {!isViewMode && (
-                                <button 
-                                  type="button" 
-                                  onClick={() => removePhoto(fieldName)} 
-                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <X className="h-3 w-3" />
-                                </button>
-                              )}
-                            </>
-                          ) : (
-                            <label className="flex items-center justify-center h-full cursor-pointer hover:bg-slate-100 transition-colors">
-                              <Upload className="h-5 w-5 text-slate-300" />
-                              <input 
-                                type="file" 
-                                className="hidden" 
-                                accept="image/*" 
-                                disabled={isViewMode} 
-                                onChange={(e) => handlePhotoUpload(fieldName, e.target.files?.[0] || null)} 
-                              />
-                            </label>
-                          )}
-                        </div>
-                      </div>
+                      <ImageUploadField
+                        key={num}
+                        control={control}
+                        name={`photo_${num}` as keyof FormData}
+                        label={`Photo ${num}`}
+                        initialImage={initialData ? (initialData[(`photo_${num}` as keyof Acceptance)] as string) : null}
+                        layout="compact"
+                        isViewMode={isViewMode}
+                      />
                     )
                   })}
                 </div>

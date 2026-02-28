@@ -3,11 +3,11 @@
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 import { useExpenseOptions } from "../expense.api"
 import { useExpenseModal } from "../expense-modal-context"
 
-interface ExpenseComboboxFieldProps<TFieldValues extends FieldValues> {
+interface ExpenseSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   label?: string
@@ -17,7 +17,7 @@ interface ExpenseComboboxFieldProps<TFieldValues extends FieldValues> {
   readOnly?: boolean
 }
 
-export function ExpenseComboboxField<TFieldValues extends FieldValues>({
+export function ExpenseSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Expense",
@@ -25,7 +25,7 @@ export function ExpenseComboboxField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
-}: ExpenseComboboxFieldProps<TFieldValues>) {
+}: ExpenseSelectFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useExpenseModal()
   const { data: expenseOptionsData, isLoading } = useExpenseOptions()
@@ -50,7 +50,7 @@ export function ExpenseComboboxField<TFieldValues extends FieldValues>({
 
   return (
     <>
-      <ComboboxWithAdd
+      <SelectField
         control={control}
         name={name}
         label={label}

@@ -1,5 +1,8 @@
-export const STATUS_OPTIONS = [
-  { value: "all", label: "All Status" },
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
-]
+export const REPAIR_STATUS_OPTIONS = [
+  {label: "All Status", value: "all"},
+  {label: "IN REPAIR", value: "IN REPAIR"},
+  {label: "WAITING PARTS", value: "WAITING PARTS"},
+  {label: "READY", value: "READY"},
+  {label: "DELIVERED", value: "DELIVERED"},
+  {label: "CANCELLED", value: "CANCELLED"},
+];

@@ -1,23 +1,23 @@
-import { Control } from "react-hook-form"
+import { Control, FieldValues, Path } from "react-hook-form"
 import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { FieldLabel } from "./field-label"
 
 interface RadioOption {
   value: string
   label: string
 }
 
-interface RadioGroupFieldProps {
-  control: Control<any>
-  name: string
+interface RadioGroupFieldProps<TFieldValues extends FieldValues> {
+  control: Control<TFieldValues>
+  name: Path<TFieldValues>
   label: React.ReactNode
   options?: RadioOption[]
   required?: boolean
@@ -26,7 +26,7 @@ interface RadioGroupFieldProps {
   readOnly?: boolean
 }
 
-export function RadioGroupField({
+export function RadioGroupField<TFieldValues extends FieldValues>({
   control,
   name,
   label,
@@ -38,7 +38,7 @@ export function RadioGroupField({
   className,
   layout = "horizontal",
   readOnly = false,
-}: RadioGroupFieldProps) {
+}: RadioGroupFieldProps<TFieldValues>) {
   // Layout classes for the main FormItem container
   const formItemLayoutClass = {
     horizontal: "grid grid-cols-1 items-center gap-x-4 gap-y-2 md:grid-cols-2",
@@ -73,9 +73,12 @@ export function RadioGroupField({
       name={name}
       render={({ field }) => (
         <FormItem className={cn(formItemLayoutClass, className)}>
-          <FormLabel className={cn("text-xs", required && "required", formLabelLayoutClass)}>
-            {label}
-          </FormLabel>
+          <FieldLabel 
+            label={label} 
+            required={required} 
+            readOnly={readOnly} 
+            className={formLabelLayoutClass} 
+          />
           <FormControl className={formControlLayoutClass}>
             <RadioGroup
               onValueChange={field.onChange}

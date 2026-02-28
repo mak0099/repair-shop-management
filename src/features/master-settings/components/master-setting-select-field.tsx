@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import { Control, FieldValues, Path } from "react-hook-form"
 
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 import { useMasterSettings } from "../master-setting.api"
 import { useMasterSettingModal } from "../master-setting-modal-context"
 
@@ -23,7 +23,7 @@ export type MasterSettingType =
   | "ACCESSORY"
   | "WARRANTY";
 
-interface MasterSettingComboboxFieldProps<TFieldValues extends FieldValues> {
+interface MasterSettingSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
   control: Control<TFieldValues>
   type: MasterSettingType
@@ -39,7 +39,7 @@ interface MasterSettingComboboxFieldProps<TFieldValues extends FieldValues> {
  * A reusable Form Field component that connects Master Settings to a Combobox.
  * Uses strict Generics to maintain type safety without using 'any'.
  */
-export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
+export function MasterSettingSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   type,
@@ -49,7 +49,7 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
   disabled = false,
   readOnly = false,
   className,
-}: MasterSettingComboboxFieldProps<TFieldValues>) {
+}: MasterSettingSelectFieldProps<TFieldValues>) {
   const { openModal } = useMasterSettingModal()
   const { data: allSettings, isLoading } = useMasterSettings()
 
@@ -85,7 +85,7 @@ export function MasterSettingComboboxField<TFieldValues extends FieldValues>({
   }
 
   return (
-    <ComboboxWithAdd<TFieldValues>
+    <SelectField<TFieldValues>
       control={control}
       name={name}
       // Fallback label logic: MasterData Name > Humanized Type > Type

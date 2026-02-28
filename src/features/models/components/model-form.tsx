@@ -11,7 +11,7 @@ import { TextField } from "@/components/forms/text-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
-import { BrandComboboxField } from "@/features/brands"
+import { BrandSelectField } from "@/features/brands"
 
 import { modelSchema, ModelFormValues, Model } from "../model.schema"
 import { useCreateModel, useUpdateModel } from "../model.api"
@@ -106,7 +106,7 @@ export function ModelForm({
             readOnly={isViewMode}
           />
 
-          <BrandComboboxField
+          <BrandSelectField
             control={form.control}
             name="brand_id"
             label="Brand"

@@ -13,12 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
-import { ComboboxWithAdd } from "@/components/forms/combobox-with-add-field"
+import { SelectField } from "@/components/forms/select-field"
 
 import { stockAdjustmentSchema, StockAdjustment, StockAdjustmentFormValues } from "../stock-adjustment.schema"
 import { useCreateStockAdjustment, useUpdateStockAdjustment } from "../stock-adjustment.api"
 import { STOCK_ADJUSTMENT_REASON_OPTIONS, STOCK_ADJUSTMENT_TYPE_OPTIONS } from "../stock-adjustment.constants"
-import { StockComboboxField } from "@/features/stock/components/stock-combobox-field"
+import { StockSelectField } from "@/features/stock/components/stock-select-field"
 
 interface StockAdjustmentFormProps {
   initialData?: StockAdjustment | null
@@ -101,7 +101,7 @@ export function StockAdjustmentForm({
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <StockComboboxField
+                <StockSelectField
                   control={form.control}
                   name="stockId"
                   label="Specific Unit (IMEI)"
@@ -125,7 +125,7 @@ export function StockAdjustmentForm({
                   type="number"
                   readOnly={isViewMode}
                 />
-                <ComboboxWithAdd
+                <SelectField
                   control={form.control}
                   name="reason"
                   label="Adjustment Reason"

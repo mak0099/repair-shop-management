@@ -1,6 +1,6 @@
 export * from "./components/model-list"
 export * from "./components/model-form"
-export * from "./components/model-combobox-field"
+export * from "./components/model-select-field"
 export * from "./model.schema"
 export * from "./model.api"
 export * from "./model-modal-context"

@@ -1,7 +1,7 @@
 "use client"
 
 import { Control } from "react-hook-form"
-import { ItemComboboxField } from "@/features/items/components/item-combobox-field"
+import { ItemSelectField } from "@/features/items/components/item-select-field"
 
 interface ItemSearchFieldProps {
   control: Control<any>
@@ -11,7 +11,7 @@ interface ItemSearchFieldProps {
 
 export function ItemSearchField({ control, name, label = "Search Product to Print" }: ItemSearchFieldProps) {
   return (
-    <ItemComboboxField
+    <ItemSelectField
       control={control}
       name={name}
       label={label}

@@ -8,10 +8,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { FieldLabel } from "./field-label"
 
 interface TextFieldProps<TFieldValues extends FieldValues>
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "name"> {
@@ -43,9 +43,12 @@ export function TextField<TFieldValues extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel className={cn("text-xs", labelClassName, required && !readOnly && "required")}>
-            {label}
-          </FormLabel>
+          <FieldLabel 
+            label={label} 
+            required={required} 
+            readOnly={readOnly} 
+            className={labelClassName} 
+          />
           <FormControl>
             <Input
               type={type}

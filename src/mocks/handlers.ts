@@ -16,6 +16,7 @@ import { supplierHandlers } from "@/features/suppliers/mocks/suppliers.handlers"
 import { userHandlers } from "@/features/users/mocks/users.handlers"
 import { shopProfileHandlers } from "@/features/shop-profile/mocks/shop-profile.handlers";
 import { invoiceSetupHandlers } from "@/features/invoice-setup/mocks/invoice-setup.handlers";
+import { authHandlers } from "@/features/auth";
 
 export const handlers = [
   ...permissionHandlers,
@@ -34,5 +35,6 @@ export const handlers = [
   ...stockHandlers,
   ...stockAdjustmentHandlers,
   ...shopProfileHandlers,
-  ...invoiceSetupHandlers
+  ...invoiceSetupHandlers,
+  ...authHandlers
 ]

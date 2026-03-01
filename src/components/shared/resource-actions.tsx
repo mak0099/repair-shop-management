@@ -164,7 +164,7 @@ export function ResourceActions<T extends { id: string }>({
               className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50"
             >
               <Trash className="mr-2 h-4 w-4 opacity-70" />
-              <span className="font-semibold">Move to Trash</span>
+              <span className="font-semibold">Delete</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenuPortal>

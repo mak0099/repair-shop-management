@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm, Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { BrandSelectField } from "@/features/brands"
@@ -19,8 +18,8 @@ import { ImageUploadField } from "@/components/forms/image-upload-field"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
-import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
+import { FormFooter } from "@/components/forms/form-footer"
 import { useCreateAcceptance, useUpdateAcceptance } from "../acceptance.api"
 import { Acceptance, formSchema, FormData } from "../acceptance.schema"
 
@@ -48,46 +47,46 @@ export function AcceptanceForm({
 
   // FIX 1: Fixed acceptance_date mapping to avoid "undefined" error
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as unknown as Resolver<FormData>,
     defaultValues: {
-      customer_id: initialData?.customer_id || "",
-      acceptance_date: initialData?.acceptance_date ? new Date(initialData.acceptance_date) : new Date(),
-      estimated_price: initialData?.estimated_price,
-      brand_id: initialData?.brand_id || "",
-      model_id: initialData?.model_id || "",
+      customerId: initialData?.customerId || "",
+      acceptanceDate: initialData?.acceptanceDate ? new Date(initialData.acceptanceDate) : new Date(),
+      estimatedPrice: initialData?.estimatedPrice,
+      brandId: initialData?.brandId || "",
+      modelId: initialData?.modelId || "",
       color: initialData?.color || "",
       accessories: initialData?.accessories || "",
-      device_type: initialData?.device_type || "SMARTPHONE",
-      current_status: initialData?.current_status || "IN REPAIR",
-      defect_description: initialData?.defect_description || "",
+      deviceType: initialData?.deviceType || "SMARTPHONE",
+      currentStatus: initialData?.currentStatus || "IN REPAIR",
+      defectDescription: initialData?.defectDescription || "",
       notes: initialData?.notes || "",
       imei: initialData?.imei || "",
-      secondary_imei: initialData?.secondary_imei || "",
-      technician_id: initialData?.technician_id || "",
+      secondaryImei: initialData?.secondaryImei || "",
+      technicianId: initialData?.technicianId || "",
       warranty: initialData?.warranty || "",
-      replacement_device_id: initialData?.replacement_device_id || "",
+      replacementDeviceId: initialData?.replacementDeviceId || "",
       dealer: initialData?.dealer || "",
-      price_offered: initialData?.price_offered,
-      reserved_notes: initialData?.reserved_notes || "",
-      important_information: initialData?.important_information || "No",
-      pin_unlock: initialData?.pin_unlock || "No",
-      pin_unlock_number: initialData?.pin_unlock_number || "",
-      urgent: initialData?.urgent || "No",
-      urgent_date: initialData?.urgent_date ? new Date(initialData.urgent_date) : undefined,
-      quote: initialData?.quote || "No",
+      priceOffered: initialData?.priceOffered,
+      reservedNotes: initialData?.reservedNotes || "",
+      importantInformation: initialData?.importantInformation ? "true" : "false",
+      pinUnlock: initialData?.pinUnlock ? "true" : "false",
+      pinUnlockNumber: initialData?.pinUnlockNumber || "",
+      urgent: initialData?.urgent ? "true" : "false",
+      urgentDate: initialData?.urgentDate ? new Date(initialData.urgentDate) : undefined,
+      quote: initialData?.quote ? "true" : "false",
     },
   })
 
   const { control, watch, setValue, formState } = form
-  const pinUnlock = watch("pin_unlock")
+  const pinUnlock = watch("pinUnlock")
   const urgent = watch("urgent")
-  const brandId = watch("brand_id")
+  const brandId = watch("brandId")
 
   useEffect(() => {
-    if (formState.dirtyFields.brand_id) {
-      setValue("model_id", "", { shouldDirty: true })
+    if (formState.dirtyFields.brandId) {
+      setValue("modelId", "", { shouldDirty: true })
     }
-  }, [brandId, setValue, formState.dirtyFields.brand_id])
+  }, [brandId, setValue, formState.dirtyFields.brandId])
 
   function onSubmit(data: FormData) {
     const callbacks = {
@@ -99,7 +98,7 @@ export function AcceptanceForm({
       onError: (error: Error) => toast.error(error.message),
     }
 
-    if (isEditMode && initialData) {
+    if (isEditMode && initialData?.id) {
       updateAcceptance({ id: initialData.id, data }, callbacks)
     } else {
       createAcceptance(data, callbacks)
@@ -112,21 +111,15 @@ export function AcceptanceForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto p-6">
             <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
-              {isViewMode && (
-                <div className="absolute top-0 right-0 z-10">
-                  <Button size="sm" type="button" onClick={() => setMode("edit")}>Edit</Button>
-                </div>
-              )}
-              
               {/* Column 1: Customer & Device */}
               <div className="md:col-span-1 space-y-4">
                 <div className="bg-white p-4 rounded-md shadow border space-y-3">
                   {/* FIX 2: Added 'as any' to control for variance issues */}
-                  <CustomerSelectField name="customer_id" control={control} required readOnly={isViewMode} />
-                  <TextField control={control} name="estimated_price" label="Estimated Price" type="number" readOnly={isViewMode} />
-                  <BrandSelectField name="brand_id" control={control} required readOnly={isViewMode} />
+                  <CustomerSelectField name="customerId" control={control} required readOnly={isViewMode} />
+                  <TextField control={control} name="estimatedPrice" label="Estimated Price" type="number" readOnly={isViewMode} />
+                  <BrandSelectField name="brandId" control={control} required readOnly={isViewMode} />
                   <ModelSelectField
-                    name="model_id"
+                    name="modelId"
                     control={control}
                     brandId={brandId}
                     required
@@ -134,9 +127,9 @@ export function AcceptanceForm({
                   />
                   <MasterSettingSelectField control={control} name="color" type="COLOR" label="Color" readOnly={isViewMode} />
                   <MasterSettingSelectField control={control} name="accessories" type="ACCESSORY" label="Accessories" readOnly={isViewMode} />
-                  <MasterSettingSelectField control={control} name="device_type" type="DEVICE_TYPE" label="Device Type" required readOnly={isViewMode} />
-                  <MasterSettingSelectField control={control} name="current_status" type="REPAIR_STATUS" label="Status" required readOnly={isViewMode} />
-                  <TextareaField control={control} name="defect_description" label="Defect" readOnly={isViewMode} />
+                  <MasterSettingSelectField control={control} name="deviceType" type="DEVICE_TYPE" label="Device Type" required readOnly={isViewMode} />
+                  <MasterSettingSelectField control={control} name="currentStatus" type="REPAIR_STATUS" label="Status" required readOnly={isViewMode} />
+                  <TextareaField control={control} name="defectDescription" label="Defect" readOnly={isViewMode} />
                 </div>
               </div>
 
@@ -145,19 +138,19 @@ export function AcceptanceForm({
                 <div className="bg-white p-4 rounded-md shadow border space-y-3">
                   <DatePickerField
                     control={control}
-                    name="acceptance_date"
+                    name="acceptanceDate"
                     label="Acceptance Date"
                     required
                     readOnly={isViewMode}
                   />
                   <TextField control={control} name="imei" label="IMEI/Serial" required readOnly={isViewMode} />
-                  <TextField control={control} name="secondary_imei" label="Secondary IMEI" readOnly={isViewMode} />
-                  <UserSelectField control={control} name="technician_id" label="Technician" required readOnly={isViewMode} />
+                  <TextField control={control} name="secondaryImei" label="Secondary IMEI" readOnly={isViewMode} />
+                  <UserSelectField control={control} name="technicianId" label="Technician" required readOnly={isViewMode} />
                   <MasterSettingSelectField control={control} name="warranty" type="WARRANTY" label="Warranty" readOnly={isViewMode} />
-                  <ItemSelectField control={control} name="replacement_device_id" label="Replacement" readOnly={isViewMode} />
+                  <ItemSelectField control={control} name="replacementDeviceId" label="Replacement" readOnly={isViewMode} />
                   <TextField control={control} name="dealer" label="Dealer" readOnly={isViewMode} />
-                  <TextField control={control} name="price_offered" label="Price Offered" type="number" readOnly={isViewMode} />
-                  <TextareaField control={control} name="reserved_notes" label="Reserved Notes" readOnly={isViewMode} />
+                  <TextField control={control} name="priceOffered" label="Price Offered" type="number" readOnly={isViewMode} />
+                  <TextareaField control={control} name="reservedNotes" label="Reserved Notes" readOnly={isViewMode} />
                 </div>
               </div>
 
@@ -166,27 +159,55 @@ export function AcceptanceForm({
                 <div className="text-center space-y-2 p-2 bg-slate-50 rounded border">
                   <div className="text-xs text-gray-500 uppercase font-semibold">Acceptance ID</div>
                   <div className="text-xl font-bold text-blue-600 tracking-wider">
-                    {initialData?.acceptance_number || "NEW-DRAFT"}
+                    {initialData?.acceptanceNumber || "NEW-DRAFT"}
                   </div>
                 </div>
 
                 <div className="bg-white p-4 rounded-md shadow border space-y-4">
-                  <RadioGroupField control={control} required name="important_information" label="Important?" readOnly={isViewMode} />
-                  <RadioGroupField control={control} required name="pin_unlock" label="Pin Unlock?" readOnly={isViewMode} />
-                  {pinUnlock === "Yes" && (
-                    <TextField control={control} name="pin_unlock_number" label="PIN Code" required readOnly={isViewMode} />
+                  <RadioGroupField 
+                    control={control} 
+                    required 
+                    name="importantInformation" 
+                    label="Important?" 
+                    readOnly={isViewMode}
+                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                  />
+                  <RadioGroupField 
+                    control={control} 
+                    required 
+                    name="pinUnlock" 
+                    label="Pin Unlock?" 
+                    readOnly={isViewMode}
+                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                  />
+                  {pinUnlock === "true" && (
+                    <TextField control={control} name="pinUnlockNumber" label="PIN Code" required readOnly={isViewMode} />
                   )}
-                  <RadioGroupField control={control} required name="urgent" label="Urgent?" readOnly={isViewMode} />
-                  {urgent === "Yes" && (
+                  <RadioGroupField 
+                    control={control} 
+                    required 
+                    name="urgent" 
+                    label="Urgent?" 
+                    readOnly={isViewMode}
+                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                  />
+                  {urgent === "true" && (
                     <DatePickerField
                       control={control}
-                      name="urgent_date"
+                      name="urgentDate"
                       label="Deadline"
                       required
                       disabled={(date) => isViewMode || date < new Date(new Date().setHours(0,0,0,0))}
                     />
                   )}
-                  <RadioGroupField control={control} required name="quote" label="Quote Needed?" readOnly={isViewMode} />
+                  <RadioGroupField 
+                    control={control} 
+                    required 
+                    name="quote" 
+                    label="Quote Needed?" 
+                    readOnly={isViewMode}
+                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                  />
                 </div>
 
                 <div className="bg-white p-4 rounded-md shadow border grid grid-cols-2 gap-3">
@@ -195,9 +216,9 @@ export function AcceptanceForm({
                       <ImageUploadField
                         key={num}
                         control={control}
-                        name={`photo_${num}` as keyof FormData}
+                        name={`photo${num}` as keyof FormData}
                         label={`Photo ${num}`}
-                        initialImage={initialData ? (initialData[(`photo_${num}` as keyof Acceptance)] as string) : null}
+                        initialImage={initialData ? (initialData[(`photo${num}` as keyof Acceptance)] as string) : null}
                         layout="compact"
                         isViewMode={isViewMode}
                       />
@@ -208,17 +229,16 @@ export function AcceptanceForm({
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 p-6 border-t bg-slate-50">
-            <Button variant="ghost" type="button" onClick={() => onSuccess?.(initialData as Acceptance)}>
-              {isViewMode ? "Close" : "Cancel"}
-            </Button>
-            {!isViewMode && (
-              <Button type="submit" disabled={isPending} className="min-w-[140px]">
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditMode ? "Update Changes" : "Save Record"}
-              </Button>
-            )}
-          </div>
+          <FormFooter
+            isViewMode={isViewMode}
+            isEditMode={isEditMode}
+            isPending={isPending}
+            onCancel={() => onSuccess?.(initialData!)}
+            onEdit={() => setMode("edit")}
+            onReset={() => form.reset()}
+            saveLabel={isEditMode ? "Update Changes" : "Save Record"}
+            className="p-6 bg-slate-50"
+          />
         </form>
       </Form>
     </FormProvider>

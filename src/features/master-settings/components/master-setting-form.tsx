@@ -2,12 +2,13 @@
 
 import { useForm, useFieldArray, FormProvider } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, Trash2, Save, Loader2, Wrench } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { TextField } from "@/components/forms/text-field"
+import { FormFooter } from "@/components/forms/form-footer"
 import { masterSettingSchema, MasterSetting, MasterSettingFormValues } from "../master-setting.schema"
 import { useUpdateMasterSetting } from "../master-setting.api";
 
@@ -56,35 +57,43 @@ export function MasterSettingForm({ initialData, onSuccess }: MasterSettingFormP
   return (
     <FormProvider {...form}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="bg-slate-50 p-4 rounded-xl border border-dashed border-slate-200 flex items-center justify-center gap-3">
-            <Wrench className="h-4 w-4 text-slate-400" />
-            <span className="text-xs font-bold uppercase text-slate-600 tracking-widest">
-              Configuring: {initialData?.name || "System Master"}
-            </span>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-muted-foreground">
+                Values for {initialData?.name || "System Master"}
+            </h3>
+            <Button 
+                type="button" 
+                variant="outline" 
+                size="sm"
+                className="h-8"
+                onClick={() => append({ value: "", isActive: true })}
+            >
+                <Plus className="mr-2 h-3.5 w-3.5" /> Add Value
+            </Button>
           </div>
 
-          <div className="max-h-[400px] overflow-y-auto pr-3 space-y-4 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto -mx-1 px-1 space-y-3 min-h-[300px] max-h-[60vh]">
             {fields.map((field, index) => (
               <div 
                 key={field.id} 
-                className="flex gap-3 items-end group animate-in fade-in slide-in-from-top-2 duration-200"
+                className="flex gap-2 items-start animate-in fade-in slide-in-from-top-1 duration-200"
               >
                 <div className="flex-1">
                   <TextField 
                     control={form.control} 
                     name={`values.${index}.value`} 
-                    label={index === 0 ? "Entry Name" : ""} 
                     placeholder="Enter value..." 
-                    inputClassName="h-10 focus-visible:ring-slate-900"
+                    className="mb-0"
                   />
                 </div>
                 <Button 
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className="h-10 w-10 text-destructive hover:bg-red-50 hover:text-red-600 transition-all"
+                  className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={() => remove(index)}
+                  title="Remove option"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -92,35 +101,28 @@ export function MasterSettingForm({ initialData, onSuccess }: MasterSettingFormP
             ))}
 
             {fields.length === 0 && (
-              <div className="text-center py-10 text-slate-400 text-sm border-2 border-dashed rounded-xl bg-slate-50/50">
-                No entries found. Add a new row to get started.
+              <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-lg bg-slate-50/50">
+                <p className="text-sm text-muted-foreground mb-2">No entries found.</p>
+                <Button 
+                  type="button" 
+                  variant="link" 
+                  size="sm"
+                  onClick={() => append({ value: "", isActive: true })}
+                >
+                  Add your first entry
+                </Button>
               </div>
             )}
           </div>
 
-          <Button 
-            type="button" 
-            variant="outline" 
-            className="w-full border-dashed h-10 text-xs font-semibold hover:bg-slate-50 transition-colors" 
-            onClick={() => append({ value: "", isActive: true })}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add New Row
-          </Button>
-
-          <div className="flex gap-3 pt-6 border-t border-slate-100">
-            <Button 
-              type="submit" 
-              className="flex-1 bg-slate-900 hover:bg-slate-800 shadow-md" 
-              disabled={isPending}
-            >
-              {isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Save className="h-4 w-4 mr-2" />
-              )}
-              Save Master Settings
-            </Button>
-          </div>
+          <FormFooter
+            isPending={isPending}
+            isEditMode={true}
+            onCancel={() => onSuccess(initialData!)}
+            onReset={() => form.reset()}
+            saveLabel="Save Changes"
+            className="mt-auto"
+          />
         </form>
       </Form>
     </FormProvider>

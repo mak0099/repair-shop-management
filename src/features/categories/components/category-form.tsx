@@ -6,13 +6,13 @@ import { useForm, FieldErrors, Resolver } from "react-hook-form" // Added Resolv
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2, Save, X } from "lucide-react"
 
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
+import { FormFooter } from "@/components/forms/form-footer"
 import { CategorySelectField } from "./category-select-field"
 
 import { categorySchema, type CategoryFormValues, type Category } from "../category.schema"
@@ -45,18 +45,18 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema) as unknown as Resolver<CategoryFormValues>,
     defaultValues: initialData
-      ? { 
-          ...initialData,
-          description: initialData.description || "",
-          parentId: initialData.parentId || undefined,
-          isActive: initialData.isActive ?? true 
-        }
+      ? {
+        ...initialData,
+        description: initialData.description || "",
+        parentId: initialData.parentId || undefined,
+        isActive: initialData.isActive ?? true
+      }
       : {
-          name: "",
-          description: "",
-          parentId: undefined,
-          isActive: true, // Boolean Consistency
-        },
+        name: "",
+        description: "",
+        parentId: undefined,
+        isActive: true, // Boolean Consistency
+      },
   })
 
   const { control, handleSubmit } = form
@@ -64,14 +64,6 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
   const onFormError = (errors: FieldErrors<CategoryFormValues>) => {
     console.error("Category Validation Errors:", errors)
     toast.error("Please fill the required fields correctly.")
-  }
-
-  const handleCancel = () => {
-    if (onSuccess && initialData) {
-      onSuccess(initialData)
-    } else {
-      router.push(CATEGORIES_BASE_HREF)
-    }
   }
 
   function onSubmit(data: CategoryFormValues) {
@@ -109,26 +101,26 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
             </Button>
           </div>
         )}
-        
+
         <div className={isViewMode ? "pt-10 space-y-4" : "space-y-4"}>
-          <TextField 
-            control={control} 
-            name="name" 
-            label="Category Name" 
-            required 
-            readOnly={isViewMode} 
-            placeholder="e.g., Smartphones" 
+          <TextField
+            control={control}
+            name="name"
+            label="Category Name"
+            required
+            readOnly={isViewMode}
+            placeholder="e.g., Smartphones"
           />
-          
-          <TextareaField 
-            control={control} 
-            name="description" 
-            label="Description" 
-            readOnly={isViewMode} 
-            placeholder="A short description of the category." 
+
+          <TextareaField
+            control={control}
+            name="description"
+            label="Description"
+            readOnly={isViewMode}
+            placeholder="A short description of the category."
             className="min-h-[100px]"
           />
-          
+
           <CategorySelectField
             control={control}
             name="parentId" // Updated from parent_id
@@ -136,7 +128,7 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
             placeholder="Select a parent category (optional)"
             disabled={isViewMode}
           />
-          
+
           <div className="pt-2">
             <CheckboxField
               control={control}
@@ -148,22 +140,16 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-6 border-t mt-4">
-          <Button variant="ghost" type="button" onClick={handleCancel} disabled={isPending}>
-            <X className="mr-2 h-4 w-4" /> {isViewMode ? "Close" : "Cancel"}
-          </Button>
-          
-          {!isViewMode && (
-            <Button type="submit" disabled={isPending} className="min-w-[140px] bg-slate-900">
-              {isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              {isEditMode ? "Save Changes" : "Save Category"}
-            </Button>
-          )}
-        </div>
+        <FormFooter
+          isViewMode={isViewMode}
+          isEditMode={isEditMode}
+          isPending={isPending}
+          onCancel={() => onSuccess?.(initialData!)}
+          onEdit={() => setMode("edit")}
+          onReset={() => form.reset()}
+          saveLabel={isEditMode ? "Save Changes" : "Save Category"}
+          className="mt-4"
+        />
       </form>
     </Form>
   )

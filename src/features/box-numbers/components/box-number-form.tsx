@@ -6,12 +6,13 @@ import { useForm, FieldErrors, Resolver } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2, Save, X, Edit3, Eye, Package } from "lucide-react"
+import { Edit3, Package } from "lucide-react"
 
 import { TextField } from "@/components/forms/text-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
+import { FormFooter } from "@/components/forms/form-footer"
 
 import { boxNumberSchema, type BoxNumber } from "../box-number.schema"
 import { useCreateBoxNumber, useUpdateBoxNumber } from "../box-number.api"
@@ -36,7 +37,7 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
   const [mode, setMode] = useState<"view" | "edit" | "create">(
     initialIsViewMode ? "view" : initialData ? "edit" : "create"
   )
-  
+
   const isViewMode = mode === "view"
   const isPending = isCreating || isUpdating
   const isEditMode = !!initialData && mode !== "create"
@@ -48,29 +49,21 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
   const form = useForm<BoxNumber>({
     resolver: zodResolver(boxNumberSchema) as unknown as Resolver<BoxNumber>,
     defaultValues: initialData
-      ? { 
-          ...initialData,
-          description: initialData.description || "",
-        }
+      ? {
+        ...initialData,
+        description: initialData.description || "",
+      }
       : {
-          name: "",
-          location: "",
-          description: "",
-          isActive: true, // Matching the boolean default from your new schema
-        },
+        name: "",
+        location: "",
+        description: "",
+        isActive: true, // Matching the boolean default from your new schema
+      },
   })
 
   const onFormError = (errors: FieldErrors<BoxNumber>) => {
     console.error("Form Validation Errors:", errors)
     toast.error("Please fill the required fields correctly.")
-  }
-
-  const handleCancel = () => {
-    if (onSuccess) {
-      onSuccess(initialData as BoxNumber)
-    } else {
-      router.push(BOX_NUMBERS_BASE_HREF)
-    }
   }
 
   function onSubmit(data: BoxNumber) {
@@ -101,7 +94,7 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-6 p-1">
-        
+
         {/* Mode Indicator Header */}
         <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-4">
           <div className="flex items-center gap-3 text-blue-700 font-semibold text-sm">
@@ -162,23 +155,16 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
           </p>
         </div>
 
-        {/* Actions Footer */}
-        <div className="flex justify-end items-center gap-4 pt-6 border-t mt-6">
-          <Button variant="ghost" type="button" onClick={handleCancel} disabled={isPending} className="text-slate-500">
-            <X className="mr-2 h-4 w-4" /> {isViewMode ? "Close" : "Cancel"}
-          </Button>
-          
-          {!isViewMode && (
-            <Button type="submit" disabled={isPending} className="min-w-[160px] bg-blue-600 hover:bg-blue-700 shadow-md">
-              {isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              {isEditMode ? "Update Changes" : "Save Box Number"}
-            </Button>
-          )}
-        </div>
+        <FormFooter
+          isViewMode={isViewMode}
+          isEditMode={isEditMode}
+          isPending={isPending}
+          onCancel={() => onSuccess?.(initialData!)}
+          onEdit={() => setMode("edit")}
+          onReset={() => form.reset()}
+          saveLabel={isEditMode ? "Update Changes" : "Save Box Number"}
+          className="pt-6 border-t mt-6"
+        />
       </form>
     </Form>
   )

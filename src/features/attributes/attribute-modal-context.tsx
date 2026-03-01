@@ -2,7 +2,7 @@
 import { createModalContext } from "@/lib/modal-context-factory";
 import { Attribute } from "./attribute.schema";
 
-const { ModalProvider, useModal } = createModalContext<Attribute>({
+const { ModalProvider, useModal } = createModalContext<Attribute, { title?: string }>({
   featureName: "Attribute",
   formName: "attributeForm",
   modalClassName: "max-w-lg",

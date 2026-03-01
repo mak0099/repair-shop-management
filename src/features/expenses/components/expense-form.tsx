@@ -6,7 +6,7 @@ import { useForm, FieldErrors, Resolver } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2, Save, X, ReceiptText, Banknote, ShieldCheck } from "lucide-react"
+import { ReceiptText, Banknote, ShieldCheck } from "lucide-react"
 
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
@@ -16,6 +16,7 @@ import { DatePickerField } from "@/components/forms/date-picker-field"
 import { ImageUploadField } from "@/components/forms/image-upload-field"
 import { MasterSettingSelectField } from "@/features/master-settings"
 import { SelectField } from "@/components/forms/select-field"
+import { FormFooter } from "@/components/forms/form-footer"
 
 import { expenseSchema, type ExpenseFormValues, type Expense } from "../expense.schema"
 import { useCreateExpense, useUpdateExpense } from "../expense.api"
@@ -92,10 +93,6 @@ export function ExpenseForm({
     } else {
       createExpense(data, callbacks)
     }
-  }
-
-  const handleClose = () => {
-    onSuccess ? onSuccess(initialData as Expense) : router.push(EXPENSES_BASE_HREF)
   }
 
   return (
@@ -187,32 +184,17 @@ export function ExpenseForm({
         </div>
 
         {/* Action Footer */}
-        <div className="flex justify-end items-center gap-4 pt-8 border-t">
-          <Button 
-            variant="ghost" 
-            type="button" 
-            className="text-slate-500 hover:bg-slate-50"
-            onClick={handleClose}
-          >
-            <X className="mr-2 h-4 w-4" />
-            {isViewMode ? "Close Panel" : "Discard Changes"}
-          </Button>
-
-          {!isViewMode && (
-            <Button 
-              type="submit" 
-              disabled={isPending} 
-              className="px-8 bg-slate-900 text-white hover:bg-black shadow-lg shadow-slate-200 transition-all active:scale-95"
-            >
-              {isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              {isEditMode ? "Update Record" : "Save Expense"}
-            </Button>
-          )}
-        </div>
+        <FormFooter
+          isViewMode={isViewMode}
+          isEditMode={isEditMode}
+          isPending={isPending}
+          onCancel={() => onSuccess?.(initialData!)}
+          onEdit={() => setMode("edit")}
+          onReset={() => form.reset()}
+          saveLabel={isEditMode ? "Update Record" : "Save Expense"}
+          cancelLabel={isViewMode ? "Close Panel" : "Discard Changes"}
+          className="pt-8 border-t"
+        />
       </form>
     </Form>
   )

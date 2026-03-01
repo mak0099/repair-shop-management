@@ -43,6 +43,7 @@ export interface ResourceListConfig {
     export?: { enabled?: boolean }
   }
   pagination?: { enabled?: boolean; pageSizeOptions?: number[] }
+  filters?: { enabled?: boolean; enableStatusFilter?: boolean }
 }
 
 interface ResourceFilters {
@@ -66,7 +67,7 @@ interface ResourceListPageProps<TData extends { id?: string }, TValue> {
   useResourceQuery: (
     filters: ResourceFilters
   ) => UseQueryResult<{ data: TData[]; meta: { total: number; page: number; pageSize: number; totalPages: number } }, Error>
-  initialFilters?: ResourceFilters
+  initialFilters?: Partial<ResourceFilters>
   searchPlaceholder: string
   filterDefinitions?: FilterDefinition[]
   onTableReady?: (table: Table<TData>) => void
@@ -85,6 +86,7 @@ const DEFAULT_INITIAL_FILTERS: ResourceFilters = {
   page: 1,
   pageSize: 10,
   search: "",
+  isActive: "true",
 }
 
 export function ResourceListPage<TData extends { id?: string }, TValue>({
@@ -95,7 +97,7 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
   addLabel,
   columns,
   useResourceQuery,
-  initialFilters = DEFAULT_INITIAL_FILTERS,
+  initialFilters,
   searchPlaceholder,
   filterDefinitions = [],
   onTableReady,
@@ -104,7 +106,8 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
   bulkStatusUpdateMutation,
   config = {},
 }: ResourceListPageProps<TData, TValue>) {
-  const [filters, setFilters] = useState<ResourceFilters>(initialFilters)
+  const mergedFilters = { ...DEFAULT_INITIAL_FILTERS, ...initialFilters }
+  const [filters, setFilters] = useState<ResourceFilters>(mergedFilters as ResourceFilters)
   const [sorting, setSorting] = useState<SortingState>([])
   const [itemIdsToDelete, setItemIdsToDelete] = useState<string[]>([])
 
@@ -114,17 +117,17 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
     _order: sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined,
   }
 
-  const { data, isLoading, isFetching, isError, error } = useResourceQuery(apiFilters)
+  const { data, isFetching, isError, error } = useResourceQuery(apiFilters)
   const resources = data?.data || []
   const meta = data?.meta || { total: resources.length, page: 1, pageSize: filters.pageSize, totalPages: 1 }
 
   const isFiltered =
     Object.keys(filters).some(
-      (key) => key !== "page" && key !== "pageSize" && filters[key] !== initialFilters[key]
+      (key) => key !== "page" && key !== "pageSize" && filters[key] !== mergedFilters[key]
     ) || sorting.length > 0
 
   const handleReset = () => {
-    setFilters(initialFilters)
+    setFilters(mergedFilters)
     setSorting([])
   }
 
@@ -135,6 +138,7 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
     columnVisibility: columnVisibilityConfig = {},
     rowSelection: rowSelectionConfig = {},
     pagination: paginationConfig = {},
+    filters: filtersConfig = {},
   } = config;
 
   const table = useDataTable({
@@ -221,6 +225,39 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
   const showExport = bulkActionsConfig.export?.enabled !== false;
   const showAnyBulkAction = resourceName && (showBulkStatusUpdate || showBulkDelete || showExport);
 
+  // Logic to inject default status filter
+  const hasIsActiveFilter = "isActive" in mergedFilters
+  const isStatusFilterOverridden = filterDefinitions.some((def) => def.key === "isActive")
+
+  // Check if data exists and has isActive property
+  const hasData = resources.length > 0
+  const firstItem = resources[0] as Record<string, unknown> | undefined
+  const dataHasIsActive = hasData && firstItem && "isActive" in firstItem
+
+  const showDefaultStatusFilter =
+    filtersConfig.enableStatusFilter !== false && // Not explicitly disabled
+    !isStatusFilterOverridden && // Not overridden
+    (
+      dataHasIsActive || // Auto-detect: Data has it
+      (!hasData && hasIsActiveFilter) || // Fallback: Data empty, but filter initialized
+      filtersConfig.enableStatusFilter === true // Forced via config
+    )
+
+  const effectiveFilterDefinitions = showDefaultStatusFilter
+    ? [
+        {
+          key: "isActive",
+          title: "Status",
+          options: [
+            { label: "All Status", value: "all" },
+            { label: "Active", value: "true" },
+            { label: "Inactive", value: "false" },
+          ],
+        },
+        ...filterDefinitions,
+      ]
+    : filterDefinitions
+
   return (
     <div className="grid grid-cols-1 gap-4 w-full max-w-full">
       <PageHeader title={title} description={description}>
@@ -245,7 +282,7 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
         searchPlaceholder={searchPlaceholder}
         onReset={handleReset}
         isFiltered={isFiltered}
-        filters={filterDefinitions.map((def) => ({
+        filters={effectiveFilterDefinitions.map((def) => ({
           ...def,
           value: String(filters[def.key] ?? ""),
           onChange: (val: string) => setFilters({ ...filters, [def.key]: val, page: 1 }),
@@ -290,6 +327,8 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
             )
             : undefined
         }
+        showPagination={paginationConfig.enabled !== false}
+        pageSizeOptions={paginationConfig.pageSizeOptions}
       >
         {columnVisibilityConfig.enabled !== false && <DataTableViewOptions table={table} />}
       </DataTableCard>

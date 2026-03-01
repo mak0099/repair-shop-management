@@ -7,7 +7,7 @@ import { mockUsers } from "@/features/users/mocks/users.mock";
 const deviceTypes = ["SMARTPHONE", "TABLET", "LAPTOP", "DESKTOP", "OTHER"];
 const statuses = ["IN REPAIR", "WAITING PARTS", "READY", "DELIVERED", "CANCELLED"];
 const warranties = ["No Warranty", "3 Months", "6 Months", "12 Months", "Lifetime"];
-const yesNo: ("Yes" | "No")[] = ["Yes", "No"];
+const booleans = [true, false];
 const colors = ["Black", "White", "Titanium Gray", "Blue", "Red", "Green"];
 const accessories = ["Charger", "Cable", "Case", "No accessories", "Original Box"];
 const defects = [
@@ -28,45 +28,45 @@ const generateAcceptances = (count: number): Acceptance[] => {
         const brand = getRandom(mockBrands);
         const model = getRandom(mockModels.filter(m => m.brand_id === brand.id)) || getRandom(mockModels);
         const technician = getRandom(mockUsers);
-        const urgent = getRandom(yesNo);
-        const pinUnlock = getRandom(yesNo);
+        const urgent = getRandom(booleans);
+        const pinUnlock = getRandom(booleans);
         // Date generated here
         const dateObj = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
 
         return {
             id: `rec-${100 + i}`,
-            acceptance_number: `${41604 + i}-2026`,
-            customer_id: customer.id,
-            brand_id: brand.id,
-            model_id: model.id,
-            technician_id: technician.id,
+            acceptanceNumber: `${41604 + i}-2026`,
+            customerId: customer.id,
+            brandId: brand.id,
+            modelId: model.id,
+            technicianId: technician.id,
             // Fixed field name: matching Acceptance interface
-            acceptance_date: dateObj, 
-            estimated_price: Math.floor(Math.random() * 451) + 50,
+            acceptanceDate: dateObj, 
+            estimatedPrice: Math.floor(Math.random() * 451) + 50,
             color: getRandom(colors),
             accessories: getRandom(accessories),
-            device_type: getRandom(deviceTypes),
-            current_status: getRandom(statuses),
-            defect_description: getRandom(defects),
+            deviceType: getRandom(deviceTypes),
+            currentStatus: getRandom(statuses),
+            defectDescription: getRandom(defects),
             notes: "Customer seems to be in a hurry. Please prioritize.",
             imei: String(Math.floor(1e14 + Math.random() * 9e14)),
-            secondary_imei: Math.random() > 0.8 ? String(Math.floor(1e14 + Math.random() * 9e14)) : "",
+            secondaryImei: Math.random() > 0.8 ? String(Math.floor(1e14 + Math.random() * 9e14)) : "",
             warranty: getRandom(warranties),
-            important_information: getRandom(yesNo),
-            pin_unlock: pinUnlock,
-            pin_unlock_number: pinUnlock === "Yes" ? Math.floor(1000 + Math.random() * 9000).toString() : "",
+            importantInformation: getRandom(booleans),
+            pinUnlock: pinUnlock,
+            pinUnlockNumber: pinUnlock ? Math.floor(1000 + Math.random() * 9000).toString() : "",
             urgent: urgent,
-            urgent_date: urgent === "Yes" ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000) : undefined,
-            quote: getRandom(yesNo),
+            urgentDate: urgent ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000) : undefined,
+            quote: getRandom(booleans),
             photos: i % 3 === 0 ? ["/mock/iphone-front.jpg", "/mock/iphone-back.jpg"] : [],
-            branch_id: "roma-main",
+            branchId: "roma-main",
             createdAt: dateObj.toISOString(),
             updatedAt: new Date().toISOString(),
             isActive: true,
-            price_offered: Math.random() > 0.9 ? Math.floor(Math.random() * 200) : 0,
+            priceOffered: Math.random() > 0.9 ? Math.floor(Math.random() * 200) : 0,
             dealer: "",
-            replacement_device_id: "",
-            reserved_notes: ""
+            replacementDeviceId: "",
+            reservedNotes: ""
         };
     });
 };

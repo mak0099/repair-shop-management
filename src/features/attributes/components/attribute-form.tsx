@@ -2,12 +2,13 @@
 
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, Trash2, Save, Loader2, Tag } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { TextField } from "@/components/forms/text-field"
+import { FormFooter } from "@/components/forms/form-footer"
 import { attributeSchema, type Attribute } from "../attribute.schema"
 import { useUpdateAttribute } from "../attribute.api"
 
@@ -66,30 +67,40 @@ export function AttributeForm({ initialData, onSuccess }: AttributeFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-center">
-          <span className="text-xs font-bold uppercase text-slate-600 flex items-center justify-center gap-2 tracking-widest">
-            <Tag className="h-3.5 w-3.5" /> Configure Attribute: {initialData?.name}
-          </span>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+        <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-muted-foreground">
+                Values for {initialData?.name}
+            </h3>
+            <Button 
+                type="button" 
+                variant="outline" 
+                size="sm"
+                className="h-8"
+                onClick={() => append({ value: "", isActive: true })}
+            >
+                <Plus className="mr-2 h-3.5 w-3.5" /> Add Value
+            </Button>
         </div>
 
-        <div className="max-h-[400px] overflow-y-auto pr-2 space-y-4 custom-scrollbar px-1">
+        <div className="flex-1 overflow-y-auto -mx-1 px-1 space-y-3 min-h-[300px] max-h-[60vh]">
           {fields.map((field, index) => (
-            <div key={field.id} className="flex gap-3 items-end group animate-in fade-in slide-in-from-top-1">
+            <div key={field.id} className="flex gap-2 items-start animate-in fade-in slide-in-from-top-1 duration-200">
               <div className="flex-1">
                 <TextField 
                   control={form.control} 
                   name={`values.${index}.value`} 
-                  label={index === 0 ? "Option Value" : ""} 
-                  placeholder="e.g. Red, 8GB, Stainless Steel" 
+                  placeholder="Value (e.g. Red, 8GB)"
+                  className="mb-0"
                 />
               </div>
               <Button 
                 type="button" 
                 variant="ghost" 
                 size="icon" 
-                className="h-10 w-10 text-destructive/70 hover:text-destructive hover:bg-destructive/5"
+                className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                 onClick={() => remove(index)}
+                title="Remove option"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -97,31 +108,28 @@ export function AttributeForm({ initialData, onSuccess }: AttributeFormProps) {
           ))}
           
           {fields.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground text-sm border-2 border-dashed rounded-lg">
-              No options defined yet.
+            <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-lg bg-slate-50/50">
+              <p className="text-sm text-muted-foreground mb-2">No options defined yet.</p>
+              <Button 
+                type="button" 
+                variant="link" 
+                size="sm"
+                onClick={() => append({ value: "", isActive: true })}
+              >
+                Add your first option
+              </Button>
             </div>
           )}
         </div>
 
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="w-full border-dashed border-2 h-10 text-xs font-semibold" 
-          onClick={() => append({ value: "", isActive: true })}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add New Option
-        </Button>
-
-        <div className="flex gap-3 pt-4 sticky bottom-0 bg-white">
-          <Button type="submit" className="flex-1 h-11 bg-slate-900 shadow-lg" disabled={isPending}>
-            {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            Update Configuration
-          </Button>
-        </div>
+        <FormFooter
+          isPending={isPending}
+          isEditMode={true}
+          onCancel={() => onSuccess(initialData!)}
+          onReset={() => form.reset()}
+          saveLabel="Save Changes"
+          className="mt-auto"
+        />
       </form>
     </Form>
   )

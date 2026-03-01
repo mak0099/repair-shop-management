@@ -65,7 +65,10 @@ export function AttributeSelectField<TFieldValues extends FieldValues>({
 
   const handleAddValue = () => {
     if (!attrData) return
-    openModal({ initialData: attrData })
+    openModal({ 
+      initialData: attrData,
+      title: `Edit ${attrData.name}`
+    })
   }
 
   return (

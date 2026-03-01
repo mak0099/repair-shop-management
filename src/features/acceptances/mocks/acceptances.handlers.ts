@@ -18,13 +18,13 @@ export const acceptanceHandlers = [
     const page = Number(url.searchParams.get("page") || "1");
     const pageSize = Number(url.searchParams.get("pageSize") || "10");
     const search = url.searchParams.get("search")?.toLowerCase() || "";
-    const status = url.searchParams.get("current_status");
+    const status = url.searchParams.get("currentStatus");
 
     // Populate related data for display in the list
     const populatedAcceptances = acceptances.map(acceptance => {
-        const customer = mockCustomers.find(c => c.id === acceptance.customer_id);
-        const brand = mockBrands.find(b => b.id === acceptance.brand_id);
-        const model = mockModels.find(m => m.id === acceptance.model_id);
+        const customer = mockCustomers.find(c => c.id === acceptance.customerId);
+        const brand = mockBrands.find(b => b.id === acceptance.brandId);
+        const model = mockModels.find(m => m.id === acceptance.modelId);
         return {
             ...acceptance,
             customer: customer ? { id: customer.id, name: customer.name } : undefined,
@@ -35,12 +35,12 @@ export const acceptanceHandlers = [
 
     const filteredData = populatedAcceptances.filter(acceptance => {
         const searchMatch = search 
-            ? acceptance.acceptance_number.toLowerCase().includes(search) ||
+            ? acceptance.acceptanceNumber.toLowerCase().includes(search) ||
               acceptance.customer?.name.toLowerCase().includes(search) ||
               (acceptance.imei || "").toLowerCase().includes(search)
             : true;
 
-        const statusMatch = !status || status === 'all' || acceptance.current_status === status;
+        const statusMatch = !status || status === 'all' || acceptance.currentStatus === status;
 
         return searchMatch && statusMatch;
     });
@@ -64,12 +64,12 @@ export const acceptanceHandlers = [
 
   // POST Request Mock
   http.post('*/acceptances', async ({ request }) => {
-    const body = await request.json() as Omit<Acceptance, "id" | "acceptance_number">;
+    const body = await request.json() as Omit<Acceptance, "id" | "acceptanceNumber">;
     const newAcceptance: Acceptance = {
       id: `rec-${Math.random().toString(36).substring(7)}`,
       ...body,
-      acceptance_number: `${Math.floor(Math.random() * 10000)}-${new Date().getFullYear()}`,
-      acceptance_date: new Date(),
+      acceptanceNumber: `${Math.floor(Math.random() * 10000)}-${new Date().getFullYear()}`,
+      acceptanceDate: new Date(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

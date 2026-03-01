@@ -7,8 +7,8 @@ export const TYPE_OPTIONS = [
 
 export const STATUS_OPTIONS = [
   { value: "all", label: "All Status" },
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
+  { value: "true", label: "Active" },
+  { value: "false", label: "Inactive" },
 ]
 
 export const CONDITION_OPTIONS = [

@@ -6,14 +6,15 @@ import { useForm, Resolver, FieldValues, Control } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2, Save, X, Edit3 } from "lucide-react"
+import { Edit3 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { TextField } from "@/components/forms/text-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
+import { FormFooter } from "@/components/forms/form-footer"
 import { SelectField } from "@/components/forms/select-field"
 
 import { customerSchema, type CustomerFormValues, type Customer } from "../customer.schema"
@@ -52,14 +53,6 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
 
   const isDealer = form.watch("isDealer")
 
-  const handleCancel = () => {
-    if (onSuccess && initialData) {
-      onSuccess(initialData)
-    } else {
-      router.push(CUSTOMERS_BASE_HREF)
-    }
-  }
-
   const onSubmit = (data: CustomerFormValues) => {
     const callbacks = {
       onSuccess: (res: Customer) => {
@@ -96,9 +89,9 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
               <TextField control={form.control} name="email" label="Email Address" type="email" readOnly={isViewMode} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-4 border-t pt-4">
-              <TextField control={form.control} name="address" label="Street Address" readOnly={isViewMode} className="md:col-span-3" />
-              <TextField control={form.control} name="location" label="City/Comune" readOnly={isViewMode} className="md:col-span-1" />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 border-t pt-4">
+              <TextField control={form.control} name="address" label="Street Address" readOnly={isViewMode} />
+              <TextField control={form.control} name="location" label="City/Comune" readOnly={isViewMode} />
 
               <SelectField
                 control={form.control}
@@ -107,11 +100,10 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
                 placeholder="Select Province"
                 searchPlaceholder="Search province..."
                 options={PROVINCE_OPTIONS}
-                disabled={isViewMode}
-                className="md:col-span-1"
+                readOnly={isViewMode}
               />
 
-              <TextField control={form.control} name="postalCode" label="CAP" readOnly={isViewMode} className="md:col-span-1" />
+              <TextField control={form.control} name="postalCode" label="CAP" readOnly={isViewMode} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50/20 rounded-lg border border-blue-100/50">
@@ -136,21 +128,16 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
             </div>
           </CardContent>
 
-          <CardFooter className="flex justify-end gap-3 bg-slate-50/50 p-4 border-t">
-            <Button variant="ghost" type="button" onClick={handleCancel}>
-              {isViewMode ? "Close" : "Cancel"}
-            </Button>
-            {!isViewMode && (
-              <Button type="submit" disabled={isPending} className="min-w-[150px] bg-slate-900 hover:bg-black transition-colors">
-                {isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
-                {isEditMode ? "Update Customer" : "Create Customer"}
-              </Button>
-            )}
-          </CardFooter>
+          <FormFooter
+            isViewMode={isViewMode}
+            isEditMode={isEditMode}
+            isPending={isPending}
+            onCancel={() => onSuccess?.(initialData!)}
+            onEdit={() => setMode("edit")}
+            onReset={() => form.reset()}
+            saveLabel={isEditMode ? "Update Customer" : "Create Customer"}
+            className="bg-slate-50/50 p-4 border-t"
+          />
         </Card>
       </form>
     </Form>

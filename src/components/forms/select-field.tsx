@@ -70,7 +70,7 @@ export function SelectField<TFieldValues extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={cn("space-y-1.5", className)}>
+        <FormItem className={cn("min-w-0", className)}>
           <FieldLabel label={label} required={required} readOnly={readOnly} />
 
           {readOnly ? (
@@ -82,7 +82,7 @@ export function SelectField<TFieldValues extends FieldValues>({
               />
             </FormControl>
           ) : (
-            <div className="flex items-center">
+            <div className="flex items-center w-full">
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -92,24 +92,24 @@ export function SelectField<TFieldValues extends FieldValues>({
                       aria-expanded={open}
                       disabled={isLoading || disabled}
                       className={cn(
-                        "flex-1 justify-between h-9 px-3 font-normal border-slate-200 shadow-sm transition-all hover:bg-slate-50",
+                        "flex w-full justify-between h-9 px-3 font-normal border-slate-200 shadow-sm transition-all hover:bg-slate-50 min-w-0",
                         onAdd && "rounded-r-none border-r-0",
                         !field.value && "text-muted-foreground"
                       )}
                     >
-                      <span className="truncate">
+                      <span className="truncate flex-1 text-left w-0">
                         {field.value ? getSelectedLabel(field.value) : placeholder}
                       </span>
                       {isLoading ? (
-                        <Loader2 className="h-3 w-3 animate-spin opacity-50" />
+                        <Loader2 className="h-3 w-3 shrink-0 ml-2 animate-spin opacity-50" />
                       ) : (
-                        <ChevronsUpDown className="h-3 w-3 opacity-50" />
+                        <ChevronsUpDown className="h-3 w-3 shrink-0 ml-2 opacity-50" />
                       )}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent 
-                  className="p-0 border-slate-200 shadow-xl" 
+                  className="p-0 border-slate-200 shadow-xl min-w-[200px]" 
                   align="start"
                   style={{ width: "var(--radix-popover-trigger-width)" }}
                 >
@@ -154,7 +154,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                   variant="outline"
                   size="icon"
                   disabled={isLoading || disabled}
-                  className="h-9 w-9 rounded-l-none border-slate-200 bg-slate-50 hover:bg-slate-100 shadow-sm"
+                  className="h-9 w-9 rounded-l-none border-slate-200 bg-slate-50 hover:bg-slate-100 shadow-sm shrink-0"
                   onClick={(e) => {
                     e.preventDefault();
                     onAdd();

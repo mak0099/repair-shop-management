@@ -2,12 +2,11 @@
 
 import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { UseMutationResult } from "@tanstack/react-query"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import { StatusCell, DateCell } from "@/components/shared/data-table-cells"
+import { DateCell } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
 
 import { useItems, useDeleteItem, useDeleteManyItems, usePartialUpdateItem } from "../item.api"
@@ -24,7 +23,8 @@ const INITIAL_FILTERS = {
   search: "",
   page: 1,
   pageSize: 10,
-  isActive: "all",
+  isActive: "true",
+  condition: "all",
 }
 
 export function ItemList() {
@@ -82,18 +82,13 @@ export function ItemList() {
       accessorKey: "initialStock",
       header: "Qty",
       cell: ({ row }) => (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col">
           <span className={row.original.initialStock > 0 ? "font-black text-emerald-600" : "font-black text-destructive"}>
             {row.original.initialStock}
           </span>
           <span className="text-[8px] text-slate-300 uppercase font-bold">In Stock</span>
         </div>
       )
-    },
-    {
-      accessorKey: "isActive",
-      header: "Status",
-      cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
     },
     {
       accessorKey: "createdAt",
@@ -122,9 +117,9 @@ export function ItemList() {
 
   return (
     <ResourceListPage<Item, unknown>
-      title="Inventory Ledger"
+      title="Products & Items"
       description="Detailed catalog of devices, spare parts, and accessories."
-      resourceName="items"
+      resourceName="products"
       columns={columns}
       useResourceQuery={useItems}
       onAdd={() => openModal()}
@@ -138,6 +133,15 @@ export function ItemList() {
           title: "Status",
           options: STATUS_OPTIONS,
         },
+        {
+          key: "condition",
+          title: "Condition",
+          options: [
+            { label: "All Condition", value: "all" },
+            { label: "New", value: "New" },
+            { label: "Used", value: "Used" },
+          ],
+        }
       ]}
     />
   )

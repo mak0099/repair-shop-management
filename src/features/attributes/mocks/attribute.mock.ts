@@ -62,7 +62,7 @@ const initialAttributes: Attribute[] = [
   {
     id: "attr-accessories",
     name: "Accessories",
-    key: "ACCESSORIES",
+    key: "ACCESSORY",
     description: "Included accessories with the device",
     values: [
       { id: "v-acc-1", value: "Charger", isActive: true },

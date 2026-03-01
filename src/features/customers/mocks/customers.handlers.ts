@@ -3,7 +3,7 @@ import { mockCustomers } from "./customers.mock"
 import { applySort } from "@/mocks/mock-utils"
 import { Customer } from "../customer.schema"
 
-let customers = [...mockCustomers]
+const customers = [...mockCustomers]
 
 export const customerHandlers = [
   // GET all customers
@@ -16,8 +16,9 @@ export const customerHandlers = [
     const sort = url.searchParams.get("_sort")
     const order = url.searchParams.get("_order")
     const isDealer = url.searchParams.get("isDealer")
+    const isActiveParam = url.searchParams.get("isActive")
 
-    let filteredData = customers.filter((customer) => {
+    const filteredData = customers.filter((customer) => {
       const searchMatch =
         customer.name.toLowerCase().includes(search) ||
         customer.mobile.includes(search) ||
@@ -28,7 +29,12 @@ export const customerHandlers = [
         dealerMatch = String(customer.isDealer) === isDealer
       }
 
-      return searchMatch && dealerMatch
+      let activeMatch = true
+      if (isActiveParam && isActiveParam !== "all") {
+        activeMatch = String(customer.isActive) === isActiveParam
+      }
+
+      return searchMatch && dealerMatch && activeMatch
     })
 
     const sortedData = applySort(filteredData, sort, order)

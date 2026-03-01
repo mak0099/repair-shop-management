@@ -20,7 +20,7 @@ export function BoxNumberSelectField<TFieldValues extends FieldValues>({
   name,
   control,
   label = "Box Number",
-  placeholder = "Select Box Number",
+  placeholder = "Select BoxNo",
   required = false,
   disabled = false,
   readOnly = false,

@@ -5,13 +5,14 @@ import { useForm, FieldErrors } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2, X } from "lucide-react"
+import { X } from "lucide-react"
 
 import { TextField } from "@/components/forms/text-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { BrandSelectField } from "@/features/brands"
+import { FormFooter } from "@/components/forms/form-footer"
 
 import { modelSchema, ModelFormValues, Model } from "../model.schema"
 import { useCreateModel, useUpdateModel } from "../model.api"
@@ -39,7 +40,7 @@ export function ModelForm({
   const [mode, setMode] = useState<"view" | "edit" | "create">(
     initialIsViewMode ? "view" : initialData ? "edit" : "create"
   )
-  
+
   const isViewMode = mode === "view"
   const isPending = isCreating || isUpdating
   const isEditMode = !!initialData && mode !== "create"
@@ -126,39 +127,15 @@ export function ModelForm({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
-          {isViewMode ? (
-            <Button 
-              variant="outline" 
-              type="button" 
-              onClick={(e) => { e.preventDefault(); setMode("edit"); }}
-              className="px-8 border-slate-200"
-            >
-              Edit Details
-            </Button>
-          ) : (
-            <>
-              <Button 
-                variant="ghost" 
-                type="button" 
-                onClick={handleClose} 
-                className="text-slate-500 hover:bg-slate-50"
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isPending} 
-                className="min-w-[140px] bg-slate-900 hover:bg-slate-800 shadow-lg shadow-slate-200"
-              >
-                {isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                {isEditMode ? "Save Changes" : "Create Model"}
-              </Button>
-            </>
-          )}
-        </div>
+        <FormFooter
+          isViewMode={isViewMode}
+          isEditMode={isEditMode}
+          isPending={isPending}
+          onCancel={() => onSuccess?.(initialData!)}
+          onEdit={() => setMode("edit")}
+          saveLabel={isEditMode ? "Save Changes" : "Create Model"}
+          className="border-slate-100"
+        />
       </form>
     </Form>
   )

@@ -74,6 +74,20 @@ const initialMasterSettings: MasterSetting[] = [
     ],
   },
   {
+    id: "mst-return-status",
+    name: "Return Status",
+    key: "RETURN_STATUS",
+    description: "Status tracking for device returns",
+    createdAt: now,
+    updatedAt: now,
+    values: [
+      { id: "m-ret-1", value: "Requested", isActive: true },
+      { id: "m-ret-2", value: "Approved", isActive: true },
+      { id: "m-ret-3", value: "Rejected", isActive: true },
+      { id: "m-ret-4", value: "Refunded", isActive: true },
+    ],
+  },
+  {
     id: "mst-color",
     name: "Colors",
     key: "COLOR",

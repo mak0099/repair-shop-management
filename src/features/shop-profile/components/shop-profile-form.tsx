@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -11,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TextField } from "@/components/forms/text-field";
 import { TextareaField } from "@/components/forms/textarea-field";
 import { SelectField } from "@/components/forms/select-field";
+import { FormFooter } from "@/components/forms/form-footer";
 
 import { shopProfileSchema, ShopProfile } from "../shop-profile.schema";
 import { useCreateShopProfile, useUpdateShopProfile } from "../shop-profile.api";
@@ -110,15 +110,14 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-3 border-t pt-6">
-          <Button variant="ghost" type="button" onClick={onCancel} className="text-slate-500">
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isPending} className="min-w-[140px] bg-slate-900 hover:bg-slate-800">
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditMode ? "Save Changes" : "Create Profile"}
-          </Button>
-        </div>
+        <FormFooter
+          isPending={isPending}
+          isEditMode={isEditMode}
+          onCancel={onCancel}
+          onReset={() => form.reset()}
+          saveLabel={isEditMode ? "Save Changes" : "Create Profile"}
+          className="border-t pt-6"
+        />
       </form>
     </Form>
   );

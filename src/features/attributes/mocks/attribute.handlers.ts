@@ -3,13 +3,21 @@ import { Attribute } from "../attribute.schema";
 import { mockAttributes } from "./attribute.mock";
 
 // Mutable state for the mock session
-let attributes = [...mockAttributes];
+const attributes = [...mockAttributes];
 
 export const attributeHandlers = [
   // GET all attributes (Categories with their values)
   http.get("*/attributes", async () => {
     await delay(500);
-    return HttpResponse.json(attributes);
+    return HttpResponse.json({
+      data: attributes,
+      meta: {
+        total: attributes.length,
+        page: 1,
+        pageSize: 100,
+        totalPages: 1,
+      },
+    });
   }),
 
   // GET a single attribute category by ID

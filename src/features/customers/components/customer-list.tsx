@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { StatusCell } from "@/components/shared/data-table-cells"
+import { StatusCell, TitleCell } from "@/components/shared/data-table-cells"
 
 import {
   useCustomers,
@@ -17,26 +17,6 @@ import {
 } from "../customer.api"
 import { Customer } from "../customer.schema"
 import { useCustomerModal } from "../customer-modal-context"
-
-/**
- * Filter Options: Standardized for Boolean Consistency.
- */
-const ACTIVE_STATUS_OPTIONS = [
-  { label: "Active Only", value: "true" },
-  { label: "Inactive Only", value: "false" },
-]
-
-const DEALER_OPTIONS = [
-  { label: "Business/Dealer", value: "true" },
-  { label: "Regular Customer", value: "false" },
-]
-
-const INITIAL_FILTERS = {
-  search: "",
-  page: 1,
-  pageSize: 10,
-  isActive: "all",
-}
 
 export function CustomerList() {
   const deleteCustomerMutation = useDeleteCustomer()
@@ -51,12 +31,11 @@ export function CustomerList() {
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Customer Name" />,
         cell: ({ row }) => (
-          <div
-            className="font-semibold text-blue-600 cursor-pointer hover:underline transition-all"
+          <TitleCell
+            value={row.getValue("name")}
+            isActive={row.original.isActive}
             onClick={() => openModal({ initialData: row.original, isViewMode: true })}
-          >
-            {row.getValue("name")}
-          </div>
+          />
         ),
       },
       {
@@ -71,13 +50,10 @@ export function CustomerList() {
       },
       {
         accessorKey: "isDealer",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Type" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Dealer?" className="justify-center" />,
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <StatusCell isActive={row.original.isDealer} />
-            <span className="text-[10px] uppercase font-black text-slate-400">
-              {row.original.isDealer ? "Dealer" : "Retail"}
-            </span>
           </div>
         ),
       },
@@ -92,7 +68,7 @@ export function CustomerList() {
             resourceTitle={row.original.name}
             onView={() => openModal({ initialData: row.original, isViewMode: true })}
             onEdit={() => openModal({ initialData: row.original })}
-            
+
             deleteMutation={deleteCustomerMutation}
             updateMutation={updateCustomerMutation}
           />
@@ -104,7 +80,7 @@ export function CustomerList() {
 
   return (
     <ResourceListPage<Customer, unknown>
-      title="Customer Directory"
+      title="Customers"
       resourceName="customers"
       description="Manage your client base, including retail customers and business dealers."
       onAdd={() => openModal()}
@@ -113,11 +89,18 @@ export function CustomerList() {
       useResourceQuery={useCustomers}
       bulkDeleteMutation={bulkDeleteMutation}
       bulkStatusUpdateMutation={bulkStatusUpdateMutation}
-      initialFilters={INITIAL_FILTERS}
+      initialFilters={{
+        isDealer: "all",
+      }}
       searchPlaceholder="Search by name, mobile, or email..."
       filterDefinitions={[
-        { key: "isActive", title: "Status", options: ACTIVE_STATUS_OPTIONS },
-        { key: "isDealer", title: "Type", options: DEALER_OPTIONS },
+        {
+          key: "isDealer", title: "Type", options: [
+            { label: "All Customers", value: "all" },
+            { label: "Dealer", value: "true" },
+            { label: "Regular", value: "false" },
+          ]
+        },
       ]}
     />
   )

@@ -7,7 +7,7 @@ import type { UseMutationResult } from "@tanstack/react-query"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { ImageCell, DateCell } from "@/components/shared/data-table-cells"
+import { ImageCell, DateCell, CurrencyCell, TitleCell } from "@/components/shared/data-table-cells"
 import { Badge } from "@/components/ui/badge"
 
 import {
@@ -44,25 +44,17 @@ export function ExpenseList() {
         accessorKey: "title",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Expense Title" />,
         cell: ({ row }) => (
-          <div 
-            className="font-semibold text-slate-700 cursor-pointer hover:text-blue-600 transition-colors" 
+          <TitleCell
+            value={row.getValue("title")}
+            subtitle={row.original.vendorName ? `To: ${row.original.vendorName}` : undefined}
             onClick={() => openModal({ initialData: row.original, isViewMode: true })}
-          >
-            {row.getValue("title")}
-            {row.original.vendorName && (
-              <p className="text-[10px] text-slate-400 font-normal">To: {row.original.vendorName}</p>
-            )}
-          </div>
+          />
         ),
       },
       {
         accessorKey: "amount",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Amount" />,
-        cell: ({ row }) => (
-          <span className="font-bold text-slate-900">
-            ৳{row.original.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-          </span>
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Amount" className="justify-end" />,
+        cell: ({ row }) => <CurrencyCell amount={row.getValue("amount")} />,
       },
       {
         accessorKey: "date",
@@ -75,7 +67,7 @@ export function ExpenseList() {
         cell: ({ row }) => {
           const item = row.original as ExpenseWithLabels;
           return (
-            <Badge variant="secondary" className="font-medium bg-slate-100 text-slate-600 border-none">
+            <Badge variant="secondary" className="font-medium">
               {item.categoryLabel || "General"}
             </Badge>
           );
@@ -85,7 +77,7 @@ export function ExpenseList() {
         accessorKey: "paymentMethod",
         header: "Payment",
         cell: ({ row }) => (
-          <span className="text-[11px] font-bold uppercase text-slate-400 tracking-tight">
+          <span className="text-[11px] font-bold uppercase text-muted-foreground tracking-tight">
             {row.original.paymentMethod?.replace("_", " ")}
           </span>
         ),
@@ -124,7 +116,7 @@ export function ExpenseList() {
 
   return (
     <ResourceListPage<Expense, unknown>
-      title="Expense Ledger"
+      title="General Expense"
       resourceName="expenses"
       description="Track and audit your shop's operational costs."
       onAdd={() => openModal()}

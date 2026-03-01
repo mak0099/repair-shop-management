@@ -16,6 +16,8 @@ interface DataTableCardProps<TData> {
   total?: number
   children?: React.ReactNode
   bulkActions?: (table: Table<TData>) => React.ReactNode
+  showPagination?: boolean
+  pageSizeOptions?: number[]
 }
 
 export function DataTableCard<TData>({
@@ -25,6 +27,8 @@ export function DataTableCard<TData>({
   total,
   children,
   bulkActions,
+  showPagination = true,
+  pageSizeOptions,
 }: DataTableCardProps<TData>) {
   const selectedRowCount = table.getFilteredSelectedRowModel().rows.length
 
@@ -50,9 +54,11 @@ export function DataTableCard<TData>({
       </CardHeader>
       <CardContent className={cn(isLoading && "opacity-50 pointer-events-none transition-opacity")}>
         <DataTable table={table} isLoading={isLoading} />
-        <div className="mt-4">
-          <DataTablePagination table={table} />
-        </div>
+        {showPagination && (
+          <div className="mt-4">
+            <DataTablePagination table={table} />
+          </div>
+        )}
       </CardContent>
     </Card>
   )

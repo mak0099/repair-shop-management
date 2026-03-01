@@ -2,7 +2,7 @@
 import { createModalContext } from "@/lib/modal-context-factory";
 import { MasterSetting } from "./master-setting.schema";
 
-const { ModalProvider, useModal } = createModalContext<MasterSetting>({
+const { ModalProvider, useModal } = createModalContext<MasterSetting, { title?: string }>({
   featureName: "Master Setting",
   formName: "masterSettingForm",
   modalClassName: "max-w-lg",

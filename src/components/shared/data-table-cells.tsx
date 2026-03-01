@@ -31,10 +31,10 @@ interface DateCellProps {
   includeTime?: boolean
 }
 
-export function DateCell({ 
-  date, 
-  placeholder = "N/A", 
-  includeTime = false 
+export function DateCell({
+  date,
+  placeholder = "N/A",
+  includeTime = false
 }: DateCellProps) {
   if (!date) {
     return <span className="text-muted-foreground italic text-xs">{placeholder}</span>
@@ -58,7 +58,7 @@ interface ImageCellProps {
   src: string | null | undefined
   alt: string
   shape?: "circle" | "rounded" | "square"
-  size?: number 
+  size?: number
   className?: string
 }
 
@@ -94,11 +94,11 @@ export function ImageCell({
       {/* The 'key' prop here is the magic. When 'src' changes, React resets 
         the internal state of InternalImageContent entirely.
       */}
-      <InternalImageContent 
-        key={src || "no-src"} 
-        src={src} 
-        alt={alt} 
-        size={size} 
+      <InternalImageContent
+        key={src || "no-src"}
+        src={src}
+        alt={alt}
+        size={size}
       />
     </div>
   )
@@ -107,14 +107,14 @@ export function ImageCell({
 /**
  * Internal helper to encapsulate error state.
  */
-function InternalImageContent({ 
-  src, 
-  alt, 
-  size 
-}: { 
-  src: string | null | undefined; 
-  alt: string; 
-  size: number 
+function InternalImageContent({
+  src,
+  alt,
+  size
+}: {
+  src: string | null | undefined;
+  alt: string;
+  size: number
 }) {
   const [hasError, setHasError] = useState(false)
 
@@ -132,4 +132,57 @@ function InternalImageContent({
       onError={() => setHasError(true)}
     />
   )
+}
+
+// --- TitleCell ---
+interface TitleCellProps {
+  value: string
+  subtitle?: string
+  isActive?: boolean
+  onClick?: () => void
+}
+
+export function TitleCell({ value, subtitle, isActive = true, onClick }: TitleCellProps) {
+  return (
+    <div>
+      <p
+        className={cn(
+          "font-medium cursor-pointer hover:underline",
+          isActive ? "text-primary" : "text-muted-foreground"
+        )}
+        onClick={onClick}
+      >{value}</p>
+      {subtitle && (
+        <p className="text-[10px] text-muted-foreground font-normal mt-0.5">{subtitle}</p>
+      )}
+    </div>
+  )
+}
+
+// --- CurrencyCell ---
+interface CurrencyCellProps {
+  amount: number | string | undefined | null
+  currencyCode?: string
+  locale?: string
+  className?: string
+}
+
+export function CurrencyCell({
+  amount,
+  currencyCode = "EUR",
+  locale = "it-IT",
+  className,
+}: CurrencyCellProps) {
+  const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
+
+  if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
+    return <div className={cn("text-right font-medium text-muted-foreground", className)}>-</div>
+  }
+
+  const formatted = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currencyCode,
+  }).format(numericAmount)
+
+  return <div className={cn("text-right font-medium pr-4", className)}>{formatted}</div>
 }

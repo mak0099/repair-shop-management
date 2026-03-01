@@ -5,7 +5,6 @@ import { useForm, FieldErrors } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
 
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
@@ -13,6 +12,7 @@ import { CheckboxField } from "@/components/forms/checkbox-field"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Card, CardContent } from "@/components/ui/card"
+import { FormFooter } from "@/components/forms/form-footer"
 
 import { supplierSchema, SupplierFormValues, Supplier } from "../supplier.schema"
 import { useCreateSupplier, useUpdateSupplier } from "../supplier.api"
@@ -167,39 +167,16 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          {isViewMode ? (
-            <Button 
-              variant="outline" 
-              type="button" 
-              onClick={(e) => { e.preventDefault(); setMode("edit"); }}
-              className="px-8 border-slate-200"
-            >
-              Edit Details
-            </Button>
-          ) : (
-            <>
-              <Button 
-                variant="ghost" 
-                type="button" 
-                onClick={handleClose} 
-                className="text-slate-500 hover:bg-slate-50"
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isPending} 
-                className="min-w-[140px] bg-slate-900 hover:bg-slate-800"
-              >
-                {isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                {isEditMode ? "Save Changes" : "Create Supplier"}
-              </Button>
-            </>
-          )}
-        </div>
+        <FormFooter
+          isViewMode={isViewMode}
+          isEditMode={isEditMode}
+          isPending={isPending}
+          onCancel={() => onSuccess?.(initialData!)}
+          onEdit={() => setMode("edit")}
+          onReset={() => form.reset()}
+          saveLabel={isEditMode ? "Save Changes" : "Create Supplier"}
+          className="pt-4 border-t border-slate-100"
+        />
       </form>
     </Form>
   )

@@ -11,6 +11,9 @@ export const itemHandlers = [
     const url = new URL(request.url)
     const search = url.searchParams.get("search")?.toLowerCase() || ""
     const isActiveParam = url.searchParams.get("isActive")
+    const conditionParam = url.searchParams.get("condition")
+    const page = Number(url.searchParams.get("page") || "1")
+    const pageSize = Number(url.searchParams.get("pageSize") || "10")
     
     let filtered = items.filter(item => 
       item.name.toLowerCase().includes(search) || (item.sku?.toLowerCase().includes(search))
@@ -20,8 +23,17 @@ export const itemHandlers = [
       filtered = filtered.filter(item => item.isActive === (isActiveParam === "true"))
     }
 
+    if (conditionParam && conditionParam !== "all") {
+      filtered = filtered.filter(item => item.condition === conditionParam)
+    }
+
     const total = filtered.length
-    return HttpResponse.json({ data: filtered, meta: { total, page: 1, pageSize: 10, totalPages: 1 } })
+    const totalPages = Math.ceil(total / pageSize)
+    const start = (page - 1) * pageSize
+    const end = start + pageSize
+    const paginatedData = filtered.slice(start, end)
+
+    return HttpResponse.json({ data: paginatedData, meta: { total, page, pageSize, totalPages } })
   }),
 
   http.post("*/items", async ({ request }) => {

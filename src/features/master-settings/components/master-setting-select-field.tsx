@@ -81,6 +81,7 @@ export function MasterSettingSelectField<TFieldValues extends FieldValues>({
     if (!masterData) return
     openModal({
       initialData: masterData,
+      title: `Edit ${masterData.name}`,
     })
   }
 

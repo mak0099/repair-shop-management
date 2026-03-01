@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageHeader } from "@/components/shared/page-header"
 
 export function AttributeList() {
   const { data: attributes, isLoading, isFetching } = useAttributes()
@@ -19,76 +20,84 @@ export function AttributeList() {
     { label: "Colors", key: "COLOR" },
     { label: "Grade / Condition", key: "GRADE" },
     { label: "Warranty", key: "WARRANTY" },
-    { label: "Accessories", key: "ACCESSORIES" }
+    { label: "Accessories", key: "ACCESSORY" }
   ]
 
   return (
-    <div className="p-4 lg:p-6 space-y-8 max-w-7xl mx-auto">
-      {/* Header Section with Blue Accent */}
-      <div className="flex flex-col gap-1 border-l-4 border-blue-600 pl-4">
-        <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2 text-slate-900">
-          <Layers className="h-6 w-6 text-blue-600" /> Product Attributes
-        </h2>
-        <p className="text-muted-foreground text-sm italic">
-          Manage product variations like size, color, and technical specifications.
-        </p>
-      </div>
+    <div className="space-y-4 w-full max-w-full">
+      <PageHeader 
+        title="Product Attributes" 
+        description="Manage product variations like size, color, and technical specifications."
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
         {productAttributes.map((attr) => {
-          const attributeData = attributes?.data?.find((a) => a.key === attr.key)
+          const attributeData = attributes?.data?.find((a) => a.key?.toUpperCase() === attr.key?.toUpperCase())
 
           return (
-            <Card key={attr.key} className="group border shadow-sm relative overflow-hidden transition-all duration-300">
+            <Card key={attr.key} className="flex flex-col overflow-hidden">
               {/* Fetching Overlay */}
               {isFetching && !isLoading && (
                 <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center backdrop-blur-[1px]">
-                  <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 </div>
               )}
 
-              {/* Card Header with Blue Theme */}
-              <CardHeader className="py-3 px-4 border-b bg-blue-50/30">
+              <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-                    <Tag className="h-3.5 w-3.5 text-blue-600" /> {attr.label}
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-muted-foreground" /> {attr.label}
                   </CardTitle>
                   {!isLoading ? (
-                    <Badge variant="secondary" className="text-[10px] bg-white text-blue-700 border-blue-100">
+                    <Badge variant="secondary" className="font-normal">
                       {attributeData?.values?.length || 0} Opts
                     </Badge>
                   ) : (
-                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="h-5 w-8" />
                   )}
                 </div>
               </CardHeader>
 
-              {/* Card Content for Attribute Options */}
-              <CardContent className="pt-4 space-y-5">
-                <div className="flex flex-wrap gap-1.5 min-h-[80px] content-start overflow-y-auto max-h-[120px] pr-1 custom-scrollbar">
+              <CardContent className="flex-1 flex flex-col gap-4 pt-0">
+                <div className="flex flex-wrap gap-1.5 min-h-[80px] content-start">
                   {isLoading ? (
-                    Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-5 w-12 rounded-full" />)
+                    Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-6 w-12 rounded-full" />)
                   ) : attributeData?.values && attributeData.values.length > 0 ? (
-                    attributeData.values.map((opt, i) => (
-                      <Badge key={i} variant="outline" className="font-normal bg-white text-[10px] border-slate-200">
+                    attributeData.values.slice(0, 12).map((opt, i) => (
+                      <Badge key={i} variant="outline" className="font-normal bg-slate-50">
                         {opt.value}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-[10px] text-slate-400 italic">No options configured.</span>
+                    <span className="text-sm text-muted-foreground italic">No options configured.</span>
+                  )}
+                  {attributeData?.values && attributeData.values.length > 12 && (
+                     <Badge variant="outline" className="font-normal bg-slate-50">+{attributeData.values.length - 12} more</Badge>
                   )}
                 </div>
                 
-                <Button 
-                  variant="outline"
-                  disabled={isLoading || !attributeData}
-                  className="w-full h-9 group-hover:bg-blue-600 group-hover:text-white transition-colors border-slate-300 text-xs" 
-                  onClick={() => {
-                    if (attributeData) openModal({ initialData: attributeData })
-                  }}
-                >
-                  <Edit3 className="mr-2 h-3.5 w-3.5" /> Edit {attr.label}
-                </Button>
+                <div className="mt-auto pt-2">
+                    <Button 
+                    variant="outline"
+                    size="sm"
+                    disabled={isLoading}
+                    className="w-full" 
+                    onClick={() => {
+                        openModal({ 
+                          title: attributeData ? `Edit ${attr.label}` : `Configure ${attr.label}`,
+                          initialData: attributeData ?? {
+                            id: "",
+                            key: attr.key,
+                            name: attr.label,
+                            description: "",
+                            values: []
+                          } 
+                        })
+                    }}
+                    >
+                    <Edit3 className="mr-2 h-3.5 w-3.5" /> {attributeData ? "Edit Options" : "Configure"}
+                    </Button>
+                </div>
               </CardContent>
             </Card>
           )

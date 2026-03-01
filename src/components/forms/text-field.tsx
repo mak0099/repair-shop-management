@@ -17,7 +17,7 @@ interface TextFieldProps<TFieldValues extends FieldValues>
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "name"> {
   control: Control<TFieldValues>
   name: Path<TFieldValues>
-  label: string
+  label?: string
   required?: boolean
   readOnly?: boolean
   labelClassName?: string

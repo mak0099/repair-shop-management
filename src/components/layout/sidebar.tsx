@@ -57,7 +57,7 @@ export const data = {
       items: [
         { title: "New Acceptance", url: "/dashboard/acceptances/add" },
         { title: "Acceptance List", url: "/dashboard/acceptances" },
-        { title: "Recycle Bin", url: "/dashboard/acceptances/deleted" },
+        // { title: "Recycle Bin", url: "/dashboard/acceptances/deleted" },
       ],
     },
     {
@@ -67,10 +67,10 @@ export const data = {
       items: [
         { title: "Current Stock", url: "/dashboard/inventory/stock" },
         { title: "Products & Items", url: "/dashboard/inventory/products" },
-        { title: "Attributes (RAM, Color...)", url: "/dashboard/inventory/attributes" },
+        { title: "Product Attributes", url: "/dashboard/inventory/attributes" },
         { title: "Stock Adjustment", url: "/dashboard/inventory/stock-adjustment" }, 
         { title: "Print Labels/Barcodes", url: "/dashboard/inventory/barcode" }, 
-        { title: "Used Devices (Tracking)", url: "/dashboard/inventory/tracking" },
+        // { title: "Used Devices (Tracking)", url: "/dashboard/inventory/tracking" },
         { title: "Categories", url: "/dashboard/inventory/categories" },
         { title: "Brands", url: "/dashboard/inventory/brands" },
         { title: "Models", url: "/dashboard/inventory/models" },
@@ -124,7 +124,7 @@ export const data = {
       items: [
         { title: "Shop Profile", url: "/dashboard/admin/shop-profile" },
         { title: "Invoice Setup", url: "/dashboard/admin/invoice-setup" },
-        { title: "Master Settings", url: "/dashboard/admin/master-settings" },
+        { title: "Business Settings", url: "/dashboard/admin/master-settings" },
         { title: "Users Management", url: "/dashboard/admin/users" },
         { title: "Roles & Permissions", url: "/dashboard/admin/permissions" },
       ],

@@ -3,22 +3,22 @@
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Info, AlertCircle } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 
-import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
 import { SelectField } from "@/components/forms/select-field"
+import { FormFooter } from "@/components/forms/form-footer"
 
 import { stockAdjustmentSchema, StockAdjustment, StockAdjustmentFormValues } from "../stock-adjustment.schema"
 import { useCreateStockAdjustment, useUpdateStockAdjustment } from "../stock-adjustment.api"
 import { STOCK_ADJUSTMENT_REASON_OPTIONS, STOCK_ADJUSTMENT_TYPE_OPTIONS } from "../stock-adjustment.constants"
-import { StockSelectField } from "@/features/stock/components/stock-select-field"
+import { StockSelectField } from "@/features/stock"
 
 interface StockAdjustmentFormProps {
   initialData?: StockAdjustment | null
@@ -32,7 +32,7 @@ export function StockAdjustmentForm({
   isViewMode: initialIsViewMode = false,
 }: StockAdjustmentFormProps) {
   const queryClient = useQueryClient()
-  const [mode] = useState<"view" | "edit" | "create">(
+  const [mode, setMode] = useState<"view" | "edit" | "create">(
     initialIsViewMode ? "view" : initialData ? "edit" : "create"
   )
   const isViewMode = mode === "view"
@@ -156,28 +156,16 @@ export function StockAdjustmentForm({
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => onSuccess?.(initialData as StockAdjustment)}
-              className="text-slate-500"
-            >
-              {isViewMode ? "Close" : "Cancel"}
-            </Button>
-            {!isViewMode && (
-              <Button type="submit" className="bg-slate-900 hover:bg-slate-800 min-w-[160px]" disabled={isPending}>
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  "Confirm Adjustment"
-                )}
-              </Button>
-            )}
-          </div>
+          <FormFooter
+            isViewMode={isViewMode}
+            isEditMode={!!initialData}
+            isPending={isPending}
+            onCancel={() => onSuccess?.(initialData as StockAdjustment)}
+            onEdit={() => setMode("edit")}
+            onReset={() => form.reset()}
+            saveLabel="Confirm Adjustment"
+            className="pt-4 border-t border-slate-100"
+          />
         </form>
       </Form>
     </FormProvider>

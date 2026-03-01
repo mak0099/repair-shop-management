@@ -94,15 +94,7 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit, onFormError)} className="relative p-4 space-y-5">
-        {isViewMode && (
-          <div className="absolute top-4 right-4 z-10">
-            <Button size="sm" variant="outline" type="button" onClick={() => setMode("edit")}>
-              Edit Category
-            </Button>
-          </div>
-        )}
-
-        <div className={isViewMode ? "pt-10 space-y-4" : "space-y-4"}>
+        <div className="space-y-4">
           <TextField
             control={control}
             name="name"

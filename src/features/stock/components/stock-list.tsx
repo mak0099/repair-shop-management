@@ -2,44 +2,49 @@
 
 import { useMemo, useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertTriangle, ArrowRight, Smartphone, MapPin, Tag, Package, ListFilter } from "lucide-react"
+import { AlertTriangle, Smartphone, MapPin, Tag, ListFilter } from "lucide-react"
 
 import { ResourceListPage, FilterDefinition } from "@/components/shared/resource-list-page"
+import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
+import { TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
+import { ResourceActions } from "@/components/shared/resource-actions"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useStock } from "../stock.api"
 import { useStockAdjustmentModal } from "@/features/stock-adjustment/stock-adjustment-modal-context"
 import { Stock } from "../stock.schema"
 import { STOCK_CATEGORY_FILTER_OPTIONS, STOCK_STATUS_FILTER_OPTIONS } from "../stock.constants"
 import { StockDetailsModal } from "./stock-details-modal"
+import { useDeleteStockAdjustment } from "@/features/stock-adjustment"
 
 export function StockList() {
   const { openModal } = useStockAdjustmentModal()
+  const deleteStockAdjustmentMutation = useDeleteStockAdjustment()
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
 
   const columns: ColumnDef<Stock>[] = useMemo(() => [
     {
       accessorKey: "itemName",
-      header: "Product & Specs",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Product & Specs" />,
       cell: ({ row }) => (
-        <div className="flex flex-col gap-1.5">
-          <span className="font-bold text-slate-900 leading-tight">
-            {row.original.itemName}
-          </span>
-          <div className="flex flex-wrap gap-1">
-            {Object.entries(row.original.attributes).map(([key, value]) => (
-              <Badge key={key} variant="secondary" className="text-[9px] h-4 px-1.5 bg-slate-100 text-slate-600 border-none">
-                {value}
-              </Badge>
-            ))}
-          </div>
-        </div>
+        <TitleCell
+          value={row.original.itemName}
+          onClick={() => setSelectedStock(row.original)}
+          subtitle={
+            <div className="flex flex-wrap gap-1 mt-1">
+              {Object.entries(row.original.attributes).map(([key, value]) => (
+                <Badge key={key} variant="secondary" className="text-[9px] h-4 px-1.5 bg-slate-100 text-slate-600 border-none">
+                  {value}
+                </Badge>
+              ))}
+            </div>
+          }
+        />
       )
     },
     {
       id: "identifiers",
-      header: "SKU & IMEI",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="SKU & IMEI" />,
       cell: ({ row }) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -55,11 +60,11 @@ export function StockList() {
     },
     {
       accessorKey: "stockQuantity",
-      header: "Available",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Available" />,
       cell: ({ row }) => {
         const isLow = row.original.stockQuantity <= row.original.lowStockThreshold
         const isOut = row.original.stockQuantity === 0
-        
+
         return (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
@@ -81,7 +86,7 @@ export function StockList() {
     },
     {
       id: "location",
-      header: "Storage Location",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Storage Location" />,
       cell: ({ row }) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5 text-xs font-semibold">
@@ -97,54 +102,48 @@ export function StockList() {
     },
     {
       accessorKey: "sellingPrice",
-      header: () => <div className="text-right">Price</div>,
-      cell: ({ row }) => (
-        <div className="text-right font-bold text-slate-900">
-          ৳{row.original.sellingPrice.toLocaleString()}
-        </div>
-      )
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Price" className="justify-end" />,
+      cell: ({ row }) => <CurrencyCell amount={row.original.sellingPrice} />
     },
     {
       id: "actions",
-      header: "",
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-          onClick={() => setSelectedStock(row.original)}
-        >
-          Details <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-        </Button>
+        <ResourceActions
+          resource={row.original}
+          resourceName="Stock Item"
+          resourceTitle={row.original.itemName}
+          onView={() => setSelectedStock(row.original)}
+          deleteMutation={deleteStockAdjustmentMutation}
+        />
       )
     }
-  ], [])
+  ], [deleteStockAdjustmentMutation])
 
   const filterDefinitions: FilterDefinition[] = [
-    {
-      key: 'status',
-      title: 'Status',
-      icon: Package,
-      options: STOCK_STATUS_FILTER_OPTIONS,
-    },
     {
       key: 'category',
       title: 'Category',
       icon: ListFilter,
       options: STOCK_CATEGORY_FILTER_OPTIONS,
     },
+    {
+      key: 'status',
+      title: 'Status',
+      options: STOCK_STATUS_FILTER_OPTIONS,
+    },
   ]
 
   return (
     <>
       <ResourceListPage<Stock, Record<string, unknown>>
-        title="Inventory"
+        title="Current Stock"
         description="Monitor real-time stock levels, IMEIs, and storage locations."
         resourceName="stock"
-        columns={columns} 
-        useResourceQuery={useStock} 
+        columns={columns}
+        useResourceQuery={useStock}
         filterDefinitions={filterDefinitions}
         searchPlaceholder="Search SKU, IMEI or Product..."
+        initialFilters={{ category: "all", status: "all" }}
         onAdd={() => openModal()}
         addLabel="Adjust Stock"
       />

@@ -2,7 +2,7 @@ import { delay, http, HttpResponse } from "msw"
 import { mockStock } from "./stock.mock"
 import { applySort } from "@/mocks/mock-utils"
 
-let stocks = [...mockStock]
+const stocks = [...mockStock]
 
 export const stockHandlers = [
   // GET all stocks with pagination and search
@@ -17,14 +17,14 @@ export const stockHandlers = [
     const status = url.searchParams.get("status")
     const category = url.searchParams.get("category")
 
-    let filteredData = stocks.filter((item) => {
+    const filteredData = stocks.filter((item) => {
       const searchMatch =
         item.itemName.toLowerCase().includes(search) ||
         item.sku.toLowerCase().includes(search) ||
         (item.imei && item.imei.toLowerCase().includes(search))
 
       let statusMatch = true
-      if (status && status !== "ALL") {
+      if (status && status !== "all") {
         if (status === "LOW_STOCK") {
           statusMatch = item.stockQuantity > 0 && item.stockQuantity <= item.lowStockThreshold
         } else if (status === "OUT_OF_STOCK") {

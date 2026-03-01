@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import { DateCell } from "@/components/shared/data-table-cells"
+import { DateCell, TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
 
 import { useItems, useDeleteItem, useDeleteManyItems, usePartialUpdateItem } from "../item.api"
@@ -19,14 +19,6 @@ import { STATUS_OPTIONS } from "../item.constants"
  */
 type ItemWithId = Item & { id: string };
 
-const INITIAL_FILTERS = {
-  search: "",
-  page: 1,
-  pageSize: 10,
-  isActive: "true",
-  condition: "all",
-}
-
 export function ItemList() {
   const { openModal } = useItemModal()
   const deleteMutation = useDeleteItem()
@@ -38,30 +30,29 @@ export function ItemList() {
       accessorKey: "name",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Product details" />,
       cell: ({ row }) => (
-        <div
-          className="font-semibold cursor-pointer hover:text-blue-600 transition-colors"
+        <TitleCell
+          value={row.getValue("name")}
+          isActive={row.original.isActive}
           onClick={() => openModal({ initialData: row.original, isViewMode: true })}
-        >
-          {row.getValue("name")}
-          <div className="flex gap-2 mt-1">
-             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                {row.original.brandId}
-             </span>
-             {row.original.ram && (
-               <span className="text-[10px] text-blue-500 font-medium italic">
-                 ({row.original.ram}/{row.original.rom})
-               </span>
-             )}
-          </div>
-        </div>
+          subtitle={
+            <div className="flex gap-2 items-center">
+              <span className="font-bold uppercase tracking-widest">{row.original.brandId}</span>
+              {row.original.ram && (
+                <span className="text-blue-500 font-medium italic">
+                  ({row.original.ram}/{row.original.rom})
+                </span>
+              )}
+            </div>
+          }
+        />
       ),
     },
     {
       accessorKey: "condition",
       header: "Condition",
       cell: ({ row }) => (
-        <Badge 
-          variant={row.original.condition === "New" ? "default" : "secondary"} 
+        <Badge
+          variant={row.original.condition === "New" ? "default" : "secondary"}
           className="text-[9px] uppercase font-bold px-1.5 py-0"
         >
           {row.original.condition}
@@ -70,12 +61,12 @@ export function ItemList() {
     },
     {
       accessorKey: "salePrice",
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Pricing" />,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pricing" className="justify-end" />,
       cell: ({ row }) => (
-        <div className="flex flex-col">
-          <span className="font-bold text-slate-900">৳{row.original.salePrice.toLocaleString()}</span>
-          <span className="text-[9px] text-slate-400 font-medium">Cost: ৳{row.original.purchasePrice.toLocaleString()}</span>
-        </div>
+        <CurrencyCell
+          amount={row.original.salePrice}
+          subtitle={`Cost: ${new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(row.original.purchasePrice)}`}
+        />
       )
     },
     {
@@ -126,13 +117,8 @@ export function ItemList() {
       addLabel="New Product"
       bulkDeleteMutation={bulkDeleteMutation}
       searchPlaceholder="Search products or SKU..."
-      initialFilters={INITIAL_FILTERS}
+      initialFilters={{ condition: "all" }}
       filterDefinitions={[
-        {
-          key: "isActive",
-          title: "Status",
-          options: STATUS_OPTIONS,
-        },
         {
           key: "condition",
           title: "Condition",

@@ -89,7 +89,6 @@ export function MasterSettingSelectField<TFieldValues extends FieldValues>({
     <SelectField<TFieldValues>
       control={control}
       name={name}
-      // Fallback label logic: MasterData Name > Humanized Type > Type
       label={label || masterData?.name || type.replace(/_/g, " ")}
       placeholder={placeholder || `Select ${masterData?.name || "option"}`}
       searchPlaceholder={`Search through ${masterData?.name || "list"}...`}

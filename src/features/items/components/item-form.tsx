@@ -105,7 +105,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
      * Zod Resolver will automatically transform "true"/"false" strings into booleans
      * so 'data' here is correctly typed as 'Item' at runtime.
      */
-    if (initialData) {
+    if (initialData?.id) {
       updateItem({ id: initialData.id, data: data as Item }, callbacks)
     } else {
       createItem(data as Item, callbacks)
@@ -159,7 +159,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <MasterSettingSelectField type="DEVICE_TYPE" control={control} name="deviceType" label="Variant/Type" readOnly={isViewMode} />
+                    <MasterSettingSelectField type="DEVICE_TYPE" control={control} name="deviceType" label="Device Type" readOnly={isViewMode} />
                     <TextField control={control} name="sku" label="System SKU" readOnly inputClassName="bg-slate-50 text-slate-400 border-dashed" />
                   </div>
                 </div>
@@ -215,7 +215,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
 
                   <div className="flex flex-wrap gap-6 pt-2 border-t border-slate-200/60 mt-2">
                     <CheckboxField control={control} name="isTouchScreen" label="Touchscreen" disabled={isViewMode} />
-                    <CheckboxField control={control} name="isSolidDevice" label="Premium Build" disabled={isViewMode} />
+                    <CheckboxField control={control} name="isSolidDevice" label="Solid Device" disabled={isViewMode} />
                     <CheckboxField control={control} name="isActive" label="Active (Show in POS)" disabled={isViewMode} />
                   </div>
                 </div>

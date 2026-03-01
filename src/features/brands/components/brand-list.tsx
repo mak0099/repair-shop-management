@@ -7,7 +7,7 @@ import type { UseMutationResult } from "@tanstack/react-query"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { DateCell, ImageCell, StatusCell } from "@/components/shared/data-table-cells"
+import { DateCell, ImageCell, StatusCell, TitleCell } from "@/components/shared/data-table-cells"
 
 import {
   useBrands,
@@ -24,18 +24,6 @@ import { useBrandModal } from "../brand-modal-context"
  */
 type BrandWithId = Brand & { id: string };
 
-const ACTIVE_STATUS_OPTIONS = [
-  { label: "Active", value: "true" },
-  { label: "Inactive", value: "false" },
-]
-
-const INITIAL_FILTERS = {
-  search: "",
-  page: 1,
-  pageSize: 10,
-  isActive: "all",
-}
-
 export function BrandList() {
   const deleteBrandMutation = useDeleteBrand()
   const updateBrandMutation = usePartialUpdateBrand()
@@ -49,12 +37,12 @@ export function BrandList() {
         accessorKey: "logo",
         header: "Logo",
         cell: ({ row }) => (
-          <ImageCell 
-            src={row.original.logo} 
-            alt={row.original.name} 
+          <ImageCell
+            src={row.original.logo}
+            alt={row.original.name}
             size={40}
-            shape="circle"
-            // fallbackText was removed from here to fix the type error
+            shape="rounded"
+          // fallbackText was removed from here to fix the type error
           />
         ),
       },
@@ -62,18 +50,12 @@ export function BrandList() {
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Brand Name" />,
         cell: ({ row }) => (
-          <div
-            className="font-semibold cursor-pointer hover:text-blue-600 transition-colors"
+          <TitleCell
+            value={row.getValue("name")}
+            isActive={row.original.isActive}
             onClick={() => openModal({ initialData: row.original, isViewMode: true })}
-          >
-            {row.getValue("name")}
-          </div>
+          />
         ),
-      },
-      {
-        accessorKey: "isActive",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
       },
       {
         accessorKey: "createdAt",
@@ -106,7 +88,7 @@ export function BrandList() {
 
   return (
     <ResourceListPage<Brand, unknown>
-      title="Brand Management"
+      title="Brands"
       resourceName="brands"
       description="Manage the list of supported mobile and gadget brands."
       onAdd={() => openModal()}
@@ -115,15 +97,7 @@ export function BrandList() {
       useResourceQuery={useBrands}
       bulkDeleteMutation={bulkDeleteMutation}
       bulkStatusUpdateMutation={bulkStatusUpdateMutation}
-      initialFilters={INITIAL_FILTERS}
       searchPlaceholder="Search brands..."
-      filterDefinitions={[
-        {
-          key: "isActive",
-          title: "Status",
-          options: ACTIVE_STATUS_OPTIONS,
-        },
-      ]}
     />
   )
 }

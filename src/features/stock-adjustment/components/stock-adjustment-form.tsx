@@ -93,14 +93,8 @@ export function StockAdjustmentForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card className="border-slate-200 shadow-sm">
-            <CardHeader className="bg-slate-50/50 border-b">
-              <CardTitle className="text-lg">Adjustment Details</CardTitle>
-              <CardDescription>
-                Select the specific stock unit (IMEI) and provide adjustment details.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 gap-6">
                 <StockSelectField
                   control={form.control}
                   name="stockId"
@@ -109,6 +103,7 @@ export function StockAdjustmentForm({
                   readOnly={isViewMode || !!initialData}
                 />
                 <RadioGroupField
+                  layout="partial-horizontal"
                   control={form.control}
                   name="type"
                   label="Movement Direction"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { useForm, Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema, LoginFormValues } from "@/features/auth"
 import { TextField } from "@/components/forms/text-field"
@@ -10,13 +10,12 @@ import { Smartphone, Lock } from "lucide-react"
 
 export default function LoginPage() {
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchema) as unknown as Resolver<LoginFormValues>,
     defaultValues: { email: "", password: "", rememberMe: false }
   })
 
   const onSubmit = (data: LoginFormValues) => {
     console.log("Login Data:", data)
-    // এখানে আপনার এপিআই কল হবে
   }
 
   return (

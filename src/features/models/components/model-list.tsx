@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { DateCell, StatusCell } from "@/components/shared/data-table-cells"
+import { DateCell, StatusCell, TitleCell } from "@/components/shared/data-table-cells"
 
 /**
  * FIX 1: Import the Brand type from its schema.
@@ -21,18 +21,8 @@ import {
 } from "../model.api"
 import { Model } from "../model.schema"
 import { useModelModal } from "../model-modal-context"
-import { STATUS_OPTIONS } from "../model.constants"
 
-const INITIAL_FILTERS = {
-  search: "",
-  page: 1,
-  pageSize: 10,
-  status: "active",
-}
 
-/**
- * Extended type for the list to include the joined 'brand' object.
- */
 interface ModelInList extends Model {
   brand?: Pick<Brand, 'id' | 'name'>;
 }
@@ -50,12 +40,11 @@ export function ModelList() {
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
         cell: ({ row }) => (
-          <div 
-            className="font-medium cursor-pointer hover:underline text-slate-900" 
-            onClick={() => openModal({ initialData: row.original as unknown as Model, isViewMode: true })}
-          >
-            {row.getValue("name")}
-          </div>
+          <TitleCell
+            value={row.getValue("name")}
+            isActive={row.original.isActive}
+            onClick={() => openModal({ initialData: row.original, isViewMode: true })}
+          />
         ),
       },
       {
@@ -64,11 +53,6 @@ export function ModelList() {
         cell: ({ row }) => {
           return row.original.brand?.name ?? <span className="text-slate-400 italic">N/A</span>
         },
-      },
-      {
-        accessorKey: "isActive",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Active?" />,
-        cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
       },
       {
         accessorKey: "createdAt",
@@ -87,21 +71,13 @@ export function ModelList() {
             onView={(model) => openModal({ initialData: model as Model, isViewMode: true })}
             onEdit={(model) => openModal({ initialData: model as Model })}
             deleteMutation={deleteModelMutation}
-            updateMutation={updateModelMutation} 
+            updateMutation={updateModelMutation}
           />
         ),
       },
     ],
     [deleteModelMutation, updateModelMutation, openModal]
   )
-
-  const filterDefinitions = [
-    {
-      key: "status",
-      title: "Status",
-      options: STATUS_OPTIONS,
-    },
-  ]
 
   return (
     <ResourceListPage<ModelInList, unknown>
@@ -114,9 +90,7 @@ export function ModelList() {
       useResourceQuery={useModels}
       bulkDeleteMutation={bulkDeleteMutation}
       bulkStatusUpdateMutation={bulkStatusUpdateMutation}
-      initialFilters={INITIAL_FILTERS}
       searchPlaceholder="Search by model name..."
-      filterDefinitions={filterDefinitions}
     />
   )
 }

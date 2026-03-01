@@ -29,12 +29,14 @@ interface DateCellProps {
   date: string | Date | undefined | null
   placeholder?: string
   includeTime?: boolean
+  isActive?: boolean
 }
 
 export function DateCell({
   date,
   placeholder = "N/A",
-  includeTime = false
+  includeTime = false,
+  isActive = true
 }: DateCellProps) {
   if (!date) {
     return <span className="text-muted-foreground italic text-xs">{placeholder}</span>
@@ -47,7 +49,10 @@ export function DateCell({
   }
 
   return (
-    <span className="text-sm font-medium text-slate-600">
+    <span className={cn(
+      "text-sm font-medium",
+      isActive ? "text-foreground" : "text-muted-foreground"
+    )}>
       {format(dateObj, includeTime ? "dd MMM yyyy, p" : "dd MMM yyyy")}
     </span>
   )
@@ -128,7 +133,7 @@ function InternalImageContent({
       alt={alt}
       fill
       sizes={`${size}px`}
-      className="object-cover transition-transform duration-300 hover:scale-110"
+      className="object-contain transition-transform duration-300 hover:scale-110"
       onError={() => setHasError(true)}
     />
   )
@@ -137,7 +142,7 @@ function InternalImageContent({
 // --- TitleCell ---
 interface TitleCellProps {
   value: string
-  subtitle?: string
+  subtitle?: React.ReactNode
   isActive?: boolean
   onClick?: () => void
 }
@@ -153,7 +158,7 @@ export function TitleCell({ value, subtitle, isActive = true, onClick }: TitleCe
         onClick={onClick}
       >{value}</p>
       {subtitle && (
-        <p className="text-[10px] text-muted-foreground font-normal mt-0.5">{subtitle}</p>
+        <div className="text-[10px] text-muted-foreground font-normal mt-0.5">{subtitle}</div>
       )}
     </div>
   )
@@ -165,6 +170,7 @@ interface CurrencyCellProps {
   currencyCode?: string
   locale?: string
   className?: string
+  subtitle?: React.ReactNode
 }
 
 export function CurrencyCell({
@@ -172,6 +178,7 @@ export function CurrencyCell({
   currencyCode = "EUR",
   locale = "it-IT",
   className,
+  subtitle,
 }: CurrencyCellProps) {
   const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
 
@@ -184,5 +191,12 @@ export function CurrencyCell({
     currency: currencyCode,
   }).format(numericAmount)
 
-  return <div className={cn("text-right font-medium pr-4", className)}>{formatted}</div>
+  return (
+    <div className={cn("text-right pr-4", className)}>
+      <div className="font-medium">{formatted}</div>
+      {subtitle && (
+        <div className="text-[10px] text-muted-foreground font-normal mt-0.5">{subtitle}</div>
+      )}
+    </div>
+  )
 }

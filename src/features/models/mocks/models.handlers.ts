@@ -22,7 +22,7 @@ export const modelHandlers = [
     const search = url.searchParams.get("search") || ""
     const sort = url.searchParams.get("_sort")
     const order = url.searchParams.get("_order")
-    const status = url.searchParams.get("status")
+    const status = url.searchParams.get("isActive")
     const brandId = url.searchParams.get("brand_id")
 
     let filteredData = [...models]
@@ -37,7 +37,7 @@ export const modelHandlers = [
 
     // 2. Status Filter
     if (status && status !== "all") {
-      const isActive = status === "active"
+      const isActive = status === "true"
       filteredData = filteredData.filter((model) => model.isActive === isActive)
     }
 

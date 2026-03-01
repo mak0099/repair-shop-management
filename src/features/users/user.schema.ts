@@ -14,7 +14,6 @@ export const userSchema = z.object({
    */
   password: z.string().min(6, "Password must be at least 6 characters").optional(),
   role: z.enum(['ADMIN', 'MANAGER', 'TECHNICIAN', 'FRONTDESK']),
-  branch_id: z.string().min(1, "Assign a branch to this user"),
   isActive: z.boolean(),
 });
 

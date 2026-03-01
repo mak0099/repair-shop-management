@@ -16,14 +16,14 @@ export const userHandlers = [
     const search = url.searchParams.get("search")?.toLowerCase() || ""
     const sort = url.searchParams.get("_sort")
     const order = url.searchParams.get("_order")
-    const status = url.searchParams.get("status")
+    const status = url.searchParams.get("isActive")
     const role = url.searchParams.get("role")
 
     const filteredData = users.filter((user) => {
       const searchMatch =
         user.name.toLowerCase().includes(search) ||
         user.email.toLowerCase().includes(search)
-      const statusMatch = !status || status === "all" || (user.isActive ? "active" : "inactive") === status
+      const statusMatch = !status || status === "all" || (user.isActive ? "true" : "false") === status
       const roleMatch = !role || role === "all" || user.role === role
       return searchMatch && statusMatch && roleMatch
     })

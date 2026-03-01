@@ -17,6 +17,7 @@ import { ImageUploadField } from "@/components/forms/image-upload-field"
 import { brandSchema, type BrandFormValues, type Brand } from "../brand.schema"
 import { useCreateBrand, useUpdateBrand } from "../brand.api"
 import { BRANDS_BASE_HREF } from "@/config/paths"
+import { FormFooter } from "@/components/forms/form-footer"
 
 interface BrandFormProps {
   initialData?: Brand | null
@@ -44,16 +45,16 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
   const form = useForm<BrandFormValues>({
     resolver: zodResolver(brandSchema) as unknown as Resolver<BrandFormValues>,
     defaultValues: initialData
-      ? { 
-          ...initialData, 
-          logo: undefined,
-          isActive: initialData.isActive ?? true // Ensuring it's never undefined
-        } 
+      ? {
+        ...initialData,
+        logo: undefined,
+        isActive: initialData.isActive ?? true // Ensuring it's never undefined
+      }
       : {
-          name: "",
-          logo: undefined,
-          isActive: true, // Boolean Consistency
-        },
+        name: "",
+        logo: undefined,
+        isActive: true, // Boolean Consistency
+      },
   })
 
   const { handleSubmit, control, reset } = form
@@ -99,7 +100,7 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit, onFormError)} className="space-y-6 p-1">
-        
+
         {/* View Mode Header */}
         {isViewMode && (
           <div className="flex justify-end mb-4">
@@ -109,7 +110,7 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <div className="space-y-4">
             <TextField
               control={control}
@@ -119,7 +120,13 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
               required
               readOnly={isViewMode}
             />
-            
+            <ImageUploadField
+              control={control}
+              name="logo"
+              label="Brand Logo"
+              initialImage={initialData?.logo}
+              isViewMode={isViewMode}
+            />
             <div className="pt-2">
               <CheckboxField
                 control={control}
@@ -131,34 +138,18 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
               />
             </div>
           </div>
-
-          <div className="space-y-4">
-            <ImageUploadField
-              control={control}
-              name="logo"
-              label="Brand Logo"
-              initialImage={initialData?.logo}
-              isViewMode={isViewMode}
-            />
-          </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-6 border-t mt-6">
-          <Button variant="ghost" type="button" onClick={handleCancel} disabled={isPending}>
-            <X className="mr-2 h-4 w-4" /> {isViewMode ? "Close" : "Cancel"}
-          </Button>
-          
-          {!isViewMode && (
-            <Button type="submit" disabled={isPending} className="min-w-[140px] bg-slate-900">
-              {isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              {isEditMode ? "Update Brand" : "Create Brand"}
-            </Button>
-          )}
-        </div>
+        <FormFooter
+          isViewMode={isViewMode}
+          isEditMode={isEditMode}
+          isPending={isPending}
+          onCancel={() => onSuccess?.(initialData!)}
+          onEdit={() => setMode("edit")}
+          onReset={() => form.reset()}
+          saveLabel={isEditMode ? "Update Changes" : "Save Brand"}
+          className="pt-6 border-t mt-6"
+        />
       </form>
     </Form>
   )

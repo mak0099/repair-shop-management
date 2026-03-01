@@ -12,7 +12,7 @@ export const brandHandlers = [
   http.get("*/brands", ({ request }) => {
     const url = new URL(request.url)
     const search = url.searchParams.get("search") || ""
-    const status = url.searchParams.get("status") // 'active', 'inactive', 'all'
+    const status = url.searchParams.get("isActive") // 'active', 'inactive', 'all'
     const page = parseInt(url.searchParams.get("page") || "1", 10)
     const pageSize = parseInt(url.searchParams.get("pageSize") || "10", 10)
     const sort = url.searchParams.get("_sort")
@@ -28,7 +28,7 @@ export const brandHandlers = [
 
     // Filter by status (isActive)
     if (status && status !== "all") {
-      const isActive = status === "active"
+      const isActive = status === "true"
       filteredBrands = filteredBrands.filter((brand) => brand.isActive === isActive)
     }
 

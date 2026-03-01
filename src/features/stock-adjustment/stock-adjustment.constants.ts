@@ -1,6 +1,6 @@
 export const STOCK_ADJUSTMENT_TYPE_OPTIONS = [
-  { value: "IN", label: "Stock In (Addition)" },
-  { value: "OUT", label: "Stock Out (Reduction)" },
+  { value: "IN", label: "Stock In" },
+  { value: "OUT", label: "Stock Out" },
 ];
 
 export const STOCK_ADJUSTMENT_REASON_OPTIONS = [

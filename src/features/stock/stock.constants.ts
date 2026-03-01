@@ -2,7 +2,7 @@ import { FilterOption } from "@/components/ui/filter-combobox"
 
 
 export const STOCK_STATUS_FILTER_OPTIONS: FilterOption[] = [
-  { value: "ALL", label: "All Statuses" },
+  { value: "all", label: "All Status" },
   { value: "Ready for Sale", label: "Ready for Sale" },
   { value: "In Testing", label: "In Testing" },
   { value: "Pending", label: "Pending" },

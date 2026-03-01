@@ -16,13 +16,13 @@ export const supplierHandlers = [
     const search = url.searchParams.get("search")?.toLowerCase() || ""
     const sort = url.searchParams.get("_sort")
     const order = url.searchParams.get("_order")
-    const status = url.searchParams.get("status")
+    const status = url.searchParams.get("isActive")
 
     const filteredData = suppliers.filter((supplier) => {
       const searchMatch =
         supplier.company_name.toLowerCase().includes(search) ||
         (supplier.contact_person || "").toLowerCase().includes(search)
-      const statusMatch = !status || status === "all" || (supplier.isActive ? "active" : "inactive") === status
+      const statusMatch = !status || status === "all" || (supplier.isActive ? "true" : "false") === status
       return searchMatch && statusMatch
     })
 

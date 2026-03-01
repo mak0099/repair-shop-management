@@ -54,18 +54,9 @@ export function UserList() {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Role" />,
       },
       {
-        accessorKey: "branch_id",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Branch ID" />,
-      },
-      {
-        accessorKey: "isActive",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Active?" />,
-        cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
-      },
-      {
         accessorKey: "createdAt",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Date" />,
-        cell: ({ row }) => <DateCell date={row.original.createdAt} />,
+        cell: ({ row }) => <DateCell date={row.original.createdAt} isActive={row.original.isActive} />,
       },
       {
         id: "actions",
@@ -89,14 +80,9 @@ export function UserList() {
 
   const filterDefinitions = [
     {
-      key: "status",
-      title: "Status",
-      options: STATUS_OPTIONS,
-    },
-    {
-        key: "role",
-        title: "Role",
-        options: ROLE_OPTIONS,
+      key: "role",
+      title: "Role",
+      options: ROLE_OPTIONS,
     }
   ]
 
@@ -112,7 +98,7 @@ export function UserList() {
         useResourceQuery={useUsers}
         bulkDeleteMutation={bulkDeleteMutation}
         bulkStatusUpdateMutation={bulkStatusUpdateMutation}
-        initialFilters={INITIAL_FILTERS}
+        initialFilters={{ role: "all" }}
         searchPlaceholder="Search by name or email..."
         filterDefinitions={filterDefinitions}
       />

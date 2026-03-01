@@ -13,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { InvoiceSetup } from "../invoice-setup.schema";
 import { useUpdateInvoiceSetup } from "../invoice-setup.api"; // Removed useInvoiceSetup
-import { INVOICE_PAGE_SIZES } from "../invoice-setup.constants";
 
 interface InvoiceSetupFormProps {
   initialData: InvoiceSetup | null | undefined; // Added prop for initialData
@@ -31,7 +30,7 @@ export function InvoiceSetupForm({ initialData }: InvoiceSetupFormProps) {
       { id: initialData?.id || "current", data },
       {
         onSuccess: () => toast.success("Invoice settings updated"),
-        onError: (err: any) => toast.error(err.message),
+        onError: (err: Error) => toast.error(err.message),
       }
     );
   }

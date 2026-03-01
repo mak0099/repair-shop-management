@@ -92,7 +92,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                       aria-expanded={open}
                       disabled={isLoading || disabled}
                       className={cn(
-                        "flex w-full justify-between h-9 px-3 font-normal border-slate-200 shadow-sm transition-all hover:bg-slate-50 min-w-0",
+                        "flex flex-1 justify-between h-9 px-3 font-normal border-slate-200 shadow-sm transition-all hover:bg-slate-50 min-w-0",
                         onAdd && "rounded-r-none border-r-0",
                         !field.value && "text-muted-foreground"
                       )}

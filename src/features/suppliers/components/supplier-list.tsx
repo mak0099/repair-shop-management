@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { DateCell, StatusCell } from "@/components/shared/data-table-cells"
+import { DateCell, StatusCell, TitleCell } from "@/components/shared/data-table-cells"
 
 import {
   useSuppliers,
@@ -17,14 +17,6 @@ import {
 } from "../supplier.api"
 import { Supplier } from "../supplier.schema"
 import { useSupplierModal } from "../supplier-modal-context"
-import { STATUS_OPTIONS } from "../supplier.constants"
-
-const INITIAL_FILTERS = {
-  search: "",
-  page: 1,
-  pageSize: 10,
-  status: "active",
-}
 
 export function SupplierList() {
   const deleteSupplierMutation = useDeleteSupplier()
@@ -39,9 +31,11 @@ export function SupplierList() {
         accessorKey: "company_name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Company Name" />,
         cell: ({ row }) => (
-          <div className="font-medium cursor-pointer hover:underline" onClick={() => openModal({ initialData: row.original, isViewMode: true })}>
-            {row.getValue("company_name")}
-          </div>
+          <TitleCell
+            value={row.getValue("company_name")}
+            isActive={row.original.isActive}
+            onClick={() => openModal({ initialData: row.original, isViewMode: true })}
+          />
         ),
       },
       {
@@ -61,14 +55,9 @@ export function SupplierList() {
         header: ({ column }) => <DataTableColumnHeader column={column} title="City" />,
       },
       {
-        accessorKey: "isActive",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Active?" />,
-        cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
-      },
-      {
         accessorKey: "createdAt",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Date" />,
-        cell: ({ row }) => <DateCell date={row.original.createdAt} />,
+        cell: ({ row }) => <DateCell date={row.original.createdAt} isActive={row.original.isActive} />,
       },
       {
         id: "actions",
@@ -90,14 +79,6 @@ export function SupplierList() {
     [deleteSupplierMutation, updateSupplierMutation, openModal]
   )
 
-  const filterDefinitions = [
-    {
-      key: "status",
-      title: "Status",
-      options: STATUS_OPTIONS,
-    },
-  ]
-
   return (
     <>
       <ResourceListPage<Supplier, unknown>
@@ -110,9 +91,7 @@ export function SupplierList() {
         useResourceQuery={useSuppliers}
         bulkDeleteMutation={bulkDeleteMutation}
         bulkStatusUpdateMutation={bulkStatusUpdateMutation}
-        initialFilters={INITIAL_FILTERS}
         searchPlaceholder="Search by company name or contact..."
-        filterDefinitions={filterDefinitions}
       />
     </>
   )

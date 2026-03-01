@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { DateCell, StatusCell } from "@/components/shared/data-table-cells"
+import { DateCell, StatusCell, TitleCell } from "@/components/shared/data-table-cells"
 
 import {
   useCategories,
@@ -18,25 +18,6 @@ import {
 import { Category } from "../category.schema"
 import { useCategoryModal } from "../category-modal-context"
 
-/**
- * Filter Options: Standardized to use the 'isActive' boolean pattern.
- */
-const ACTIVE_STATUS_OPTIONS = [
-  { label: "Active Only", value: "true" },
-  { label: "Inactive Only", value: "false" },
-]
-
-const INITIAL_FILTERS = {
-  search: "",
-  page: 1,
-  pageSize: 10,
-  isActive: "all", // Changed from 'status' to 'isActive'
-}
-
-/**
- * Extended type for the list to include the joined 'parent' object 
- * that usually comes from the backend.
- */
 interface CategoryInList extends Category {
   parent?: Pick<Category, 'id' | 'name'>;
 }
@@ -54,12 +35,11 @@ export function CategoryList() {
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Category Name" />,
         cell: ({ row }) => (
-          <div 
-            className="font-medium cursor-pointer hover:underline text-blue-600" 
+          <TitleCell
+            value={row.getValue("name")}
+            isActive={row.original.isActive}
             onClick={() => openModal({ initialData: row.original, isViewMode: true })}
-          >
-            {row.getValue("name")}
-          </div>
+          />
         ),
       },
       {
@@ -78,11 +58,6 @@ export function CategoryList() {
           const category = row.original as CategoryInList;
           return category.parent?.name ?? "Main Category";
         },
-      },
-      {
-        accessorKey: "isActive",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Active?" />,
-        cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
       },
       {
         accessorKey: "createdAt",
@@ -120,15 +95,7 @@ export function CategoryList() {
       useResourceQuery={useCategories}
       bulkDeleteMutation={bulkDeleteMutation}
       bulkStatusUpdateMutation={bulkStatusUpdateMutation}
-      initialFilters={INITIAL_FILTERS}
       searchPlaceholder="Search category name..."
-      filterDefinitions={[
-        {
-          key: "isActive",
-          title: "Status",
-          options: ACTIVE_STATUS_OPTIONS,
-        },
-      ]}
     />
   )
 }

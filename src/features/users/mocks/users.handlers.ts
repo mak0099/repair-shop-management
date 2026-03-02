@@ -1,74 +1,71 @@
 import { delay, http, HttpResponse } from "msw"
-
 import { applySort } from "@/mocks/mock-utils"
 import { User, UserFormValues } from "../user.schema"
 import { mockUsers } from "./users.mock"
+import { mockRoles } from "@/features/roles/mocks/roles.mock"
 
 let users = [...mockUsers]
 
 export const userHandlers = [
-  // GET all users with pagination and search
+  // GET all users with advanced filtering
   http.get("*/users", async ({ request }) => {
     await delay(500)
     const url = new URL(request.url)
     const page = Number(url.searchParams.get("page") || "1")
     const pageSize = Number(url.searchParams.get("pageSize") || "10")
     const search = url.searchParams.get("search")?.toLowerCase() || ""
-    const sort = url.searchParams.get("_sort")
-    const order = url.searchParams.get("_order")
     const status = url.searchParams.get("isActive")
-    const role = url.searchParams.get("role")
+    const roleId = url.searchParams.get("roleId")
+    const branchId = url.searchParams.get("branchId")
+    const hasPermission = url.searchParams.get("hasPermission") // New Filter
 
     const filteredData = users.filter((user) => {
       const searchMatch =
         user.name.toLowerCase().includes(search) ||
         user.email.toLowerCase().includes(search)
+      
       const statusMatch = !status || status === "all" || (user.isActive ? "true" : "false") === status
-      const roleMatch = !role || role === "all" || user.role === role
-      return searchMatch && statusMatch && roleMatch
+      
+      // Role match now checks inside the roleIds array
+      const roleMatch = !roleId || roleId === "all" || user.roleIds.includes(roleId)
+      
+      const branchMatch = !branchId || branchId === "all" || user.branchId === branchId
+
+      /**
+       * Note: In a real app, permission check would involve looking up the 
+       * user's roles and combining with extraPermissions. 
+       * In mocks, we'll simulate this by roleId names for simplicity.
+       */
+      const permissionMatch = !hasPermission || 
+        user.extraPermissions.includes(hasPermission as any) ||
+        (hasPermission === "repair.perform" && user.roleIds.includes("role-technician"))
+
+      return searchMatch && statusMatch && roleMatch && branchMatch && permissionMatch
     })
 
+    const sort = url.searchParams.get("_sort")
+    const order = url.searchParams.get("_order")
     const sortedData = applySort(filteredData, sort, order)
 
     const total = sortedData.length
-    const totalPages = Math.ceil(total / pageSize)
-    const start = (page - 1) * pageSize
-    const end = start + pageSize
-    const paginatedData = sortedData.slice(start, end)
+    const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize)
+
+    // Enrich with role details
+    const enrichedData = paginatedData.map(user => ({
+      ...user,
+      roles: user.roleIds.map(id => mockRoles.find(r => r.id === id)).filter(Boolean)
+    }))
 
     return HttpResponse.json({
-      data: paginatedData,
-      meta: {
-        total,
-        page,
-        pageSize,
-        totalPages,
-      },
+      data: enrichedData,
+      meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
-  }),
-
-  // GET user options for dropdowns
-  http.get("*/users/options", async () => {
-    await delay(300)
-    const userOptions = users.map((u) => ({ id: u.id, name: u.name }))
-    return HttpResponse.json(userOptions)
-  }),
-
-  // GET a single user by ID
-  http.get("*/users/:id", ({ params }) => {
-    const { id } = params
-    const user = users.find((u) => u.id === id)
-    if (!user) {
-      return new HttpResponse(null, { status: 404 })
-    }
-    return HttpResponse.json(user)
   }),
 
   // POST a new user
   http.post("*/users", async ({ request }) => {
-    await delay(1000)
+    await delay(800)
     const data = (await request.json()) as UserFormValues
-    
     const { password, ...rest } = data;
 
     const newUser: User = {
@@ -76,6 +73,8 @@ export const userHandlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       ...rest,
+      isActive: rest.isActive ?? true,
+      extraPermissions: rest.extraPermissions ?? [],
     }
     users.unshift(newUser)
     return HttpResponse.json(newUser, { status: 201 })
@@ -83,7 +82,7 @@ export const userHandlers = [
 
   // PATCH a user
   http.patch("*/users/:id", async ({ params, request }) => {
-    await delay(1000)
+    await delay(800)
     const { id } = params
     const updates = (await request.json()) as Partial<UserFormValues>
 
@@ -91,17 +90,13 @@ export const userHandlers = [
     users = users.map((user) => {
       if (user.id === id) {
         const { password, ...rest } = updates;
-        updatedUser = { ...user, ...rest, updatedAt: new Date().toISOString() }
+        updatedUser = { ...user, ...rest, updatedAt: new Date().toISOString() } as User
         return updatedUser
       }
       return user
     })
 
-    if (!updatedUser) {
-      return new HttpResponse(null, { status: 404 })
-    }
-
-    return HttpResponse.json(updatedUser)
+    return updatedUser ? HttpResponse.json(updatedUser) : new HttpResponse(null, { status: 404 })
   }),
 
   // DELETE a user
@@ -109,28 +104,5 @@ export const userHandlers = [
     const { id } = params
     users = users.filter((u) => u.id !== id)
     return new HttpResponse(null, { status: 204 })
-  }),
-
-  // PATCH (bulk update) users
-  http.patch("*/users", async ({ request }) => {
-    await delay(1000)
-    const { ids, data } = (await request.json()) as { ids: string[]; data: Partial<Omit<User, "id">> }
-
-    users = users.map((user) => {
-      if (ids.includes(user.id)) {
-        return { ...user, ...data, updatedAt: new Date().toISOString() }
-      }
-      return user
-    })
-
-    return HttpResponse.json({ status: "ok" })
-  }),
-
-  // DELETE (bulk) users
-  http.delete("*/users", async ({ request }) => {
-    await delay(1000)
-    const { ids } = (await request.json()) as { ids: string[] }
-    users = users.filter((u) => !ids.includes(u.id))
-    return HttpResponse.json({ status: "ok" })
   }),
 ]

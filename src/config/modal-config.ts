@@ -14,6 +14,7 @@ import { AttributeForm } from "@/features/attributes"
 import { PermissionForm } from "@/features/permissions/components/permission-form"
 import { StockAdjustmentForm } from "@/features/stock-adjustment"
 import { BoxNumberForm } from "@/features/box-numbers"
+import { RoleForm } from "@/features/roles"
 
 // 1. Define a structure for each modal configuration
 interface ModalConfig {
@@ -54,6 +55,10 @@ const modalRegistry: readonly ModalConfig[] = [
   {
     type: "userForm",
     contentComponent: UserForm,
+  },
+  {
+    type: "roleForm",
+    contentComponent: RoleForm,
   },
   {
     type: "categoryForm",

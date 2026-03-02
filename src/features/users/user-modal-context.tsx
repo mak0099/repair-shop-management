@@ -5,7 +5,7 @@ import { User } from "./user.schema";
 const { ModalProvider, useModal } = createModalContext<User>({
   featureName: "User",
   formName: "userForm",
-  modalClassName: "max-w-lg",
+  modalClassName: "max-w-7xl max-h-[95vh] overflow-y-auto",
   addDescription: "Create a new system user.",
   editDescription: "Update user details.",
   viewDescription: "View user details.",

@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { CheckCircle, XCircle, ImageIcon } from "lucide-react"
 import { format, isValid } from "date-fns"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import { cn } from "@/lib/utils"
 
@@ -145,21 +146,33 @@ interface TitleCellProps {
   subtitle?: React.ReactNode
   isActive?: boolean
   onClick?: () => void
+  avatar?: string
+  fallback?: string
 }
 
-export function TitleCell({ value, subtitle, isActive = true, onClick }: TitleCellProps) {
+export function TitleCell({ value, subtitle, isActive = true, onClick, avatar, fallback }: TitleCellProps) {
   return (
-    <div>
-      <p
-        className={cn(
-          "font-medium cursor-pointer hover:underline",
-          isActive ? "text-primary" : "text-muted-foreground"
-        )}
-        onClick={onClick}
-      >{value}</p>
-      {subtitle && (
-        <div className="text-[10px] text-muted-foreground font-normal mt-0.5">{subtitle}</div>
+    <div className="flex items-center gap-3">
+      {(avatar || fallback) && (
+        <Avatar className="h-8 w-8 border">
+          <AvatarImage src={avatar} alt={value} />
+          <AvatarFallback className="bg-blue-50 text-blue-700 font-bold text-[10px]">
+            {fallback || value.substring(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
       )}
+      <div className="flex flex-col">
+        <p
+          className={cn(
+            "font-medium text-sm cursor-pointer hover:underline",
+            isActive ? "text-slate-800" : "text-muted-foreground"
+          )}
+          onClick={onClick}
+        >{value}</p>
+        {subtitle && (
+          <div className="text-[10px] text-muted-foreground font-normal mt-0.5">{subtitle}</div>
+        )}
+      </div>
     </div>
   )
 }

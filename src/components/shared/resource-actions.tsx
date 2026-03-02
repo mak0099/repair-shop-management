@@ -35,7 +35,7 @@ interface ResourceActionsProps<T extends { id: string }> {
   onEdit?: (resource: T) => void
   
   // Replaced 'any' with 'unknown' for results
-  deleteMutation: UseMutationResult<unknown, Error, string, unknown>
+  deleteMutation?: UseMutationResult<unknown, Error, string, unknown>
   
   // Replaced 'any' with UpdatePayload
   updateMutation?: UseMutationResult<unknown, Error, UpdatePayload, unknown>
@@ -54,7 +54,7 @@ export function ResourceActions<T extends { id: string }>({
   const [isDeleteOpen, setDeleteOpen] = useState(false)
   const [isStatusChangeOpen, setStatusChangeOpen] = useState(false)
 
-  const { mutate: deleteResource, isPending: isDeleting } = deleteMutation
+  const { mutate: deleteResource, isPending: isDeleting } = deleteMutation || {}
   const { mutate: updateResource, isPending: isUpdating } = updateMutation || {}
 
   const resourceAsRecord = resource as Record<string, unknown>;
@@ -63,6 +63,7 @@ export function ResourceActions<T extends { id: string }>({
   const newStatus = !currentIsActive;
 
   const handleDelete = () => {
+    if (!deleteResource) return
     deleteResource(resource.id, {
       onSuccess: () => {
         toast.success(`${resourceName} deleted successfully`)
@@ -100,6 +101,7 @@ export function ResourceActions<T extends { id: string }>({
   const canUpdateStatus = !!updateResource && hasActiveField
   const canView = !!onView
   const canEdit = !!onEdit || !!baseEditHref
+  const canDelete = !!deleteResource
 
   return (
     <>
@@ -159,13 +161,15 @@ export function ResourceActions<T extends { id: string }>({
 
             <DropdownMenuSeparator className="bg-slate-100" />
             
-            <DropdownMenuItem 
-              onClick={() => setDeleteOpen(true)} 
-              className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50"
-            >
-              <Trash className="mr-2 h-4 w-4 opacity-70" />
-              <span className="font-semibold">Delete</span>
-            </DropdownMenuItem>
+            {canDelete && (
+              <DropdownMenuItem 
+                onClick={() => setDeleteOpen(true)} 
+                className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50"
+              >
+                <Trash className="mr-2 h-4 w-4 opacity-70" />
+                <span className="font-semibold">Delete</span>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenuPortal>
       </DropdownMenu>

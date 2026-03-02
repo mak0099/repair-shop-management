@@ -2,9 +2,10 @@
 
 import * as React from "react"
 import { Control, FieldValues, Path, useController } from "react-hook-form"
-import { Check, ChevronsUpDown, Plus, Loader2, Search } from "lucide-react"
+import { Check, ChevronsUpDown, Plus, Loader2, Search, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -41,6 +42,7 @@ interface SelectFieldProps<TFieldValues extends FieldValues> {
   disabled?: boolean
   readOnly?: boolean
   className?: string
+  isMulti?: boolean
 }
 
 export function SelectField<TFieldValues extends FieldValues>({
@@ -57,12 +59,33 @@ export function SelectField<TFieldValues extends FieldValues>({
   disabled = false,
   readOnly = false,
   className,
+  isMulti = false,
 }: SelectFieldProps<TFieldValues>) {
   const [open, setOpen] = React.useState(false)
   
   // Find selected label for display
   const getSelectedLabel = (value: string) => {
     return options.find((opt) => opt.value === value)?.label || ""
+  }
+
+  const handleSelect = (optionValue: string, field: any) => {
+    if (isMulti) {
+      const currentValues = Array.isArray(field.value) ? field.value : []
+      const newValues = currentValues.includes(optionValue)
+        ? currentValues.filter((v: string) => v !== optionValue)
+        : [...currentValues, optionValue]
+      field.onChange(newValues)
+    } else {
+      field.onChange(optionValue)
+      setOpen(false)
+    }
+  }
+
+  const handleRemove = (optionValue: string, field: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isMulti && Array.isArray(field.value)) {
+      field.onChange(field.value.filter((v: string) => v !== optionValue))
+    }
   }
 
   return (
@@ -75,11 +98,22 @@ export function SelectField<TFieldValues extends FieldValues>({
 
           {readOnly ? (
             <FormControl>
-              <Input
-                readOnly
-                value={getSelectedLabel(field.value)}
-                className="h-9 bg-slate-50/50 border-slate-200 cursor-default focus-visible:ring-0"
-              />
+              <div className={cn(
+                "min-h-[2.25rem] py-2 px-3 w-full rounded-md border border-slate-200 bg-slate-50/50 text-sm cursor-default",
+                !field.value && "text-muted-foreground"
+              )}>
+                {isMulti && Array.isArray(field.value) && field.value.length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    {field.value.map((val: string) => (
+                      <Badge key={val} variant="outline" className="font-normal bg-white border-slate-300 text-slate-700">
+                        {getSelectedLabel(val) || val}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  field.value ? getSelectedLabel(field.value) : placeholder
+                )}
+              </div>
             </FormControl>
           ) : (
             <div className="flex items-center w-full">
@@ -92,13 +126,33 @@ export function SelectField<TFieldValues extends FieldValues>({
                       aria-expanded={open}
                       disabled={isLoading || disabled}
                       className={cn(
-                        "flex flex-1 justify-between h-9 px-3 font-normal border-slate-200 shadow-sm transition-all hover:bg-slate-50 min-w-0",
+                        "flex flex-1 justify-between min-h-[2.25rem] h-auto px-3 py-2 font-normal border-slate-200 shadow-sm transition-all hover:bg-slate-50 min-w-0",
                         onAdd && "rounded-r-none border-r-0",
-                        !field.value && "text-muted-foreground"
+                        (!field.value || (Array.isArray(field.value) && field.value.length === 0)) && "text-muted-foreground"
                       )}
                     >
-                      <span className="truncate flex-1 text-left w-0">
-                        {field.value ? getSelectedLabel(field.value) : placeholder}
+                      <span className="flex-1 text-left w-0">
+                        {isMulti && Array.isArray(field.value) && field.value.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {field.value.map((val: string) => (
+                              <Badge key={val} variant="secondary" className="rounded-sm px-1 font-normal bg-slate-100 text-slate-900 hover:bg-slate-200 border border-slate-200">
+                                {getSelectedLabel(val)}
+                                <span
+                                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer hover:bg-slate-300 p-0.5"
+                                  onMouseDown={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                  }}
+                                  onClick={(e) => handleRemove(val, field, e)}
+                                >
+                                  <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                                </span>
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="truncate block">{field.value ? getSelectedLabel(field.value) : placeholder}</span>
+                        )}
                       </span>
                       {isLoading ? (
                         <Loader2 className="h-3 w-3 shrink-0 ml-2 animate-spin opacity-50" />
@@ -127,17 +181,16 @@ export function SelectField<TFieldValues extends FieldValues>({
                           <CommandItem
                             key={option.value}
                             value={option.label}
-                            onSelect={() => {
-                              field.onChange(option.value)
-                              setOpen(false)
-                            }}
+                            onSelect={() => handleSelect(option.value, field)}
                             className="flex items-center justify-between py-2 cursor-pointer text-sm"
                           >
                             <span className="truncate">{option.label}</span>
                             <Check
                               className={cn(
                                 "h-4 w-4 text-primary",
-                                field.value === option.value ? "opacity-100" : "opacity-0"
+                                isMulti 
+                                  ? (Array.isArray(field.value) && field.value.includes(option.value) ? "opacity-100" : "opacity-0")
+                                  : (field.value === option.value ? "opacity-100" : "opacity-0")
                               )}
                             />
                           </CommandItem>

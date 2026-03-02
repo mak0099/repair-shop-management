@@ -19,6 +19,7 @@ import { StockAdjustmentModalProvider } from "@/features/stock-adjustment"
 import { SupplierModalProvider } from "@/features/suppliers/supplier-modal-context"
 import { UserModalProvider } from "@/features/users/user-modal-context"
 import { MSWProvider } from "@/providers/msw-provider"
+import { RoleModalProvider } from "@/features/roles"
 
 // Add all new global providers to this array.
 // The order matters if one provider depends on another.
@@ -42,6 +43,7 @@ const providers = [
   StockAdjustmentModalProvider,
   SupplierModalProvider,
   UserModalProvider,
+  RoleModalProvider,
 ]
 
 export function AppProviders({ children }: { children: React.ReactNode }) {

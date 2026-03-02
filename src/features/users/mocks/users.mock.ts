@@ -1,24 +1,25 @@
-import { User, UserFormValues } from "../user.schema"
+import { User } from "../user.schema"
 import { MOCK_USERS } from "@/features/auth/mocks/auth.mock"
 
-const userData: {name: string, email: string, role: UserFormValues['role'], branch_id: string}[] = [
-  { name: "Super Admin", email: "admin@example.com", role: "ADMIN", branch_id: "branch-100" },
-  { name: "Manager Milano", email: "manager.milano@example.com", role: "MANAGER", branch_id: "branch-100" },
-  { name: "Technician Mario", email: "mario.rossi@example.com", role: "TECHNICIAN", branch_id: "branch-100" },
-  { name: "Frontdesk Luigi", email: "luigi.verdi@example.com", role: "FRONTDESK", branch_id: "branch-100" },
-  { name: "Manager Roma", email: "manager.roma@example.com", role: "MANAGER", branch_id: "branch-101" },
+const userData = [
+  { name: "Super Admin", email: "admin@example.com", roleIds: ["role-admin", "role-manager"] },
+  { name: "Manager Milano", email: "manager.milano@example.com", roleIds: ["role-manager"] },
+  { name: "Technician Mario", email: "mario.rossi@example.com", roleIds: ["role-technician", "role-frontdesk"] },
+  { name: "Frontdesk Luigi", email: "luigi.verdi@example.com", roleIds: ["role-frontdesk"] },
+  { name: "Manager Roma", email: "manager.roma@example.com", roleIds: ["role-manager"] },
 ];
 
 const generateUsers = (count: number): User[] => {
   const users: User[] = [];
 
-  // Add auth users to ensure consistency
+  // Syncing with Auth users
   MOCK_USERS.forEach((u) => {
     users.push({
       id: u.id,
       name: u.name,
       email: u.email,
-      role: u.role as UserFormValues['role'],
+      roleIds: [u.role === 'ADMIN' ? 'role-admin' : 'role-manager'],
+      extraPermissions: [],
       isActive: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -32,7 +33,8 @@ const generateUsers = (count: number): User[] => {
       id: `user-${String(100 + i).padStart(3, '0')}`,
       name: isDuplicate ? `${userInfo.name} ${Math.floor(i / userData.length) + 1}` : userInfo.name,
       email: isDuplicate ? `user${i}@example.com` : userInfo.email,
-      role: userInfo.role,
+      roleIds: userInfo.roleIds,
+      extraPermissions: [],
       isActive: i % 10 !== 0,
       createdAt: new Date(Date.now() - (count - i) * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - (count - i) * 12 * 60 * 60 * 1000).toISOString(),

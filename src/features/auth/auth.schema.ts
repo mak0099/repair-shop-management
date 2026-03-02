@@ -1,4 +1,13 @@
 import { z } from "zod";
+import { PermissionType } from "@/constants/permissions"
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+  permissions: PermissionType[]
+}
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid corporate email address"),

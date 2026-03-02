@@ -15,5 +15,8 @@ export const authHandlers = [
     }
 
     return new HttpResponse(null, { status: 401, statusText: 'Invalid credentials' })
+  }),
+  http.post('*/auth/logout', async () => {
+    return new HttpResponse(null, { status: 200 })
   })
 ]

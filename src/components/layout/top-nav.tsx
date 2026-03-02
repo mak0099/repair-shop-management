@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { LucideIcon, GalleryVerticalEnd } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { data } from "@/components/layout/sidebar"
 import { useLayout } from "@/components/layout/layout-context"
@@ -16,16 +17,35 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
+import { NavUserMenuContent } from "@/components/layout/nav-user"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LayoutDashboard, LogOut } from "lucide-react"
+import { useSession } from "next-auth/react"
+
+interface NavItem {
+  title: string
+  url?: string
+  icon?: LucideIcon
+  items?: {
+    title: string
+    url?: string
+    items?: { title: string; url: string }[]
+  }[]
+}
 
 export function AppTopNav() {
   const pathname = usePathname()
   const { toggleLayout } = useLayout()
-  const { user, teams } = data
-  const { logo: Logo } = teams[0]
+  const { user: initialUser } = data
+  const Logo = GalleryVerticalEnd
+  const { data: session } = useSession()
 
-  const getIsActive = (item: any): boolean => {
+  const user = session?.user ? {
+    name: session.user.name ?? initialUser.name,
+    email: session.user.email ?? initialUser.email,
+    avatar: session.user.image ?? initialUser.avatar,
+  } : initialUser
+
+  const getIsActive = (item: NavItem): boolean => {
     if (item.url) {
       if (item.url === '/dashboard') {
         return pathname === '/dashboard';
@@ -35,7 +55,7 @@ export function AppTopNav() {
       }
     }
     if (item.items) {
-      return item.items.some(getIsActive);
+      return item.items.some((subItem) => getIsActive(subItem as NavItem));
     }
     return false;
   }
@@ -49,7 +69,7 @@ export function AppTopNav() {
               <Logo className="size-4" />
             </div>
             <span className="hidden font-bold sm:inline-block">
-              {teams[0].name}
+              TELEFIX
             </span>
           </Link>
           <nav className="flex items-center space-x-2 text-[11px] font-medium">
@@ -113,24 +133,7 @@ export function AppTopNav() {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user.email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={toggleLayout}>
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                Switch to Sidebar
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </DropdownMenuItem>
+              <NavUserMenuContent user={user} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

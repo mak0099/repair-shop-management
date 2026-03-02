@@ -1,13 +1,14 @@
 import { LoginForm } from "@/features/auth/components/login-form"
-import { AuthProvider } from "@/features/auth/auth-context"
-import { MSWProvider } from "@/providers/msw-provider"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-export default function LoginPage() {
-  return (
-    <MSWProvider>
-      <AuthProvider>
-        <LoginForm />
-      </AuthProvider>
-    </MSWProvider>
-  )
+export default async function LoginPage() {
+  const session = await getServerSession(authOptions)
+
+  if (session) {
+    redirect("/dashboard")
+  }
+
+  return <LoginForm />
 }

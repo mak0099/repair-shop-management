@@ -9,6 +9,7 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import {
   Avatar,
@@ -31,9 +32,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useLayout } from "@/components/layout/layout-context"
+import { signOut, useSession } from "next-auth/react"
 
 export function NavUser({
-  user,
+  user: initialUser,
 }: {
   user: {
     name: string
@@ -42,7 +44,13 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const { toggleLayout } = useLayout()
+  const { data: session } = useSession()
+
+  const user = session?.user ? {
+    name: session.user.name ?? initialUser.name,
+    email: session.user.email ?? initialUser.email,
+    avatar: session.user.image ?? initialUser.avatar,
+  } : initialUser
 
   return (
     <SidebarMenu>
@@ -70,52 +78,74 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">AU</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={toggleLayout}>
-                <LayoutDashboard />
-                Switch to Top Nav
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+            <NavUserMenuContent user={user} />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
+  )
+}
+
+export function NavUserMenuContent({
+  user,
+}: {
+  user: {
+    name: string
+    email: string
+    avatar: string
+  }
+}) {
+  const { toggleLayout, isTopNav } = useLayout()
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/login" })
+  }
+
+  return (
+    <>
+      <DropdownMenuLabel className="p-0 font-normal">
+        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+          <Avatar className="h-8 w-8 rounded-lg">
+            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarFallback className="rounded-lg">AU</AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">{user.name}</span>
+            <span className="truncate text-xs">{user.email}</span>
+          </div>
+        </div>
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      {/* <DropdownMenuGroup>
+        <DropdownMenuItem>
+          <Sparkles />
+          Upgrade to Pro
+        </DropdownMenuItem>
+      </DropdownMenuGroup> */}
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        {/* <DropdownMenuItem>
+          <BadgeCheck />
+          Account
+        </DropdownMenuItem> */}
+        {/* <DropdownMenuItem>
+          <CreditCard />
+          Billing
+        </DropdownMenuItem> */}
+        {/* <DropdownMenuItem>
+          <Bell />
+          Notifications
+        </DropdownMenuItem> */}
+        <DropdownMenuItem onClick={toggleLayout}>
+          <LayoutDashboard />
+          {isTopNav ? "Switch to Sidebar" : "Switch to Top Nav"}
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem onClick={handleLogout}>
+        <LogOut />
+        Log out
+      </DropdownMenuItem>
+    </>
   )
 }

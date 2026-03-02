@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { SessionProvider } from "next-auth/react"
 import { GlobalModalProvider } from "@/components/shared/global-modal-context"
 import QueryProvider from "./query-provider"
 import { AcceptanceModalProvider } from "@/features/acceptances/acceptance-modal-context"
@@ -17,11 +18,14 @@ import { PermissionModalProvider } from "@/features/permissions/permission-modal
 import { StockAdjustmentModalProvider } from "@/features/stock-adjustment"
 import { SupplierModalProvider } from "@/features/suppliers/supplier-modal-context"
 import { UserModalProvider } from "@/features/users/user-modal-context"
+import { MSWProvider } from "@/providers/msw-provider"
 
 // Add all new global providers to this array.
 // The order matters if one provider depends on another.
 
 const providers = [
+  MSWProvider,
+  SessionProvider,
   QueryProvider,
   GlobalModalProvider,
   AcceptanceModalProvider,

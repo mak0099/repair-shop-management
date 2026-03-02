@@ -1,19 +1,12 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode } from "react"
-import { PermissionType } from "@/constants/permissions"
-
-export interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-  permissions: PermissionType[] // এই সেই পারমিশন লিস্ট
-}
+import { createContext, useContext, useState, ReactNode, useEffect } from "react"
+import { User } from "./auth.schema"
 
 interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
+  isLoading: boolean
   login: (userData: User) => void
   logout: () => void
 }
@@ -22,12 +15,27 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const login = (userData: User) => setUser(userData)
-  const logout = () => setUser(null)
+  useEffect(() => {
+    const storedUser = localStorage.getItem("auth_user")
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+    setIsLoading(false)
+  }, [])
+
+  const login = (userData: User) => {
+    setUser(userData)
+    localStorage.setItem("auth_user", JSON.stringify(userData))
+  }
+  const logout = () => {
+    setUser(null)
+    localStorage.removeItem("auth_user")
+  }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

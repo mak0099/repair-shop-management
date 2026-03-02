@@ -9,15 +9,15 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Smartphone, Lock, Loader2 } from "lucide-react"
-import { useAuth } from "../auth-context"
-import { loginWithEmailAndPassword } from "../auth.api"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
+import { signIn } from "next-auth/react"
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
-  const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema) as unknown as Resolver<LoginFormValues>,
@@ -27,10 +27,18 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setIsLoading(true)
-      const user = await loginWithEmailAndPassword(data)
-      login(user)
-      toast.success("Welcome back!")
-      router.push("/dashboard")
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      })
+
+      if (result?.error) {
+        toast.error("Invalid email or password")
+      } else {
+        toast.success("Welcome back!")
+        router.push(callbackUrl)
+      }
     } catch (error) {
       toast.error("Invalid email or password")
     } finally {

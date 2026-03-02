@@ -1,4 +1,5 @@
 import { User, UserFormValues } from "../user.schema"
+import { MOCK_USERS } from "@/features/auth/mocks/auth.mock"
 
 const userData: {name: string, email: string, role: UserFormValues['role'], branch_id: string}[] = [
   { name: "Super Admin", email: "admin@example.com", role: "ADMIN", branch_id: "branch-100" },
@@ -10,6 +11,20 @@ const userData: {name: string, email: string, role: UserFormValues['role'], bran
 
 const generateUsers = (count: number): User[] => {
   const users: User[] = [];
+
+  // Add auth users to ensure consistency
+  MOCK_USERS.forEach((u) => {
+    users.push({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role as UserFormValues['role'],
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+  })
+
   for (let i = 0; i < count; i++) {
     const userInfo = userData[i % userData.length];
     const isDuplicate = i >= userData.length;
@@ -18,7 +33,6 @@ const generateUsers = (count: number): User[] => {
       name: isDuplicate ? `${userInfo.name} ${Math.floor(i / userData.length) + 1}` : userInfo.name,
       email: isDuplicate ? `user${i}@example.com` : userInfo.email,
       role: userInfo.role,
-      branch_id: userInfo.branch_id,
       isActive: i % 10 !== 0,
       createdAt: new Date(Date.now() - (count - i) * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - (count - i) * 12 * 60 * 60 * 1000).toISOString(),

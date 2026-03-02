@@ -1,8 +1,8 @@
-import { User } from "../auth-context"
+import { User } from "../auth.schema"
 
 export const MOCK_USERS: (User & { password: string })[] = [
   {
-    id: "1",
+    id: "user-001",
     name: "Admin User",
     email: "admin@shop.com",
     role: "ADMIN",
@@ -10,7 +10,7 @@ export const MOCK_USERS: (User & { password: string })[] = [
     password: "password123"
   },
   {
-    id: "2",
+    id: "user-002",
     name: "Manager User",
     email: "manager@shop.com",
     role: "MANAGER",

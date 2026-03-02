@@ -83,7 +83,7 @@ export function SelectField<TFieldValues extends FieldValues>({
             </FormControl>
           ) : (
             <div className="flex items-center w-full">
-              <Popover open={open} onOpenChange={setOpen}>
+              <Popover open={open} onOpenChange={setOpen} modal={true}>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button

@@ -63,13 +63,6 @@ export function ModelForm({
     toast.error("Please correct the highlighted fields.")
   }
 
-  const handleClose = () => {
-    if (onSuccess) {
-      // Just closing without passing data if cancelled
-      onSuccess(initialData || undefined)
-    }
-  }
-
   const onSubmit = (data: ModelFormValues) => {
     const handleMutationSuccess = (model: Model) => {
       toast.success(`Model ${isEditMode ? "updated" : "created"} successfully`)

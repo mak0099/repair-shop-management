@@ -1,5 +1,4 @@
-import { LoginFormValues } from "./auth.schema"
-import { User } from "./auth-context"
+import { LoginFormValues, User } from "./auth.schema"
 import { apiClient } from "@/lib/api-client"
 
 export const loginWithEmailAndPassword = async (data: LoginFormValues): Promise<User> => {

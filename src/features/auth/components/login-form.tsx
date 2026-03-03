@@ -39,7 +39,7 @@ export function LoginForm() {
         toast.success("Welcome back!")
         router.push(callbackUrl)
       }
-    } catch (error) {
+    } catch {
       toast.error("Invalid email or password")
     } finally {
       setIsLoading(false)

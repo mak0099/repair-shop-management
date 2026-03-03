@@ -2,6 +2,7 @@ import { delay, http, HttpResponse } from "msw";
 import { applySort } from "@/mocks/mock-utils";
 import { Role, RoleFormValues } from "../role.schema";
 import { mockRoles } from "./roles.mock";
+import { PermissionType } from "@/constants/permissions"; // Import needed for casting
 
 let roles = [...mockRoles];
 
@@ -32,7 +33,7 @@ export const roleHandlers = [
     });
   }),
 
-  // GET role options (for Select dropdowns in User Form)
+  // GET role options
   http.get("*/roles/options", async () => {
     await delay(200);
     const options = roles
@@ -41,7 +42,7 @@ export const roleHandlers = [
     return HttpResponse.json(options);
   }),
 
-  // GET a single role by ID
+  // GET a single role
   http.get("*/roles/:id", ({ params }) => {
     const { id } = params;
     const role = roles.find(r => r.id === id);
@@ -49,7 +50,7 @@ export const roleHandlers = [
     return HttpResponse.json(role);
   }),
 
-  // POST a new role
+  // POST a new role (FIXED TYPE ERROR)
   http.post("*/roles", async ({ request }) => {
     await delay(800);
     const data = (await request.json()) as RoleFormValues;
@@ -57,7 +58,9 @@ export const roleHandlers = [
     const newRole: Role = {
       id: `role-${Date.now()}`,
       ...data,
-      isSystem: false, // User created roles are never system roles
+      // Manual cast to satisfy the Role interface
+      permissions: data.permissions as PermissionType[], 
+      isSystem: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -66,7 +69,7 @@ export const roleHandlers = [
     return HttpResponse.json(newRole, { status: 201 });
   }),
 
-  // PATCH (Update) a role
+  // PATCH (Update) a role (FIXED TYPE ERROR)
   http.patch("*/roles/:id", async ({ params, request }) => {
     await delay(800);
     const { id } = params;
@@ -75,7 +78,12 @@ export const roleHandlers = [
     let updatedRole: Role | undefined;
     roles = roles.map((role) => {
       if (role.id === id) {
-        updatedRole = { ...role, ...updates, updatedAt: new Date().toISOString() };
+        // Using 'as Role' to bypass the string[] vs PermissionType[] conflict
+        updatedRole = { 
+          ...role, 
+          ...updates, 
+          updatedAt: new Date().toISOString() 
+        } as Role;
         return updatedRole;
       }
       return role;
@@ -85,7 +93,7 @@ export const roleHandlers = [
     return HttpResponse.json(updatedRole);
   }),
 
-  // DELETE a role (Prevent deleting system roles)
+  // DELETE a role
   http.delete("*/roles/:id", ({ params }) => {
     const { id } = params;
     const roleToDelete = roles.find(r => r.id === id);

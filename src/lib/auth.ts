@@ -13,15 +13,17 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
-        // এখানে আমরা সরাসরি মক ডাটা চেক করছি।
-        // রিয়েল ব্যাকএন্ড আসলে এখানে API কল হবে।
         const user = MOCK_USERS.find(
           (u) => u.email === credentials.email && u.password === credentials.password
         )
 
-        if (user) {
+        if (user && user.isActive) {
           const { password, ...userWithoutPassword } = user
-          return userWithoutPassword
+          // Ensure we return the object structure that matches our User interface
+          return {
+            ...userWithoutPassword,
+            id: user.id,
+          }
         }
 
         return null
@@ -34,16 +36,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
-        token.permissions = user.permissions
+        token.sub = user.id
+        token.roleIds = user.roleIds
+        token.extraPermissions = user.extraPermissions
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub as string
-        session.user.role = token.role
-        session.user.permissions = token.permissions
+        session.user.id = token.sub
+        session.user.roleIds = token.roleIds
+        session.user.extraPermissions = token.extraPermissions
       }
       return session
     }
@@ -51,5 +54,5 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET || "super-secret-secret", // .env ফাইলে NEXTAUTH_SECRET রাখবেন
+  secret: process.env.NEXTAUTH_SECRET || "super-secret-secret",
 }

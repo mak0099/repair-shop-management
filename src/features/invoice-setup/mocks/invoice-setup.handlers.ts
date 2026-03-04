@@ -28,7 +28,7 @@ export const invoiceSetupHandlers = [
       await delay(800);
 
       // Verify if the requested ID matches our mock configuration ID
-      if (params.id !== currentConfig.id) {
+      if (params.id !== "current" && params.id !== currentConfig.id) {
         return new HttpResponse(null, { status: 404 });
       }
 

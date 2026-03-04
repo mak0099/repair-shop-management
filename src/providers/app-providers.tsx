@@ -20,6 +20,10 @@ import { SupplierModalProvider } from "@/features/suppliers/supplier-modal-conte
 import { UserModalProvider } from "@/features/users/user-modal-context"
 import { MSWProvider } from "@/providers/msw-provider"
 import { RoleModalProvider } from "@/features/roles"
+import { SalesModalProvider } from "@/features/sales"
+import { QuotationModalProvider } from "@/features/quotations"
+import { ReturnModalProvider } from "@/features/returns"
+import { RegisterModalProvider } from "@/features/register"
 
 // Add all new global providers to this array.
 // The order matters if one provider depends on another.
@@ -44,6 +48,10 @@ const providers = [
   SupplierModalProvider,
   UserModalProvider,
   RoleModalProvider,
+  SalesModalProvider,
+  QuotationModalProvider,
+  ReturnModalProvider,
+  RegisterModalProvider
 ]
 
 export function AppProviders({ children }: { children: React.ReactNode }) {

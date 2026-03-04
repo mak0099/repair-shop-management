@@ -12,7 +12,6 @@ import { ResourceActions } from "@/components/shared/resource-actions"
 import { useItems, useDeleteItem, useDeleteManyItems, usePartialUpdateItem } from "../item.api"
 import { Item } from "../item.schema"
 import { useItemModal } from "../item-modal-context"
-import { STATUS_OPTIONS } from "../item.constants"
 
 /**
  * Strict type for Item to ensure ID existence during table actions.

@@ -1,0 +1,149 @@
+"use client"
+
+import { useForm, FormProvider } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { Wallet, Banknote, CreditCard, Landmark, AlertCircle } from "lucide-react"
+
+import { TextField } from "@/components/forms/text-field"
+import { TextareaField } from "@/components/forms/textarea-field"
+import { FormFooter } from "@/components/forms/form-footer"
+import { Form } from "@/components/ui/form"
+
+import { registerSchema, RegisterFormValues, RegisterLog } from "../register.schema"
+import { useCreateRegister, useUpdateRegister } from "../register.api"
+import { REGISTER_STATUS } from "../register.constants"
+
+interface RegisterFormProps {
+  initialData?: RegisterLog | null
+  onSuccess: () => void
+  isViewMode?: boolean
+}
+
+export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFormProps) {
+  const isClosing = initialData?.status === REGISTER_STATUS.OPEN && !isViewMode
+  const { mutate: createRegister, isPending: isCreating } = useCreateRegister()
+  const { mutate: updateRegister, isPending: isUpdating } = useUpdateRegister()
+
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      openedAt: initialData?.openedAt || new Date().toISOString(),
+      openedBy: initialData?.openedBy || "current-user",
+      openingBalance: initialData?.openingBalance || 0,
+      actualBalance: initialData?.actualBalance || 0,
+      notes: initialData?.notes || "",
+      status: initialData?.status || REGISTER_STATUS.OPEN,
+      totalCashSales: initialData?.totalCashSales || 0,
+      totalCardSales: initialData?.totalCardSales || 0,
+      totalDigitalSales: initialData?.totalDigitalSales || 0,
+    }
+  })
+
+  const onSubmit = (data: RegisterFormValues) => {
+    if (isClosing) {
+      // Close Register Logic
+      const finalData = { ...data, status: REGISTER_STATUS.CLOSED, closedAt: new Date().toISOString() }
+      // @ts-ignore
+      updateRegister({ id: initialData.id, data: finalData }, {
+        onSuccess: () => {
+          toast.success("Register closed and reconciled successfully")
+          onSuccess()
+        }
+      })
+    } else {
+      // Open Register Logic
+      createRegister(data, {
+        onSuccess: () => {
+          toast.success("Register opened for the new session")
+          onSuccess()
+        }
+      })
+    }
+  }
+
+  return (
+    <FormProvider {...form}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full bg-white">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            
+            {/* Summary Cards during Close/View */}
+            {(isClosing || isViewMode) && (
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                  <div className="flex items-center gap-2 text-emerald-600 mb-1">
+                    <Banknote className="h-4 w-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Cash Sales</span>
+                  </div>
+                  <p className="text-xl font-black text-slate-900">৳{form.watch("totalCashSales").toLocaleString()}</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                  <div className="flex items-center gap-2 text-blue-600 mb-1">
+                    <CreditCard className="h-4 w-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Card/Digital</span>
+                  </div>
+                  <p className="text-xl font-black text-slate-900">৳{(form.watch("totalCardSales") + form.watch("totalDigitalSales")).toLocaleString()}</p>
+                </div>
+                <div className="bg-slate-900 p-4 rounded-xl text-white">
+                  <div className="flex items-center gap-2 text-slate-400 mb-1">
+                    <Wallet className="h-4 w-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Expected Total</span>
+                  </div>
+                  <p className="text-xl font-black">৳{(form.watch("openingBalance") + form.watch("totalCashSales")).toLocaleString()}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <TextField 
+                name="openingBalance" 
+                control={form.control} 
+                label="Opening Cash (Drawer Start)" 
+                type="number" 
+                disabled={!!initialData}
+              />
+
+              {isClosing && (
+                <TextField 
+                  name="actualBalance" 
+                  control={form.control} 
+                  label="Actual Cash in Hand (Counted)" 
+                  type="number" 
+                  required
+                />
+              )}
+
+              <TextareaField 
+                name="notes" 
+                control={form.control} 
+                label="Session Notes" 
+                placeholder="Any cash shortages or observations..."
+                disabled={isViewMode}
+              />
+            </div>
+
+            {!initialData && (
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5" />
+                <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+                  Opening the register will allow you to start processing sales in the POS Terminal. Ensure the starting cash matches the physical drawer.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!isViewMode && (
+            <FormFooter 
+              isPending={isCreating || isUpdating} 
+              isEditMode={!!initialData} 
+              submitLabel={isClosing ? "Close Register & Reconcile" : "Open Register"}
+              onCancel={onSuccess} 
+              className="p-6 bg-slate-50 border-t"
+            />
+          )}
+        </form>
+      </Form>
+    </FormProvider>
+  )
+}

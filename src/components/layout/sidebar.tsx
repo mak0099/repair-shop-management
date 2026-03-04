@@ -63,8 +63,8 @@ export const data = {
         { title: "Current Stock", url: "/dashboard/inventory/stock" },
         { title: "Products & Items", url: "/dashboard/inventory/products" },
         { title: "Product Attributes", url: "/dashboard/inventory/attributes" },
-        { title: "Stock Adjustment", url: "/dashboard/inventory/stock-adjustment" }, 
-        { title: "Print Labels/Barcodes", url: "/dashboard/inventory/barcode" }, 
+        { title: "Stock Adjustment", url: "/dashboard/inventory/stock-adjustment" },
+        { title: "Print Labels/Barcodes", url: "/dashboard/inventory/barcode" },
         // { title: "Used Devices (Tracking)", url: "/dashboard/inventory/tracking" },
         { title: "Categories", url: "/dashboard/inventory/categories" },
         { title: "Brands", url: "/dashboard/inventory/brands" },
@@ -73,13 +73,30 @@ export const data = {
       ],
     },
     {
-      title: "Sales (POS)",
+      title: "Sales & POS",
       url: "/dashboard/sales",
       icon: ShoppingCart,
       items: [
-        { title: "New POS Sale", url: "/dashboard/sales/add" },
-        { title: "Sales History", url: "/dashboard/sales" },
-        { title: "Spare Parts Orders", url: "/dashboard/sales/parts" },
+        {
+          title: "POS Terminal",
+          url: "/dashboard/sales/pos"
+        },
+        {
+          title: "All Sales",
+          url: "/dashboard/sales"
+        },
+        {
+          title: "Quotations",
+          url: "/dashboard/sales/quotations"
+        },
+        {
+          title: "Returns",
+          url: "/dashboard/sales/returns"
+        },
+        {
+          title: "Register Log",
+          url: "/dashboard/sales/register"
+        },
       ],
     },
     {

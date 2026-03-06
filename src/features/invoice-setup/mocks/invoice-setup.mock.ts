@@ -1,4 +1,5 @@
 import { InvoiceSetup } from "../invoice-setup.schema";
+import { INVOICE_PAPER_SIZES } from "../invoice-setup.constants";
 
 /**
  * Updated mock data with Italian Terms and Conditions 
@@ -9,7 +10,7 @@ export const invoiceSetupMock: InvoiceSetup = {
   invoicePrefix: "AM",
   nextInvoiceNumber: 1001,
   dateFormat: "dd/MM/yyyy",
-  templateSize: "A4",
+  templateSize: INVOICE_PAPER_SIZES.A4,
   showLogo: true,
   showSignature: true,
 

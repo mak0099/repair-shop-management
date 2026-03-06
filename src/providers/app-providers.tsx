@@ -24,6 +24,8 @@ import { SalesModalProvider } from "@/features/sales"
 import { QuotationModalProvider } from "@/features/quotations"
 import { ReturnModalProvider } from "@/features/returns"
 import { RegisterModalProvider } from "@/features/register"
+import { PurchaseModalProvider } from "@/features/purchases"
+import { KhataModalProvider } from "@/features/khata"
 
 // Add all new global providers to this array.
 // The order matters if one provider depends on another.
@@ -51,7 +53,9 @@ const providers = [
   SalesModalProvider,
   QuotationModalProvider,
   ReturnModalProvider,
-  RegisterModalProvider
+  RegisterModalProvider,
+  PurchaseModalProvider,
+  KhataModalProvider
 ]
 
 export function AppProviders({ children }: { children: React.ReactNode }) {

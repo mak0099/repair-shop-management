@@ -20,8 +20,8 @@ export const supplierHandlers = [
 
     const filteredData = suppliers.filter((supplier) => {
       const searchMatch =
-        supplier.company_name.toLowerCase().includes(search) ||
-        (supplier.contact_person || "").toLowerCase().includes(search)
+        supplier.companyName.toLowerCase().includes(search) ||
+        (supplier.contactPerson || "").toLowerCase().includes(search)
       const statusMatch = !status || status === "all" || (supplier.isActive ? "true" : "false") === status
       return searchMatch && statusMatch
     })
@@ -43,6 +43,24 @@ export const supplierHandlers = [
         totalPages,
       },
     })
+  }),
+
+  // GET supplier options for dropdowns
+  http.get("*/suppliers/options", async ({ request }) => {
+    await delay(300)
+    const url = new URL(request.url)
+    const search = url.searchParams.get("search")?.toLowerCase() || ""
+
+    const filtered = suppliers.filter(
+      (s) => s.isActive && s.companyName.toLowerCase().includes(search)
+    )
+
+    const options = filtered.map((s) => ({
+      id: s.id,
+      name: s.companyName, // Standardize to 'name' for comboboxes
+    }))
+
+    return HttpResponse.json(options)
   }),
 
   // GET a single supplier by ID
@@ -120,23 +138,5 @@ export const supplierHandlers = [
     const { ids } = (await request.json()) as { ids: string[] }
     suppliers = suppliers.filter((s) => !ids.includes(s.id))
     return HttpResponse.json({ status: "ok" })
-  }),
-
-  // GET supplier options for dropdowns
-  http.get("*/suppliers/options", async ({ request }) => {
-    await delay(300)
-    const url = new URL(request.url)
-    const search = url.searchParams.get("search")?.toLowerCase() || ""
-
-    const filtered = suppliers.filter(
-      (s) => s.isActive && s.company_name.toLowerCase().includes(search)
-    )
-
-    const options = filtered.map((s) => ({
-      id: s.id,
-      name: s.company_name, // Standardize to 'name' for comboboxes
-    }))
-
-    return HttpResponse.json(options)
   }),
 ]

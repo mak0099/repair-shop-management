@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Control, FieldValues, Path, useController } from "react-hook-form"
-import { Check, ChevronsUpDown, Plus, Loader2, Search, X } from "lucide-react"
+import { Control, FieldValues, Path } from "react-hook-form"
+import { Check, ChevronsUpDown, Plus, Loader2, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -21,7 +21,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { FieldLabel } from "./field-label"
 
 /**

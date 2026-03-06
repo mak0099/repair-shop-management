@@ -100,13 +100,13 @@ export const data = {
       ],
     },
     {
-      title: "Finance & Accounts",
+      title: "Purchases & Expenses",
       url: "/dashboard/finance",
       icon: BarChart3,
       items: [
         { title: "Product Purchases", url: "/dashboard/finance/purchase" },
         { title: "General Expenses", url: "/dashboard/finance/expenses" },
-        { title: "Daily Khata (Entry)", url: "/dashboard/finance/khata" },
+        { title: "Daily Khata", url: "/dashboard/finance/khata" },
       ],
     },
     {
@@ -142,9 +142,9 @@ export const data = {
       ],
     },
   ],
-  projects: [
-    { name: "Activity Logs", url: "/dashboard/logs", icon: History },
-  ],
+  // projects: [
+  //   { name: "Activity Logs", url: "/dashboard/logs", icon: History },
+  // ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -169,7 +169,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

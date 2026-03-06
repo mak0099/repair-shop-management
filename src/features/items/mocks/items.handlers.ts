@@ -36,6 +36,12 @@ export const itemHandlers = [
     return HttpResponse.json({ data: paginatedData, meta: { total, page, pageSize, totalPages } })
   }),
 
+  // GET item options for dropdowns
+  http.get("*/items/options", () => {
+    const itemOptions = items.map((b) => ({ id: b.id, name: b.name }))
+    return HttpResponse.json(itemOptions)
+  }),
+
   http.post("*/items", async ({ request }) => {
     const data = (await request.json()) as Item
     const newItem = { ...data, id: `item_${Date.now()}`, createdAt: new Date().toISOString() }

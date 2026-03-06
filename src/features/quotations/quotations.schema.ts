@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { BaseEntity } from "@/types/common";
-import { saleItemSchema } from "../sales/sales.schema";
+import { itemSchema } from "../items";
 
 export const quotationSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
-  items: z.array(saleItemSchema).min(1, "At least one item is required"),
+  items: z.array(itemSchema).min(1, "At least one item is required"),
   
   // Financials
   subtotal: z.number(),

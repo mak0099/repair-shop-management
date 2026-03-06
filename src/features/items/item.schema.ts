@@ -9,7 +9,7 @@ const booleanSchema = z.union([z.boolean(), z.string()])
 
 export const itemSchema = z.object({
   id: z.string().optional(),
-  sku: z.string().optional(),
+  sku: z.string().min(1, "SKU is required"), // মাস্টার ট্র্যাকিংয়ের জন্য SKU এখন মাস্ট
   name: z.string().min(1, "Product name is required"),
   
   categoryId: z.string().min(1, "Category is required"),
@@ -18,8 +18,13 @@ export const itemSchema = z.object({
   supplierId: z.string().optional().nullable(),
   boxNumberId: z.string().optional().nullable(),
   
+  // --- MASTER INVENTORY FIELDS (New) ---
+  isSerialized: booleanSchema.default(false),
+  serialList: z.array(z.string()).default([]),
+  minStockLevel: z.coerce.number().min(0).default(2), 
+  
   deviceType: z.string().optional().nullable(),
-  imei: z.string().optional().nullable(),
+  
   color: z.string().optional().nullable(),
   ram: z.string().optional().nullable(),
   rom: z.string().optional().nullable(),
@@ -31,18 +36,18 @@ export const itemSchema = z.object({
 
   purchasePrice: z.coerce.number().min(0),
   salePrice: z.coerce.number().min(0),
-  initialStock: z.coerce.number().min(0),
+  initialStock: z.coerce.number().min(0).default(0),
   storageNote: z.string().optional().nullable(),
   
   condition: z.enum(["Used", "New"]),
-  // Using the booleanSchema to handle "true"/"false" strings without 'any'
+  
+  // Boolean Flags using the safe booleanSchema
   isBoxIncluded: booleanSchema,
   isChargerIncluded: booleanSchema,
   addToKhata: booleanSchema,
-  
-  isTouchScreen: z.boolean(),
-  isSolidDevice: z.boolean(),
-  isActive: z.boolean(),
+  isTouchScreen: booleanSchema.default(false),
+  isSolidDevice: booleanSchema.default(true),
+  isActive: booleanSchema.default(true),
 
   description: z.string().optional().nullable(),
   note: z.string().optional().nullable(),

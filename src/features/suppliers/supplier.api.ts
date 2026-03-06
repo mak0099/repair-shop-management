@@ -8,7 +8,7 @@ const supplierApiHooks = createApiHooksFor<Supplier, Partial<Supplier>>("supplie
 
 export interface SupplierOption {
   id: string
-  company_name: string
+  name: string
 }
 
 export const useSuppliers = supplierApiHooks.useGetList

@@ -17,6 +17,8 @@ import { BoxNumberForm } from "@/features/box-numbers"
 import { RoleForm } from "@/features/roles"
 import { ReturnForm } from "@/features/returns"
 import { RegisterForm } from "@/features/register"
+import { PurchaseForm } from "@/features/purchases"
+import { KhataForm } from "@/features/khata"
 
 // 1. Define a structure for each modal configuration
 interface ModalConfig {
@@ -97,6 +99,14 @@ const modalRegistry: readonly ModalConfig[] = [
   {
     type: "registerForm",
     contentComponent: RegisterForm,
+  },
+  {
+    type: "purchaseForm",
+    contentComponent: PurchaseForm,
+  },
+  {
+    type: "khataForm",
+    contentComponent: KhataForm,
   },
 ] as const // Using 'as const' for better type inference
 

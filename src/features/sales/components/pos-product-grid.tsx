@@ -17,7 +17,7 @@ export function POSProductGrid() {
   const { addItem } = usePOS()
 
   // Handle both array (direct) and paginated ({ data: [...] }) responses
-  const products = Array.isArray(rawData) ? rawData : (rawData?.data || [])
+  const products = Array.isArray(rawData) ? rawData : ((rawData as any)?.data || [])
 
   return (
     <div className="flex flex-col h-full bg-slate-50/20">

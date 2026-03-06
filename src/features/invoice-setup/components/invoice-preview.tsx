@@ -3,6 +3,7 @@
 import { useFormContext } from "react-hook-form";
 import { format } from "date-fns";
 import { InvoiceSetup } from "../invoice-setup.schema";
+import { INVOICE_PAPER_SIZES } from "../invoice-setup.constants";
 
 export function InvoicePreview() {
   const { watch } = useFormContext<InvoiceSetup>();
@@ -24,7 +25,7 @@ export function InvoicePreview() {
     <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm sticky top-6">
       <div className="bg-slate-50 px-4 py-2 border-b flex justify-between items-center">
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Live Preview</span>
-        <span className="text-[10px] font-bold text-slate-400">{values.templateSize || "A4"}</span>
+        <span className="text-[10px] font-bold text-slate-400">{values.templateSize || INVOICE_PAPER_SIZES.A4}</span>
       </div>
 
       <div className="p-8 space-y-6 text-xs">

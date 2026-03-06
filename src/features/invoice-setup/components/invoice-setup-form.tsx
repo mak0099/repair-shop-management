@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { InvoiceSetup } from "../invoice-setup.schema";
 import { useUpdateInvoiceSetup } from "../invoice-setup.api"; // Removed useInvoiceSetup
+import { INVOICE_PAPER_SIZE_OPTIONS } from "../invoice-setup.constants";
 
 interface InvoiceSetupFormProps {
   initialData: InvoiceSetup | null | undefined; // Added prop for initialData
@@ -42,12 +43,6 @@ export function InvoiceSetupForm({ initialData }: InvoiceSetupFormProps) {
     { label: "MM/DD/YYYY (12/31/2024)", value: "MM/dd/yyyy" },
     { label: "YYYY-MM-DD (2024-12-31)", value: "yyyy-MM-dd" },
     { label: "DD MMM YYYY (31 Dec 2024)", value: "dd MMM yyyy" },
-  ];
-
-  const paperSizeOptions = [
-    { label: "A4 (Standard)", value: "A4" },
-    { label: "A5 (Half Page)", value: "A5" },
-    { label: "Thermal (80mm POS)", value: "Thermal 80mm" },
   ];
 
   return (
@@ -83,7 +78,7 @@ export function InvoiceSetupForm({ initialData }: InvoiceSetupFormProps) {
                       name="templateSize" 
                       label="Paper Size" 
                       placeholder="Select size"
-                      options={paperSizeOptions}
+                      options={INVOICE_PAPER_SIZE_OPTIONS}
                     />
                   </div>
                   <div className="flex gap-6 pt-2">

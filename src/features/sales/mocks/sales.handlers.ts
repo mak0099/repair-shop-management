@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from "msw"
-import { mockPOSProducts } from "./products.mock"
+import { mockItems } from "@/features/items"
 import { mockSales } from "./sales.mock"
 import { Sale, SaleFormValues } from "../sales.schema"
 
@@ -9,7 +9,7 @@ export const salesHandlers = [
   // POS Search API
   http.get("*/pos/products", async () => {
     await delay(300);
-    return HttpResponse.json({ data: mockPOSProducts });
+    return HttpResponse.json({ data: mockItems });
   }),
 
   // Sales History API

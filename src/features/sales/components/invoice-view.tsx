@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useInvoiceSetup } from "@/features/invoice-setup/invoice-setup.api"
+import { INVOICE_PAPER_SIZES } from "@/features/invoice-setup/invoice-setup.constants"
 
 interface InvoiceViewProps {
   sale: Sale
@@ -29,8 +30,8 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
 
   const getPageSize = () => {
     switch (invoiceSetup?.templateSize) {
-      case "A5": return "A5";
-      case "Thermal 80mm": return "80mm auto";
+      case INVOICE_PAPER_SIZES.A5: return "A5";
+      case INVOICE_PAPER_SIZES.THERMAL_80: return "80mm auto";
       default: return "A4";
     }
   };

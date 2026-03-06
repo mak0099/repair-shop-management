@@ -197,7 +197,7 @@ export function AcceptanceForm({
                       name="urgentDate"
                       label="Deadline"
                       required
-                      disabled={(date) => isViewMode || date < new Date(new Date().setHours(0,0,0,0))}
+                      readOnly={isViewMode}
                     />
                   )}
                   <RadioGroupField 

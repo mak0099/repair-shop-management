@@ -3,9 +3,9 @@
 import { useMemo } from "react"
 import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
 
-import { SelectField } from "@/components/forms/select-field"
-import { useSupplierOptions } from "../supplier.api"
-import { useSupplierModal } from "../supplier-modal-context"
+import { SelectField } from "@/components/forms/select-field";
+import { useSupplierOptions } from "../supplier.api";
+import { useSupplierModal } from "../supplier-modal-context";
 
 interface SupplierSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
@@ -20,7 +20,7 @@ interface SupplierSelectFieldProps<TFieldValues extends FieldValues> {
 export function SupplierSelectField<TFieldValues extends FieldValues>({
   name,
   control,
-  label = "Supplier",
+  label = "Supplier Name",
   placeholder = "Select Supplier",
   required = false,
   disabled = false,
@@ -34,7 +34,7 @@ export function SupplierSelectField<TFieldValues extends FieldValues>({
     const suppliers = supplierOptionsData || []
     return suppliers.map((s) => ({
       value: s.id,
-      label: s.company_name,
+      label: s.name,
     }))
   }, [supplierOptionsData])
 
@@ -55,7 +55,7 @@ export function SupplierSelectField<TFieldValues extends FieldValues>({
         name={name}
         label={label}
         placeholder={placeholder}
-        searchPlaceholder="Search suppliers..."
+        searchPlaceholder="Search by name or mobile..."
         noResultsMessage="No supplier found."
         options={supplierOptions}
         onAdd={handleAddSupplier}

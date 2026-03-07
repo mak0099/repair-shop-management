@@ -5,6 +5,7 @@ import { useForm, FormProvider } from "react-hook-form"
 import { Receipt, Trash2, Plus, Minus, Smartphone, X } from "lucide-react"
 
 import { usePOS } from "../pos-context"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { POSCheckoutModal } from "./pos-checkout-modal"
 import { CustomerSelectField } from "@/features/customers"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -15,6 +16,8 @@ import { Input } from "@/components/ui/input"
 
 export function POSCartPanel() {
   const { cart, totals, updateQuantity, removeItem, clearCart, selectedCustomerId, setCustomerId, updateItemIMEI, updatePrice } = usePOS()
+  const { data: shopProfile } = useShopProfile()
+  const currency = shopProfile?.currency || "BDT"
 
   const form = useForm({ defaultValues: { customerId: selectedCustomerId || "" } })
   const { control, watch, reset } = form
@@ -144,7 +147,7 @@ export function POSCartPanel() {
                         />
                     </div>
                     <div className="text-xs font-black text-slate-900">
-                        Total: €{(item.price * item.quantity).toLocaleString()}
+                        Total: {currency} {(item.price * item.quantity).toLocaleString()}
                     </div>
                   </div>
 
@@ -160,15 +163,15 @@ export function POSCartPanel() {
         <div className="space-y-1">
           <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
             <span>Subtotal</span>
-            <span>€{totals.subtotal.toLocaleString()}</span>
+            <span>{currency} {totals.subtotal.toLocaleString()}</span>
           </div>
           <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
             <span>Tax (VAT)</span>
-            <span>€{totals.tax.toLocaleString()}</span>
+            <span>{currency} {totals.tax.toLocaleString()}</span>
           </div>
           <div className="flex justify-between items-center pt-2 border-t border-slate-200 mt-2">
             <span className="text-xs font-black text-slate-700 uppercase">Total Payable</span>
-            <span className="text-xl font-black text-blue-600">€{totals.grandTotal.toLocaleString()}</span>
+            <span className="text-xl font-black text-blue-600">{currency} {totals.grandTotal.toLocaleString()}</span>
           </div>
         </div>
         

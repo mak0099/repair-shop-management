@@ -33,6 +33,9 @@ interface ItemFormProps {
   isViewMode?: boolean
 }
 
+// Helper to generate a temporary SKU for new items
+const generateSKU = () => `SKU-${Math.floor(100000 + Math.random() * 900000)}`
+
 export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode = false }: ItemFormProps) {
   const { mutate: createItem, isPending: isCreating } = useCreateItem()
   const { mutate: updateItem, isPending: isUpdating } = useUpdateItem()
@@ -77,7 +80,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
       brandId: "",
       modelId: "",
       deviceType: "",
-      sku: "",
+      sku: generateSKU(), // Auto-generate SKU to satisfy validation
       imei: "",
       processor: "",
       batteryHealth: "",

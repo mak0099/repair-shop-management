@@ -7,17 +7,19 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useInvoiceSetup } from "@/features/invoice-setup/invoice-setup.api"
 import { INVOICE_PAPER_SIZES } from "@/features/invoice-setup/invoice-setup.constants"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
 interface InvoiceViewProps {
   sale: Sale
 }
 
 export function InvoiceView({ sale }: InvoiceViewProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(amount);
-  };
-
   const { data: invoiceSetup } = useInvoiceSetup();
+  const { data: shopProfile } = useShopProfile();
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('it-IT', { style: 'currency', currency: shopProfile?.currency || 'EUR' }).format(amount);
+  };
 
   const formatDate = (date: Date) => {
     if (!invoiceSetup?.dateFormat) return new Date(date).toLocaleDateString('it-IT');
@@ -65,9 +67,9 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
                   SHOP LOGO
                 </div>
               )}
-              <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">{invoiceSetup?.shopName || "NOME OFFICINA"}</h1>
-              <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopAddress || "Indirizzo, Città, CAP"}</p>
-              <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopContact || "Contatto (Tel/Email)"}</p>
+              <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">{invoiceSetup?.shopName || shopProfile?.name || "NOME OFFICINA"}</h1>
+              <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopAddress || shopProfile?.address || "Indirizzo, Città, CAP"}</p>
+              <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopContact || [shopProfile?.phone, shopProfile?.email].filter(Boolean).join(" • ") || "Contatto (Tel/Email)"}</p>
             </div>
             <div className="text-right">
               <h2 className="text-lg font-black text-slate-400 uppercase tracking-widest">{invoiceSetup?.invoiceTitle || "RICEVUTA"}</h2>

@@ -5,6 +5,7 @@ import Image from "next/image"
 import { CheckCircle, XCircle, ImageIcon } from "lucide-react"
 import { format, isValid } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
 import { cn } from "@/lib/utils"
 
@@ -39,6 +40,9 @@ export function DateCell({
   includeTime = false,
   isActive = true
 }: DateCellProps) {
+  const { data: shopProfile } = useShopProfile()
+  const dateFormat = shopProfile?.dateFormat || "dd MMM yyyy"
+
   if (!date) {
     return <span className="text-muted-foreground italic text-xs">{placeholder}</span>
   }
@@ -54,7 +58,7 @@ export function DateCell({
       "text-sm font-medium",
       isActive ? "text-foreground" : "text-muted-foreground"
     )}>
-      {format(dateObj, includeTime ? "dd MMM yyyy, p" : "dd MMM yyyy")}
+      {format(dateObj, includeTime ? `${dateFormat}, p` : dateFormat)}
     </span>
   )
 }
@@ -178,7 +182,7 @@ export function TitleCell({ value, subtitle, isActive = true, onClick, avatar, f
 }
 
 // --- CurrencyCell ---
-interface CurrencyCellProps {
+export interface CurrencyCellProps {
   amount: number | string | undefined | null
   currencyCode?: string
   locale?: string
@@ -188,11 +192,13 @@ interface CurrencyCellProps {
 
 export function CurrencyCell({
   amount,
-  currencyCode = "EUR",
+  currencyCode,
   locale = "it-IT",
   className,
   subtitle,
 }: CurrencyCellProps) {
+  const { data: shopProfile } = useShopProfile()
+  const currency = currencyCode || shopProfile?.currency || "EUR"
   const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
 
   if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
@@ -201,7 +207,7 @@ export function CurrencyCell({
 
   const formatted = new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: currencyCode,
+    currency: currency,
   }).format(numericAmount)
 
   return (
@@ -212,4 +218,23 @@ export function CurrencyCell({
       )}
     </div>
   )
+}
+
+export function CurrencyText({
+  amount,
+  currencyCode,
+  locale = "it-IT",
+}: Pick<CurrencyCellProps, "amount" | "currencyCode" | "locale">) {
+  const { data: shopProfile } = useShopProfile()
+  const currency = currencyCode || shopProfile?.currency || "EUR"
+  const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
+
+  if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
+    return <>-</>
+  }
+
+  return <>{new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(numericAmount)}</>
 }

@@ -14,7 +14,7 @@ import { FormFooter } from "@/components/forms/form-footer";
 
 import { shopProfileSchema, ShopProfile } from "../shop-profile.schema";
 import { useCreateShopProfile, useUpdateShopProfile } from "../shop-profile.api";
-import { CURRENCY_OPTIONS } from "../shop-profile.constants";
+import { CURRENCY_OPTIONS, DATE_FORMAT_OPTIONS } from "../shop-profile.constants";
 
 interface ShopProfileFormProps {
   initialData?: ShopProfile | null;
@@ -42,8 +42,13 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
       address: "",
       binNumber: "",
       currency: "BDT", 
+      dateFormat: "dd MMM yyyy",
       invoiceFooterMessage: "",
       logoUrl: "",
+      taxRate: 0,
+      bankAccountInfo: "",
+      returnPolicy: "",
+      termsAndConditions: "",
       website: "",
     },
   });
@@ -99,6 +104,29 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
               searchPlaceholder="Search currency..."
               noResultsMessage="No currency found."
             />
+            <SelectField
+              control={form.control}
+              name="dateFormat"
+              label="Date Format"
+              options={DATE_FORMAT_OPTIONS}
+              required
+            />
+            <TextField 
+                control={form.control} 
+                name="taxRate" 
+                label="Default Tax Rate (%)" 
+                type="number" 
+                placeholder="0" 
+            />
+            <div className="md:col-span-2">
+              <TextareaField
+                control={form.control}
+                name="bankAccountInfo"
+                label="Bank Account Details"
+                placeholder="Bank Name: ...&#10;Account No: ...&#10;IBAN: ..."
+                rows={3}
+              />
+            </div>
             <div className="md:col-span-2">
               <TextareaField
                 control={form.control}
@@ -107,6 +135,28 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
                 placeholder="Ex: Goods once sold are not returnable."
               />
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm border-slate-200">
+          <CardHeader className="border-b bg-slate-50/50">
+            <CardTitle className="text-lg font-semibold text-slate-800">Policies & Terms</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-5 pt-6">
+             <TextareaField 
+                control={form.control} 
+                name="termsAndConditions" 
+                label="General Terms & Conditions (Quotations)" 
+                placeholder="Terms for estimates and quotations..." 
+                rows={4}
+             />
+             <TextareaField 
+                control={form.control} 
+                name="returnPolicy" 
+                label="Return Policy (Receipts)" 
+                placeholder="Policy for returns and refunds..." 
+                rows={4}
+             />
           </CardContent>
         </Card>
 

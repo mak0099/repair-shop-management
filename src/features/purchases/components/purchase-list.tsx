@@ -14,7 +14,7 @@ import { usePurchases, useDeletePurchase, useDeleteManyPurchases } from "../purc
 import { ProductPurchase } from "../purchases.schema"
 import { usePurchaseModal } from "../purchase-modal-context"
 import { PURCHASE_PAYMENT_STATUS } from "../purchases.constants"
-import { PurchaseInvoiceDialog } from "./purchase-invoice-dialog"
+import { PurchaseInvoiceView } from "./purchase-invoice-view"
 
 export function PurchaseList() {
     const { openModal } = usePurchaseModal()

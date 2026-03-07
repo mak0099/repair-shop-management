@@ -1,6 +1,7 @@
 import { delay, http, HttpResponse } from "msw"
 import { mockReturns } from "./returns.mock"
 import { SaleReturn, ReturnFormValues } from "../returns.schema"
+import { mockCustomers } from "@/features/customers/mocks/customers.mock"
 
 // Local state for our mock returns history
 let returnsHistory = [...mockReturns];
@@ -11,8 +12,18 @@ export const returnsHandlers = [
    */
   http.get("*/returns", async () => {
     await delay(500);
+    
+    // Enrich with customerName
+    const enrichedReturns = returnsHistory.map(r => {
+      const customer = mockCustomers.find(c => c.id === r.customerId);
+      return {
+        ...r,
+        customerName: customer?.name || "Unknown Customer"
+      };
+    });
+
     return HttpResponse.json({
-      data: returnsHistory,
+      data: enrichedReturns,
       meta: { total: returnsHistory.length }
     });
   }),
@@ -29,7 +40,12 @@ export const returnsHandlers = [
       return new HttpResponse(null, { status: 404 });
     }
     
-    return HttpResponse.json(item);
+    const customer = mockCustomers.find(c => c.id === item.customerId);
+    
+    return HttpResponse.json({
+        ...item,
+        customerName: customer?.name || "Unknown Customer"
+    });
   }),
 
   /**
@@ -39,6 +55,8 @@ export const returnsHandlers = [
     await delay(800);
     const data = (await request.json()) as ReturnFormValues;
     
+    const customer = mockCustomers.find(c => c.id === data.customerId);
+    
     // Construct the full return object with server-side fields
     const newReturn: SaleReturn = {
       ...data,
@@ -47,6 +65,7 @@ export const returnsHandlers = [
       processedBy: "staff-001",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      customerName: customer?.name || "Unknown Customer"
     };
     
     returnsHistory.unshift(newReturn);

@@ -1,6 +1,6 @@
 export * from "./components/purchase-list";
 export * from "./components/purchase-form";
-export * from "./components/purchase-invoice-dialog";
+export * from "./components/purchase-invoice-view";
 export * from "./purchase-modal-context";
 export * from "./purchases.api";
 export * from "./purchases.schema";

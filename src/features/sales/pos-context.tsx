@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useMemo, useCallback } from
 import { SaleItem } from "./sales.schema"
 import { DEFAULT_TAX_RATE } from "./sales.constants"
 import { Item } from "@/features/items/item.schema"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
 /**
  * ১. POS কার্ট আইটেম ইন্টারফেস
@@ -40,6 +41,8 @@ const POSContext = createContext<POSContextType | undefined>(undefined)
 export function POSProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<POSCartItem[]>([])
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
+  const { data: shopProfile } = useShopProfile()
+  const taxRate = shopProfile?.taxRate !== undefined ? shopProfile.taxRate / 100 : DEFAULT_TAX_RATE
 
   // Wrapper to ensure empty string becomes null for strict validation
   const setCustomerId = useCallback((id: string | null) => {
@@ -144,11 +147,11 @@ export function POSProvider({ children }: { children: React.ReactNode }) {
   const totals = useMemo(() => {
     const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
     const discount = cart.reduce((sum, item) => sum + (item.discount || 0), 0);
-    const tax = subtotal * DEFAULT_TAX_RATE;
+    const tax = subtotal * taxRate;
     const grandTotal = subtotal + tax - discount;
 
     return { subtotal, tax, discount, grandTotal };
-  }, [cart]);
+  }, [cart, taxRate]);
 
   const value = useMemo(() => ({
     cart,

@@ -24,6 +24,7 @@ import { returnsHandlers } from "@/features/returns";
 import { registerHandlers } from "@/features/register";
 import { purchaseHandlers } from "@/features/purchases";
 import { khataHandlers } from "@/features/khata";
+import { profileHandlers } from "@/features/profile";
 
 export const handlers = [
   ...authHandlers,
@@ -50,5 +51,6 @@ export const handlers = [
   ...returnsHandlers,
   ...registerHandlers,
   ...purchaseHandlers,
-  ...khataHandlers
+  ...khataHandlers,
+  ...profileHandlers
 ]

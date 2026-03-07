@@ -96,6 +96,7 @@ export function NavUserMenuContent({
   }
 }) {
   const { toggleLayout, isTopNav } = useLayout()
+  const router = useRouter()
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/login" })
@@ -104,7 +105,10 @@ export function NavUserMenuContent({
   return (
     <>
       <DropdownMenuLabel className="p-0 font-normal">
-        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+        <div 
+          className="flex items-center gap-2 px-1 py-1.5 text-left text-sm cursor-pointer hover:bg-slate-100 rounded-md transition-colors"
+          onClick={() => router.push("/dashboard/settings/profile")}
+        >
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src={user.avatar} alt={user.name} />
             <AvatarFallback className="rounded-lg">AU</AvatarFallback>

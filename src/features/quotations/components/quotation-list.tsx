@@ -30,7 +30,7 @@ export function QuotationList() {
           onClick={() => openModal({ initialData: row.original, isViewMode: true })}
           subtitle={
             <span className="font-bold text-slate-500 uppercase tracking-tighter">
-              {row.original.customerId || "Unknown Customer"}
+              {row.original.customerName || row.original.customerId || "Unknown Customer"}
             </span>
           }
         />

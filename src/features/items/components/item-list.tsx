@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import { DateCell, TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
+import { DateCell, TitleCell, CurrencyCell, CurrencyText } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
 
 import { useItems, useDeleteItem, useDeleteManyItems, usePartialUpdateItem } from "../item.api"
@@ -64,7 +64,7 @@ export function ItemList() {
       cell: ({ row }) => (
         <CurrencyCell
           amount={row.original.salePrice}
-          subtitle={`Cost: ${new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(row.original.purchasePrice)}`}
+          subtitle={<>Cost: <CurrencyText amount={row.original.purchasePrice} /></>}
         />
       )
     },

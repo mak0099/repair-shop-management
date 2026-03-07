@@ -9,6 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { usePOS } from "../pos-context"
 import { usePOSItems } from "../sales.api"
 import { useCategoryOptions } from "@/features/categories/category.api"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { cn } from "@/lib/utils"
 
 export function POSProductGrid() {
@@ -19,6 +20,8 @@ export function POSProductGrid() {
   const { data: rawData, isLoading: isProductsLoading } = usePOSItems(search, categoryId)
   const { data: categoriesData, isLoading: isCategoriesLoading } = useCategoryOptions()
   const { addItem } = usePOS()
+  const { data: shopProfile } = useShopProfile()
+  const currency = shopProfile?.currency || "BDT"
 
   const products = Array.isArray(rawData) ? rawData : ((rawData as any)?.data || [])
   const categories = categoriesData || []
@@ -188,7 +191,7 @@ export function POSProductGrid() {
                   viewType === "grid" ? "justify-between mt-auto pt-3 border-t border-slate-50" : "gap-6 pl-4"
                 )}>
                   <span className="text-sm font-black text-slate-900">
-                    €{Number(product.salePrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    {currency} {Number(product.salePrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </span>
                   
                   <Badge 

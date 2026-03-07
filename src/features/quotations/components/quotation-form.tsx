@@ -18,12 +18,16 @@ import { ItemSelectField } from "@/features/items"
 import { quotationSchema, QuotationFormValues, Quotation } from "../quotations.schema"
 import { useCreateQuotation, useUpdateQuotation, fetchItemDetailsForQuotation } from "../quotations.api"
 import { DEFAULT_TAX_RATE } from "../../sales/sales.constants"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { cn } from "@/lib/utils"
 
-export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialData?: Quotation | null, onSuccess: () => void, isViewMode?: boolean }) {
+export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialData?: Quotation | null, onSuccess: (data?: Quotation) => void, isViewMode?: boolean }) {
   const { mutate: createQuote, isPending: isCreating } = useCreateQuotation()
   const { mutate: updateQuote, isPending: isUpdating } = useUpdateQuotation()
   const [isFetchingItem, setIsFetchingItem] = useState(false)
+  const { data: shopProfile } = useShopProfile()
+  const currency = shopProfile?.currency || "BDT"
+  const taxRate = shopProfile?.taxRate !== undefined ? shopProfile.taxRate / 100 : DEFAULT_TAX_RATE
 
   const form = useForm<QuotationFormValues>({
     resolver: zodResolver(quotationSchema),
@@ -63,7 +67,7 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
       })
 
       setValue("tempItemId", "")
-      toast.success(`${details.name} added`)
+      // toast.success(`${details.name} added`)
     } catch (error) {
       toast.error("Failed to fetch item details")
     } finally {
@@ -77,33 +81,40 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
 
   useEffect(() => {
     // প্রতিটি আইটেমের প্রাইস এবং কোয়ান্টিটি রিয়েল টাইমে ক্যালকুলেট করা
-    const subtotal = watchedItems.reduce((acc, item) => {
+    const subtotal = watchedItems.reduce((acc, item, index) => {
         const p = parseFloat(String(item.price)) || 0;
         let q = parseInt(String(item.quantity)) || 0;
         
         // নেগেটিভ কোয়ান্টিটি আটকানোর জন্য লজিক
         if (q < 0) q = 0; 
         
-        return acc + (p * q);
+        const itemSubtotal = p * q;
+
+        // প্রতিটি আইটেমের সাবটোটাল আপডেট করা
+        if (item.subtotal !== itemSubtotal) {
+          setValue(`items.${index}.subtotal`, itemSubtotal, { shouldValidate: false });
+        }
+        
+        return acc + itemSubtotal;
     }, 0)
     
-    const tax = subtotal * DEFAULT_TAX_RATE
+    const tax = subtotal * taxRate
     const discount = parseFloat(String(totalDiscount)) || 0
     const grandTotal = Math.max(0, subtotal + tax - discount)
 
     // ফর্মের ভ্যালুগুলো আপডেট করা যা হেডার এবং ফুটারে রিফ্লেক্ট করবে
-    setValue("subtotal", subtotal, { shouldValidate: true })
-    setValue("totalTax", tax, { shouldValidate: true })
-    setValue("grandTotal", grandTotal, { shouldValidate: true })
+    setValue("subtotal", subtotal, { shouldValidate: false })
+    setValue("totalTax", tax, { shouldValidate: false })
+    setValue("grandTotal", grandTotal, { shouldValidate: false })
     
-  }, [watchedItems, totalDiscount, setValue])
+  }, [watchedItems, totalDiscount, setValue, taxRate])
 
   // ৩. সেভ/আপডেট লজিক
   const onSubmit = (data: QuotationFormValues) => {
     const callbacks = {
-        onSuccess: () => {
+        onSuccess: (response: any) => {
           toast.success(`Quotation ${initialData ? "updated" : "created"} successfully`)
-          onSuccess()
+          onSuccess(response)
         },
         onError: (err: any) => toast.error(err?.message || "Operation failed")
     }
@@ -136,13 +147,13 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
               </div>
               
               {/* Dynamic Header Total: watch("grandTotal") এর মাধ্যমে আপডেট হবে */}
-              <div className="bg-blue-600 p-6 rounded-2xl border border-blue-500 flex flex-col items-center justify-center shadow-lg shadow-blue-200 text-white h-full min-h-[120px]">
-                <div className="flex items-center gap-2 opacity-80 mb-1">
-                    <Calculator className="h-4 w-4" />
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center h-full min-h-[120px]">
+                <div className="flex items-center gap-2 text-slate-400 mb-1">
+                    <Calculator className="h-4 w-4 text-slate-400" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Estimated Total</span>
                 </div>
-                <h2 className="text-4xl font-black tracking-tighter transition-all">
-                    €{Number(watch("grandTotal")).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                <h2 className="text-4xl font-black tracking-tighter text-slate-800 transition-all">
+                    {currency} {Number(watch("grandTotal")).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </h2>
               </div>
             </div>
@@ -157,7 +168,7 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
                   type="button"
                   onClick={handleAddItem}
                   disabled={!watch("tempItemId") || isFetchingItem}
-                  className="bg-slate-900 hover:bg-slate-800 h-10 px-6 font-bold text-xs"
+                  className="bg-blue-600 hover:bg-blue-700 text-white h-10 px-6 font-bold text-xs shadow-sm transition-all"
                 >
                   {isFetchingItem ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
                   ADD TO QUOTE
@@ -171,7 +182,7 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
                 <Package className="h-3.5 w-3.5" /> Line Items Breakdown
               </div>
               
-              <div className="min-h-[150px]">
+              <div className="pb-5">
                 {fields.length > 0 ? (
                     <table className="w-full text-left text-sm">
                         <thead className="bg-white text-slate-500 font-medium border-b border-slate-100">
@@ -198,7 +209,7 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
                                     </td>
                                     <td className="px-4 py-3 align-top text-right">
                                         <span className="text-xs font-black text-slate-700 block py-2">
-                                            €{(Number(watchedItems[index]?.price || 0) * Number(watchedItems[index]?.quantity || 0)).toLocaleString()}
+                                            {currency} {(Number(watchedItems[index]?.price || 0) * Number(watchedItems[index]?.quantity || 0)).toLocaleString()}
                                         </span>
                                     </td>
                                     {!isViewMode && (
@@ -214,7 +225,7 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
                     </table>
                 ) : (
 
-                  <div className="py-12 flex flex-col items-center justify-center text-slate-300 bg-white">
+                  <div className="py-5 flex flex-col items-center justify-center text-slate-300 bg-white">
                     <Receipt className="h-10 w-10 mb-2 opacity-10" />
                     <p className="text-[10px] font-black uppercase tracking-widest italic">Scanning items needed...</p>
                   </div>
@@ -235,7 +246,7 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
               <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4 h-fit shadow-sm">
                 <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                   <span>Subtotal</span>
-                  <span>€{Number(watch("subtotal")).toLocaleString()}</span>
+                  <span>{currency} {Number(watch("subtotal")).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                   <span>Discount</span>
@@ -244,12 +255,12 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
                   </div>
                 </div>
                 <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                  <span>Estimated Tax ({(DEFAULT_TAX_RATE * 100)}%)</span>
-                  <span>€{Number(watch("totalTax")).toLocaleString()}</span>
+                  <span>Estimated Tax ({(taxRate * 100)}%)</span>
+                  <span>{currency} {Number(watch("totalTax")).toLocaleString()}</span>
                 </div>
                 <div className="pt-4 border-t border-dashed border-slate-200 flex justify-between items-center">
                   <span className="text-xs font-black text-slate-800 uppercase tracking-widest">Grand Total</span>
-                  <span className="text-2xl font-black text-blue-600 tracking-tighter">€{Number(watch("grandTotal")).toLocaleString()}</span>
+                  <span className="text-2xl font-black text-slate-900 tracking-tighter">{currency} {Number(watch("grandTotal")).toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -259,7 +270,7 @@ export function QuotationForm({ initialData, onSuccess, isViewMode }: { initialD
             <FormFooter 
                 isPending={isCreating || isUpdating} 
                 isEditMode={!!initialData}
-                onCancel={onSuccess} 
+                onCancel={() => onSuccess()} 
                 saveLabel={initialData ? "Update Quotation" : "Save Quotation"}
                 className="p-6 bg-white border-t shadow-[0_-10px_40px_rgba(0,0,0,0.02)]" 
             />

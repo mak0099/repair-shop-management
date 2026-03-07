@@ -1,31 +1,37 @@
-import { z } from "zod";
-import { BaseEntity } from "@/types/common";
+import { z } from "zod"
+import { BaseEntity } from "@/types/common"
 
 export const returnItemSchema = z.object({
   productId: z.string().min(1, "Product is required"),
-  name: z.string(),
-  quantity: z.number().min(1),
-  price: z.number(), // বিক্রয় মূল্য
+  name: z.string().min(1, "Name is required"),
+  quantity: z.coerce.number().min(1),
+  price: z.coerce.number().min(0), // Refund unit price
   subtotal: z.number(),
-  condition: z.string().default("RESALABLE"), // নষ্ট নাকি ভালো
-});
+  condition: z.enum(["RESALABLE", "DEFECTIVE", "OPEN_BOX"]).default("RESALABLE"),
+  soldQuantity: z.number().optional(), // For validation against original sale
+})
 
 export const returnSchema = z.object({
-  saleId: z.string().min(1, "Original Invoice/Sale is required"),
-  items: z.array(returnItemSchema).min(1, "At least one item must be returned"),
+  customerId: z.string().min(1, "Customer is required"),
+  saleId: z.string().min(1, "Original Invoice is required"),
+  items: z.array(returnItemSchema).min(1, "At least one item is required"),
   
-  // Totals
+  // Financials
+  subtotal: z.number(),
+  restockingFee: z.coerce.number().default(0),
   totalRefundAmount: z.number(),
-  restockingFee: z.number().default(0), // যদি কোনো চার্জ কাটা হয়
   
-  // Metadata
-  reason: z.string().min(5, "Reason must be at least 5 characters"),
-  status: z.string().default("PENDING"),
-  processedBy: z.string().optional(),
-});
+  // Meta
+  status: z.enum(["PENDING", "APPROVED", "COMPLETED", "REJECTED"]).default("PENDING"),
+  returnDate: z.date().or(z.string()).default(() => new Date()),
+  notes: z.string().optional(),
+})
 
-export type ReturnFormValues = z.infer<typeof returnSchema>;
+export type ReturnFormValues = z.infer<typeof returnSchema>
+export type ReturnItem = z.infer<typeof returnItemSchema>
 
 export interface SaleReturn extends BaseEntity, ReturnFormValues {
-  returnNumber: string; // e.g., RET-1002
+  returnNumber: string
+  createdBy: string
+  customerName?: string
 }

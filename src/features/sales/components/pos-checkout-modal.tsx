@@ -13,6 +13,7 @@ import { saleSchema, SaleFormValues } from "../sales.schema"
 import { PAYMENT_METHODS } from "../sales.constants"
 import { InvoiceView } from "./invoice-view"
 import { Sale } from "../sales.schema"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -28,6 +29,8 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
   const { mutate: createSale, isPending } = useCreateSale()
   const [open, setOpen] = useState(false)
   const [completedSale, setCompletedSale] = useState<Sale | null>(null)
+  const { data: shopProfile } = useShopProfile()
+  const currency = shopProfile?.currency || "BDT"
 
   const form = useForm<SaleFormValues>({
     resolver: zodResolver(saleSchema.extend({
@@ -183,7 +186,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1">Total Payable Amount</span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-medium text-slate-400">€</span>
+                  <span className="text-xl font-medium text-slate-400">{currency}</span>
                   <span className="text-4xl font-black tracking-tighter">{totals.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </div>
@@ -235,7 +238,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                     name="totalDiscount"
                     render={({ field }) => (
                       <FormItem className="space-y-1">
-                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Discount (€)</Label>
+                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Discount ({currency})</Label>
                         <FormControl>
                         <Input 
                             {...field}
@@ -259,7 +262,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                     name="grandTotal"
                     render={({ field }) => (
                       <FormItem className="space-y-1">
-                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Total Selling Price (€)</Label>
+                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Total Selling Price ({currency})</Label>
                         <FormControl>
                         <Input 
                             {...field}
@@ -285,7 +288,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                 <div className="space-y-2">
                   <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Receive Amount</Label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">€</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">{currency}</span>
                     <FormField
                       control={control}
                       name="amountReceived"
@@ -330,7 +333,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                             className="h-6 text-[10px] font-medium bg-white text-slate-600 px-2"
                             onClick={() => handleQuickAmount(amt)}
                           >
-                            €{amt}
+                            {currency} {amt}
                           </Button>
                         )
                       ))}
@@ -350,7 +353,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                       ? "bg-emerald-50 border-emerald-100 text-emerald-600" 
                       : "bg-slate-100 border-slate-200 text-slate-400"
                   )}>
-                    €{(dueAmount > 0 ? dueAmount : changeAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {currency} {(dueAmount > 0 ? dueAmount : changeAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
               </div>
@@ -388,7 +391,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                     Processing...
                   </span>
                 ) : (
-                  dueAmount > 0 ? `Confirm with Due (€${dueAmount.toFixed(2)})` : "Complete Sale"
+                  dueAmount > 0 ? `Confirm with Due (${currency} ${dueAmount.toFixed(2)})` : "Complete Sale"
                 )}
               </Button>
             </div>

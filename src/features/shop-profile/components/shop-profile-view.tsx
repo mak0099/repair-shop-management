@@ -92,17 +92,43 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
         </Card>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm font-medium">Invoice Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-xs text-muted-foreground mb-1">Footer Message:</p>
-          <div className="p-3 bg-slate-50 rounded border text-sm italic text-slate-600">
-            "{profile.invoiceFooterMessage || "No message set"}"
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Financial Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between border-b pb-2">
+                 <span className="text-xs text-muted-foreground">Currency</span>
+                 <span className="text-sm font-medium">{profile.currency}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                 <span className="text-xs text-muted-foreground">Default Tax Rate</span>
+                 <span className="text-sm font-medium">{profile.taxRate ? `${profile.taxRate}%` : "N/A"}</span>
+              </div>
+              <div>
+                 <p className="text-xs text-muted-foreground mb-1">Bank Details:</p>
+                 <p className="text-sm whitespace-pre-wrap text-slate-700">{profile.bankAccountInfo || "Not Set"}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Policies</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               <div>
+                 <p className="text-xs text-muted-foreground mb-1">Invoice Footer:</p>
+                 <p className="text-sm italic text-slate-600">{profile.invoiceFooterMessage || "Not Set"}</p>
+               </div>
+               <div>
+                 <p className="text-xs text-muted-foreground mb-1">Return Policy:</p>
+                 <p className="text-xs text-slate-600 line-clamp-3">{profile.returnPolicy || "Not Set"}</p>
+               </div>
+            </CardContent>
+          </Card>
+      </div>
     </div>
   );
 }

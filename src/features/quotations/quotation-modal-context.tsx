@@ -45,7 +45,13 @@ export function QuotationModalProvider({ children }: { children: ReactNode }) {
           ) : (
             <QuotationForm 
               initialData={state.initialData} 
-              onSuccess={() => closeModal()} 
+              onSuccess={(data) => {
+                if (data) {
+                  openModal({ initialData: data, isViewMode: true })
+                } else {
+                  closeModal()
+                }
+              }} 
             />
           )}
         </DialogContent>

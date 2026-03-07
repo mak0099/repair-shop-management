@@ -23,30 +23,38 @@ export function ReturnList() {
   const columns: ColumnDef<SaleReturn>[] = useMemo(() => [
     {
       accessorKey: "returnNumber",
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Return Details" />,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Return #" />,
       cell: ({ row }) => (
         <TitleCell
           value={row.original.returnNumber}
           isActive={row.original.status === RETURN_STATUS.COMPLETED}
           onClick={() => openModal({ initialData: row.original, isViewMode: true })}
           subtitle={
-            <div className="flex gap-2 items-center">
-              <Receipt className="h-3 w-3 text-slate-400" />
-              <span className="font-bold text-slate-500 uppercase tracking-tighter">
-                Ref: {row.original.saleId}
-              </span>
-            </div>
+            <span className="text-[10px] text-slate-400 flex items-center gap-1">
+              <Receipt className="h-3 w-3" />
+              Ref: {row.original.saleId}
+            </span>
           }
         />
       ),
     },
     {
+      accessorKey: "customerName",
+      header: "Customer",
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-slate-700 text-xs">{row.original.customerName || "Unknown"}</span>
+          <span className="text-[10px] text-slate-400">{row.original.customerId}</span>
+        </div>
+      )
+    },
+    {
       accessorKey: "totalRefundAmount",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Refund Total" className="justify-end" />,
       cell: ({ row }) => (
-        <CurrencyCell 
-          amount={row.original.totalRefundAmount} 
-          subtitle={row.original.restockingFee > 0 ? `Fee: ৳${row.original.restockingFee}` : undefined}
+        <CurrencyCell
+          amount={row.original.totalRefundAmount}
+          subtitle={row.original.restockingFee > 0 ? `Fee: €${row.original.restockingFee}` : undefined}
         />
       ),
     },
@@ -90,7 +98,7 @@ export function ReturnList() {
           resource={row.original}
           resourceName="Return"
           onView={(data) => openModal({ initialData: data as SaleReturn, isViewMode: true })}
-          deleteMutation={deleteMutation}
+          deleteMutation={row.original.status === RETURN_STATUS.COMPLETED ? null : deleteMutation}
         />
       )
     }
@@ -105,7 +113,7 @@ export function ReturnList() {
       useResourceQuery={useReturns}
       onAdd={() => openModal()}
       addLabel="Process Return"
-      bulkDeleteMutation={bulkDeleteMutation}
+      // bulkDeleteMutation={bulkDeleteMutation}
       searchPlaceholder="Search return number or sale ID..."
       filterDefinitions={[
         {

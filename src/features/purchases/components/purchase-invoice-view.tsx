@@ -6,14 +6,17 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ProductPurchase } from "../purchases.schema"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
-interface PurchaseInvoiceDialogProps {
+interface PurchaseInvoiceViewProps {
   purchase: ProductPurchase
   trigger?: React.ReactNode
 }
 
-export function PurchaseInvoiceDialog({ purchase, trigger }: PurchaseInvoiceDialogProps) {
+export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const { data: shopProfile } = useShopProfile()
+  const currency = shopProfile?.currency || "BDT"
 
   const handlePrint = () => {
     window.print()
@@ -49,9 +52,12 @@ export function PurchaseInvoiceDialog({ purchase, trigger }: PurchaseInvoiceDial
             {/* Header Section */}
             <div className="flex justify-between items-start border-b-2 border-slate-100 pb-8">
               <div className="space-y-2">
-                <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">ARIF REPAIR SHOP</h1>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">{shopProfile?.name || "ARIF REPAIR SHOP"}</h1>
                 <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">
-                  <CheckCircle2 className="h-3 w-3 text-green-500" /> Italy Official Inventory Record
+                  <CheckCircle2 className="h-3 w-3 text-green-500" /> {shopProfile?.address || "Official Inventory Record"}
+                </div>
+                <div className="text-[10px] text-slate-400 font-medium">
+                  {shopProfile?.phone} {shopProfile?.email && `• ${shopProfile.email}`}
                 </div>
               </div>
               <div className="text-right space-y-2">
@@ -110,8 +116,8 @@ export function PurchaseInvoiceDialog({ purchase, trigger }: PurchaseInvoiceDial
                         )}
                       </td>
                       <td className="py-5 px-2 text-center font-black text-slate-700 text-sm">{item.quantity}</td>
-                      <td className="py-5 px-2 text-right text-slate-600 font-bold">€{item.costPrice.toLocaleString()}</td>
-                      <td className="py-5 px-4 text-right font-black text-slate-900 text-sm">€{item.subtotal.toLocaleString()}</td>
+                      <td className="py-5 px-2 text-right text-slate-600 font-bold">{currency} {item.costPrice.toLocaleString()}</td>
+                      <td className="py-5 px-4 text-right font-black text-slate-900 text-sm">{currency} {item.subtotal.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -123,16 +129,16 @@ export function PurchaseInvoiceDialog({ purchase, trigger }: PurchaseInvoiceDial
               <div className="w-72 space-y-4">
                 <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
                   <span>Subtotal</span>
-                  <span className="text-sm text-slate-900">€{purchase.subtotal.toLocaleString()}</span>
+                  <span className="text-sm text-slate-900">{currency} {purchase.subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-black text-slate-500 uppercase tracking-widest border-b pb-4">
                   <span>Paid to Supplier</span>
-                  <span className="text-sm text-slate-900">€{purchase.paidAmount.toLocaleString()}</span>
+                  <span className="text-sm text-slate-900">{currency} {purchase.paidAmount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-xs font-black uppercase text-slate-900">Total Balance Due</span>
                   <span className="text-2xl font-black text-red-600 tracking-tighter">
-                    €{purchase.dueAmount.toLocaleString()}
+                    {currency} {purchase.dueAmount.toLocaleString()}
                   </span>
                 </div>
               </div>

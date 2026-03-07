@@ -17,7 +17,7 @@ import { SupplierSelectField } from "@/features/suppliers"
 
 import { purchaseSchema, PurchaseFormValues, ProductPurchase, PurchaseItem } from "../purchases.schema"
 import { useCreatePurchase, fetchItemDetailsForPurchase } from "../purchases.api"
-import { PurchaseInvoiceDialog } from "./purchase-invoice-dialog"
+import { PurchaseInvoiceView } from "./purchase-invoice-view"
 
 export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialData?: ProductPurchase | null, onSuccess: () => void, isViewMode?: boolean }) {
   const { mutate: createPurchase, isPending } = useCreatePurchase()
@@ -93,7 +93,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
               </div>
 
               {/* সরাসরি এই ডায়ালগটি ব্যবহার করুন */}
-              <PurchaseInvoiceDialog purchase={initialData} />
+              <PurchaseInvoiceView purchase={initialData} />
             </div>
           )}
 

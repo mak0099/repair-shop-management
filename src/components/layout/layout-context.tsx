@@ -10,10 +10,22 @@ interface LayoutContextProps {
 const LayoutContext = React.createContext<LayoutContextProps | undefined>(undefined)
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
-  const [isTopNav, setIsTopNav] = React.useState(false)
+  const [isTopNav, setIsTopNav] = React.useState(true)
+
+  // Load preference from localStorage on mount
+  React.useEffect(() => {
+    const savedMode = localStorage.getItem("layout_mode")
+    if (savedMode === "top") {
+      setIsTopNav(true)
+    }
+  }, [])
 
   const toggleLayout = () => {
-    setIsTopNav((prev) => !prev)
+    setIsTopNav((prev) => {
+      const next = !prev
+      localStorage.setItem("layout_mode", next ? "top" : "side")
+      return next
+    })
   }
 
   return (

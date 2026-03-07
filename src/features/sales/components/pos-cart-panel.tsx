@@ -97,14 +97,18 @@ export function POSCartPanel() {
                                   <SelectValue placeholder="Select Serial / IMEI" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
-                                  {serials.map((sn: string) => (
-                                    <SelectItem key={sn} value={sn} className="text-[10px] font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <Smartphone className="h-3 w-3 text-slate-400" />
-                                            <span>{sn}</span>
-                                        </div>
-                                    </SelectItem>
-                                  ))}
+                                  {serials.length > 0 ? (
+                                    serials.map((sn: string) => (
+                                      <SelectItem key={sn} value={sn} className="text-[10px] font-medium">
+                                          <div className="flex items-center gap-2">
+                                              <Smartphone className="h-3 w-3 text-slate-400" />
+                                              <span>{sn}</span>
+                                          </div>
+                                      </SelectItem>
+                                    ))
+                                  ) : (
+                                    <div className="p-2 text-[10px] text-slate-400 text-center font-medium">No serials found</div>
+                                  )}
                                 </SelectContent>
                               </Select>
                         </div>

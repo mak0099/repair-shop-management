@@ -81,7 +81,9 @@ export function POSProvider({ children }: { children: React.ReactNode }) {
         type: "PRODUCT", // Fixed: Schema expects "PRODUCT" or "SERVICE", not categoryId
         isSerialized: isSerialized,
         // সিরিয়াল নম্বরগুলোকে অ্যারেতে কনভার্ট করা
-        availableSerials: product.imei ? product.imei.split(",").map(s => s.trim()).filter(Boolean) : [],
+        availableSerials: product.imei 
+          ? product.imei.split(",").map(s => s.trim()).filter(Boolean) 
+          : ((product as any).serialList || []),
         selectedIMEI: "",
       };
       

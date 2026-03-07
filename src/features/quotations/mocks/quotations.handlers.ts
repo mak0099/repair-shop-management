@@ -1,6 +1,7 @@
 import { delay, http, HttpResponse } from "msw";
 import { mockQuotations } from "./quotations.mock";
 import { Quotation, QuotationFormValues } from "../quotations.schema";
+import { mockItems } from "@/features/items";
 
 let quotations = [...mockQuotations];
 
@@ -11,6 +12,23 @@ export const quotationHandlers = [
       data: quotations,
       meta: { total: quotations.length }
     });
+  }),
+
+  http.get("*/items/:id", async ({ params }) => {
+    await delay(300); // হালকা ডিলে যাতে লোডার দেখা যায়
+    const { id } = params;
+    
+    // মক আইটেম লিস্ট থেকে খুঁজে বের করা
+    const item = mockItems.find(i => i.id === id);
+
+    if (!item) {
+      return new HttpResponse(JSON.stringify({ message: "Item not found" }), { 
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    return HttpResponse.json(item);
   }),
 
   http.post("*/quotations", async ({ request }) => {

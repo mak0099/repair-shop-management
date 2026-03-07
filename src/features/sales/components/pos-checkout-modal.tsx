@@ -1,29 +1,41 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm, FormProvider } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { CreditCard, Banknote, Smartphone, Check, ArrowRight, Calculator, Coins } from "lucide-react"
+import { z } from "zod"
 
 import { usePOS } from "../pos-context"
 import { useCreateSale } from "../sales.api"
 import { saleSchema, SaleFormValues } from "../sales.schema"
 import { PAYMENT_METHODS } from "../sales.constants"
+import { InvoiceView } from "./invoice-view"
+import { Sale } from "../sales.schema"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { TextField } from "@/components/forms/text-field"
-import { TextareaField } from "@/components/forms/textarea-field"
-import { RadioGroupField } from "@/components/forms/radio-group-field"
-import { Form } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
+import { FormField, FormMessage, FormItem, FormControl } from "@/components/ui/form"
 
 export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
   const { totals, cart, selectedCustomerId, clearCart } = usePOS()
   const { mutate: createSale, isPending } = useCreateSale()
   const [open, setOpen] = useState(false)
+  const [completedSale, setCompletedSale] = useState<Sale | null>(null)
 
   const form = useForm<SaleFormValues>({
-    resolver: zodResolver(saleSchema),
+    resolver: zodResolver(saleSchema.extend({
+      totalDiscount: z.coerce.number(),
+      grandTotal: z.coerce.number(),
+      amountReceived: z.coerce.number(),
+      customerId: z.string().min(1, "Customer is required"),
+    })),
     defaultValues: {
       customerId: selectedCustomerId,
       items: cart,
@@ -38,89 +50,352 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
     }
   })
 
-  const { control, watch, setValue, handleSubmit } = form
+  const { control, watch, setValue, handleSubmit, reset } = form
   const amountReceived = watch("amountReceived") || 0
-  const changeAmount = Math.max(0, amountReceived - totals.grandTotal)
+  const grandTotal = watch("grandTotal") || 0
+  const paymentMethod = watch("paymentMethod")
+  const changeAmount = Math.max(0, amountReceived - grandTotal)
+  const dueAmount = Math.max(0, grandTotal - amountReceived)
+  const baseTotal = totals.subtotal + totals.tax
+
+  // Sync form values when modal opens or totals change
+  useEffect(() => {
+    if (open) {
+      const roundedTotal = Number(totals.grandTotal.toFixed(2))
+      setValue("subtotal", totals.subtotal)
+      setValue("totalTax", totals.tax)
+      setValue("totalDiscount", totals.discount)
+      setValue("grandTotal", roundedTotal)
+      setValue("items", cart)
+      setValue("customerId", selectedCustomerId)
+      // Reset amount received to grand total
+      setValue("amountReceived", roundedTotal)
+    }
+  }, [open, totals, cart, selectedCustomerId, setValue])
 
   const onConfirm = (data: SaleFormValues) => {
+    const paymentStatus = data.amountReceived >= data.grandTotal ? "PAID" : (data.amountReceived > 0 ? "PARTIAL" : "UNPAID")
+    
     createSale({
       ...data,
       customerId: selectedCustomerId,
-      items: cart, // Always sync current cart
-      changeAmount
+      items: cart,
+      changeAmount,
+      paymentStatus
     }, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Sale Recorded Successfully")
         clearCart()
-        setOpen(false)
-        form.reset()
+        reset()
+        setCompletedSale(data as Sale)
       }
     })
   }
 
+  const onErrors = (errors: any) => {
+    console.error("Form Validation Errors:", errors)
+    const firstErrorKey = Object.keys(errors)[0]
+    const firstError = errors[firstErrorKey] as any
+
+    if (firstError?.message) {
+      toast.error(`${firstErrorKey === 'customerId' ? 'Customer' : firstErrorKey}: ${firstError.message}`)
+    } else if (Array.isArray(firstError)) {
+      toast.error("Please check item details in the cart")
+    } else {
+      toast.error("Please check all required fields")
+    }
+  }
+
+  const handleQuickAmount = (amount: number) => {
+    setValue("amountReceived", amount)
+  }
+
+  const handleDiscountChange = (val: string) => {
+    const newDiscount = parseFloat(val) || 0
+    const newTotal = Math.max(0, baseTotal - newDiscount)
+    setValue("grandTotal", Number(newTotal.toFixed(2)))
+    // Update receive amount to match new total
+    setValue("amountReceived", Number(newTotal.toFixed(2)))
+  }
+
+  const handleTotalChange = (val: string) => {
+    const newTotal = parseFloat(val) || 0
+    const newDiscount = Math.max(0, baseTotal - newTotal)
+    setValue("totalDiscount", Number(newDiscount.toFixed(2)))
+    // Update receive amount to match new total
+    setValue("amountReceived", newTotal)
+  }
+
+  const getPaymentIcon = (method: string) => {
+    switch (method) {
+      case "CASH": return <Banknote className="h-5 w-5" />
+      case "CARD": return <CreditCard className="h-5 w-5" />
+      case "MOBILE_PAYMENT": return <Smartphone className="h-5 w-5" />
+      default: return <CreditCard className="h-5 w-5" />
+    }
+  }
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen)
+    if (!isOpen) {
+      setTimeout(() => setCompletedSale(null), 300)
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full bg-blue-600 hover:bg-blue-700 font-bold h-11" disabled={disabled}>
-          PROCEED TO CHECKOUT
+        <Button 
+          className="w-full bg-blue-600 hover:bg-blue-700 font-bold h-12 text-base shadow-md shadow-blue-200 transition-all active:scale-[0.98]" 
+          disabled={disabled}
+        >
+          PROCEED TO PAYMENT
+          <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden">
-        <DialogHeader className="p-6 bg-slate-50 border-b">
-          <DialogTitle className="text-sm font-black uppercase tracking-widest text-slate-600">Complete Payment</DialogTitle>
+      <DialogContent className={cn("p-0 gap-0 overflow-hidden bg-white transition-all duration-300", completedSale ? "sm:max-w-[900px] h-[90vh]" : "sm:max-w-[600px]")}>
+        {completedSale ? (
+          <div className="flex flex-col h-full">
+            <div className="flex-1 overflow-hidden">
+              <InvoiceView sale={completedSale} />
+            </div>
+            <div className="p-4 border-t bg-slate-50 flex justify-end">
+              <Button onClick={() => handleOpenChange(false)} className="bg-slate-900 text-white hover:bg-slate-800 font-bold">
+                Close & Start New Sale
+              </Button>
+            </div>
+          </div>
+        ) : (
+        <>
+        <DialogHeader className="p-4 bg-white border-b sticky top-0 z-10">
+          <DialogTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-tight text-slate-800">
+            <Calculator className="h-5 w-5 text-blue-600" />
+            Checkout & Payment
+          </DialogTitle>
         </DialogHeader>
         
         <FormProvider {...form}>
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onConfirm)} className="p-6 space-y-6">
-              {/* Grand Total Display */}
-              <div className="bg-blue-600 p-6 rounded-xl text-center shadow-lg shadow-blue-100">
-                <p className="text-[10px] text-blue-100 uppercase font-bold tracking-widest mb-1">Grand Total Payable</p>
-                <h2 className="text-4xl font-black text-white">৳{totals.grandTotal.toLocaleString()}</h2>
+          <form onSubmit={handleSubmit(onConfirm, onErrors)} className="flex flex-col">
+            <div className="p-4 space-y-5 overflow-y-auto max-h-[70vh]">
+              
+              {/* Total Banner */}
+              <div className="flex flex-col items-center justify-center py-4 bg-slate-900 rounded-xl shadow-lg text-white relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1">Total Payable Amount</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xl font-medium text-slate-400">€</span>
+                  <span className="text-4xl font-black tracking-tighter">{totals.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4">
-                {/* Custom RadioGroupField for Payment Method */}
-                <RadioGroupField 
-                  control={control} 
-                  name="paymentMethod" 
-                  label="Payment Method" 
-                  required
-                  options={PAYMENT_METHODS.map(m => ({ label: m.label, value: m.value }))}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <TextField 
-                    control={control} 
-                    name="amountReceived" 
-                    label="Amount Tendered" 
-                    type="number" 
-                    required 
-                  />
-                  
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase">Change Back</label>
-                    <div className="h-10 px-3 bg-emerald-50 border border-emerald-100 rounded-md flex items-center justify-end font-black text-emerald-700">
-                      ৳{changeAmount.toLocaleString()}
+              {/* Payment Method Selection */}
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Payment Method</Label>
+                <FormField
+                  control={control}
+                  name="paymentMethod"
+                  render={({ field }) => (
+                    <div className="flex gap-2">
+                      {PAYMENT_METHODS.map((method) => (
+                        <label
+                          key={method.value}
+                          className={cn(
+                            "cursor-pointer relative flex-1 flex items-center justify-center gap-2 p-2 rounded-lg border transition-all duration-200",
+                            field.value === method.value
+                              ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-600"
+                              : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            className="sr-only"
+                            {...field}
+                            value={method.value}
+                            checked={field.value === method.value}
+                            onChange={() => field.onChange(method.value)}
+                          />
+                          {getPaymentIcon(method.value)}
+                          <span className="text-[10px] font-bold uppercase tracking-wide">{method.label}</span>
+                          {field.value === method.value && (
+                            <div className="absolute top-1 right-1 h-3 w-3 bg-blue-600 rounded-full flex items-center justify-center">
+                              <Check className="h-2 w-2 text-white" strokeWidth={3} />
+                            </div>
+                          )}
+                        </label>
+                      ))}
                     </div>
+                  )}
+                />
+              </div>
+
+              {/* Discount & Final Price Adjustment */}
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                 <FormField
+                    control={control}
+                    name="totalDiscount"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Discount (€)</Label>
+                        <FormControl>
+                        <Input 
+                            {...field}
+                            type="number" 
+                            step="0.01"
+                            onFocus={(e) => e.target.select()}
+                            value={field.value === 0 ? "" : field.value}
+                            onChange={(e) => {
+                              field.onChange(e.target.value)
+                              handleDiscountChange(e.target.value)
+                            }}
+                            className="h-8 bg-white text-sm font-bold"
+                        />
+                        </FormControl>
+                        <FormMessage className="text-[10px]" />
+                      </FormItem>
+                    )}
+                 />
+                 <FormField
+                    control={control}
+                    name="grandTotal"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Total Selling Price (€)</Label>
+                        <FormControl>
+                        <Input 
+                            {...field}
+                            type="number" 
+                            step="0.01"
+                            onFocus={(e) => e.target.select()}
+                            value={field.value === 0 ? "" : field.value}
+                            onChange={(e) => {
+                              field.onChange(e.target.value)
+                              handleTotalChange(e.target.value)
+                            }}
+                            className="h-8 bg-white text-sm font-bold border-blue-200 focus:border-blue-500"
+                        />
+                        </FormControl>
+                        <FormMessage className="text-[10px]" />
+                      </FormItem>
+                    )}
+                 />
+              </div>
+
+              {/* Amount & Change Calculation */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Receive Amount</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">€</span>
+                    <FormField
+                      control={control}
+                      name="amountReceived"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input 
+                              {...field}
+                              type="number" 
+                              className="pl-7 h-10 text-base font-bold bg-white border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                              placeholder="0.00"
+                              onFocus={(e) => e.target.select()}
+                              value={field.value === 0 ? "" : field.value}
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-[10px]" />
+                        </FormItem>
+                      )}
+                    />
                   </div>
+                  
+                  {/* Quick Cash Suggestions */}
+                  {paymentMethod === "CASH" && (
+                    <div className="flex flex-wrap gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-6 text-[10px] font-bold bg-white px-2"
+                        onClick={() => handleQuickAmount(grandTotal)}
+                      >
+                        Exact
+                      </Button>
+                      {[10, 20, 50, 100].map(amt => (
+                        amt > grandTotal && (
+                          <Button 
+                            key={amt}
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-6 text-[10px] font-medium bg-white text-slate-600 px-2"
+                            onClick={() => handleQuickAmount(amt)}
+                          >
+                            €{amt}
+                          </Button>
+                        )
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <TextareaField control={control} name="notes" label="Special Notes" placeholder="Any additional info..." />
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    {dueAmount > 0 ? "Due Amount" : "Change Return"}
+                  </Label>
+                  <div className={cn(
+                    "h-10 flex items-center px-3 rounded-lg border-2 font-mono text-lg font-bold transition-colors",
+                    dueAmount > 0 
+                      ? "bg-red-50 border-red-100 text-red-600"
+                      : changeAmount > 0 
+                      ? "bg-emerald-50 border-emerald-100 text-emerald-600" 
+                      : "bg-slate-100 border-slate-200 text-slate-400"
+                  )}>
+                    €{(dueAmount > 0 ? dueAmount : changeAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                </div>
               </div>
 
-              <div className="pt-2">
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 text-base font-black bg-slate-900 hover:bg-black text-white rounded-xl shadow-xl"
-                  disabled={isPending || (amountReceived < totals.grandTotal)}
-                >
-                  {isPending ? "PROCESSING..." : "FINALIZE & PRINT INVOICE"}
-                </Button>
+              <Separator />
+
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Transaction Notes</Label>
+                <FormField
+                  control={control}
+                  name="notes"
+                  render={({ field }) => (
+                    <Textarea 
+                      {...field} 
+                      placeholder="Optional notes about this sale..." 
+                      className="min-h-[60px] bg-white border-slate-200 resize-none text-xs"
+                    />
+                  )}
+                />
               </div>
-            </form>
-          </Form>
+            </div>
+
+            <div className="p-4 bg-white border-t mt-auto">
+              <Button 
+                type="submit" 
+                className={cn(
+                  "w-full h-12 text-base font-black uppercase tracking-widest rounded-xl shadow-xl transition-all",
+                  "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-blue-200 hover:-translate-y-0.5"
+                )}
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Processing...
+                  </span>
+                ) : (
+                  dueAmount > 0 ? `Confirm with Due (€${dueAmount.toFixed(2)})` : "Complete Sale"
+                )}
+              </Button>
+            </div>
+          </form>
         </FormProvider>
+        </>
+        )}
       </DialogContent>
     </Dialog>
   )

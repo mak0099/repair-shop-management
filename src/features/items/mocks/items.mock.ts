@@ -1,4 +1,5 @@
 import { Item } from "../item.schema"
+import { mockCategories } from "../../categories/mocks/categories.mock"
 
 const itemData = [
   { name: "iPhone 15 Pro", sku: "APL-IP15P-256", price: 999, cost: 800, brandId: "brand-100", serialized: true },
@@ -12,6 +13,7 @@ const generateItems = (count: number): Item[] => {
   const items: Item[] = [];
   for (let i = 0; i < count; i++) {
     const itemInfo = itemData[i % itemData.length];
+    const category = mockCategories[i % mockCategories.length];
     
     // আইটেমটি সিরিয়ালাইজড হলে ডামি IMEI তৈরি করার লজিক
     const mockSerials = itemInfo.serialized 
@@ -23,13 +25,16 @@ const generateItems = (count: number): Item[] => {
       name: i >= itemData.length ? `${itemInfo.name} ${Math.floor(i / itemData.length) + 1}` : itemInfo.name,
       sku: i >= itemData.length ? `${itemInfo.sku}-${i}` : itemInfo.sku,
       
-      categoryId: "cat-101",
+      categoryId: category.id,
       brandId: itemInfo.brandId,
       modelId: `model-${i % 5}`,
+      supplierId: `sup-${100 + (i % 3)}`,
+      boxNumberId: `box-${10 + (i % 5)}`,
       
       purchasePrice: itemInfo.cost,
       salePrice: itemInfo.price,
       initialStock: itemInfo.serialized ? mockSerials.length : 50,
+      minStockLevel: 5,
       
       // গুরুত্বপূর্ণ: সিরিয়ালাইজড ফ্ল্যাগ এবং লিস্ট
       isSerialized: itemInfo.serialized,
@@ -42,7 +47,14 @@ const generateItems = (count: number): Item[] => {
       isTouchScreen: itemInfo.serialized,
       isSolidDevice: true,
       condition: "New",
+      
+      deviceType: "Smartphone",
+      color: "Black",
+      ram: "8GB",
+      rom: "256GB",
+      
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
   }
   return items;

@@ -28,11 +28,12 @@ export function StockList() {
       header: ({ column }) => <DataTableColumnHeader column={column} title="Product & Specs" />,
       cell: ({ row }) => (
         <TitleCell
+          isActive={row.original.isActive}
           value={row.original.itemName}
           onClick={() => setSelectedStock(row.original)}
           subtitle={
             <div className="flex flex-wrap gap-1 mt-1">
-              {Object.entries(row.original.attributes).map(([key, value]) => (
+              {Object.entries(row.original.attributes || {}).map(([key, value]) => (
                 <Badge key={key} variant="secondary" className="text-[9px] h-4 px-1.5 bg-slate-100 text-slate-600 border-none">
                   {value}
                 </Badge>
@@ -143,7 +144,7 @@ export function StockList() {
         useResourceQuery={useStock}
         filterDefinitions={filterDefinitions}
         searchPlaceholder="Search SKU, IMEI or Product..."
-        initialFilters={{ category: "all", status: "all" }}
+        initialFilters={{ category: "all", status: "all", isActive: "true" }}
         onAdd={() => openModal()}
         addLabel="Adjust Stock"
       />

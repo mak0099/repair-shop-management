@@ -8,7 +8,7 @@ import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 
 import { Form } from "@/components/ui/form"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
@@ -18,7 +18,7 @@ import { FormFooter } from "@/components/forms/form-footer"
 import { stockAdjustmentSchema, StockAdjustment, StockAdjustmentFormValues } from "../stock-adjustment.schema"
 import { useCreateStockAdjustment, useUpdateStockAdjustment } from "../stock-adjustment.api"
 import { STOCK_ADJUSTMENT_REASON_OPTIONS, STOCK_ADJUSTMENT_TYPE_OPTIONS } from "../stock-adjustment.constants"
-import { StockSelectField } from "@/features/stock"
+import { StockSelectField } from "@/features/stock/components/stock-select-field"
 
 interface StockAdjustmentFormProps {
   initialData?: StockAdjustment | null

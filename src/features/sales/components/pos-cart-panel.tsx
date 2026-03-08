@@ -1,11 +1,10 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, FormProvider, useWatch } from "react-hook-form"
 import { Receipt, Trash2, Plus, Minus, Smartphone, X } from "lucide-react"
 
 import { usePOS } from "../pos-context"
-import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { POSCheckoutModal } from "./pos-checkout-modal"
 import { CustomerSelectField } from "@/features/customers"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -17,15 +16,13 @@ import { CurrencyText } from "@/components/shared/data-table-cells"
 
 export function POSCartPanel() {
   const { cart, totals, updateQuantity, removeItem, clearCart, selectedCustomerId, setCustomerId, updateItemIMEI, updatePrice } = usePOS()
-  const { data: shopProfile } = useShopProfile()
-  const currency = shopProfile?.currency || "BDT"
 
   const form = useForm({ defaultValues: { customerId: selectedCustomerId || "" } })
-  const { control, watch, reset } = form
-  const watchedCustomerId = watch("customerId")
+  const { control, reset } = form
+  const watchedCustomerId = useWatch({ control, name: "customerId" })
 
-  useEffect(() => { if (watchedCustomerId !== selectedCustomerId) setCustomerId(watchedCustomerId) }, [watchedCustomerId])
-  useEffect(() => { reset({ customerId: selectedCustomerId || "" }) }, [selectedCustomerId])
+  useEffect(() => { if (watchedCustomerId !== selectedCustomerId) setCustomerId(watchedCustomerId) }, [watchedCustomerId, selectedCustomerId, setCustomerId])
+  useEffect(() => { reset({ customerId: selectedCustomerId || "" }) }, [selectedCustomerId, reset])
 
   return (
     <div className="flex flex-col h-full bg-white relative">
@@ -64,6 +61,7 @@ export function POSCartPanel() {
             {cart.map((item) => {
               const serials = (item.availableSerials && item.availableSerials.length > 0) 
                   ? item.availableSerials 
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   : ((item as any).serialList || []);
 
               return (

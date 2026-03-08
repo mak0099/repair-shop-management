@@ -3,10 +3,10 @@
 import axios from "axios"
 import { createApiHooksFor } from "@/lib/api-factory"
 import { createBulkDeleteHook } from "@/lib/api-bulk-hooks"
-import { SaleReturn } from "./returns.schema"
+import { SaleReturn, ReturnFormValues } from "./returns.schema"
 import { Sale } from "@/features/sales/sales.schema"
 
-const returnApiHooks = createApiHooksFor<SaleReturn>("returns")
+const returnApiHooks = createApiHooksFor<SaleReturn, ReturnFormValues, Partial<ReturnFormValues>>("returns")
 
 export const useReturns = returnApiHooks.useGetList
 export const useReturn = returnApiHooks.useGetOne

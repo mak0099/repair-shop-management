@@ -7,8 +7,8 @@ export const mockQuotations: Quotation[] = [
     quotationNumber: "EST-2024-001",
     customerId: "cust-101",
     items: [
-      { productId: "p-item-100", name: "iPhone 15 Pro OLED Screen", price: 15000, quantity: 1, subtotal: 15000, type: "PRODUCT", tax: 0, discount: 0 },
-      { productId: "s-item-500", name: "Installation Labor", price: 1500, quantity: 1, subtotal: 1500, type: "SERVICE", tax: 0, discount: 0 }
+      { productId: "p-item-100", name: "iPhone 15 Pro OLED Screen", price: 15000, quantity: 1, subtotal: 15000, tax: 0, discount: 0 },
+      { productId: "s-item-500", name: "Installation Labor", price: 1500, quantity: 1, subtotal: 1500, tax: 0, discount: 0 }
     ],
     subtotal: 16500,
     totalTax: 825,
@@ -26,7 +26,7 @@ export const mockQuotations: Quotation[] = [
     quotationNumber: "EST-2024-002",
     customerId: "cust-105",
     items: [
-      { productId: "p-item-102", name: "MacBook Air Battery", price: 8500, quantity: 1, subtotal: 8500, type: "PRODUCT", tax: 0, discount: 0 }
+      { productId: "p-item-102", name: "MacBook Air Battery", price: 8500, quantity: 1, subtotal: 8500, tax: 0, discount: 0 }
     ],
     subtotal: 8500,
     totalTax: 425,

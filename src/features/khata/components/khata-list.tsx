@@ -7,7 +7,7 @@ import { ArrowUpRight, ArrowDownLeft } from "lucide-react"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import { DateCell, TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
+import { DateCell, TitleCell } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
 
 import {

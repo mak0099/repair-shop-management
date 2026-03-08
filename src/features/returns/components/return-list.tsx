@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { RotateCcw, Receipt, AlertTriangle, CheckCircle2 } from "lucide-react"
+import { Receipt } from "lucide-react"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { DateCell, TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
 
-import { useReturns, useDeleteReturn, useDeleteManyReturns } from "../returns.api"
+import { useReturns, useDeleteReturn } from "../returns.api"
 import { SaleReturn } from "../returns.schema"
 import { useReturnModal } from "../return-modal-context"
 import { RETURN_STATUS } from "../returns.constants"
@@ -18,7 +18,6 @@ import { RETURN_STATUS } from "../returns.constants"
 export function ReturnList() {
   const { openModal } = useReturnModal()
   const deleteMutation = useDeleteReturn()
-  const bulkDeleteMutation = useDeleteManyReturns()
 
   const columns: ColumnDef<SaleReturn>[] = useMemo(() => [
     {
@@ -77,15 +76,6 @@ export function ReturnList() {
       }
     },
     {
-      accessorKey: "reason",
-      header: "Reason",
-      cell: ({ row }) => (
-        <div className="max-w-[200px] truncate text-[11px] font-medium text-slate-500">
-          {row.original.reason}
-        </div>
-      )
-    },
-    {
       accessorKey: "createdAt",
       header: "Return Date",
       cell: ({ row }) => <DateCell date={row.original.createdAt} />,
@@ -98,7 +88,7 @@ export function ReturnList() {
           resource={row.original}
           resourceName="Return"
           onView={(data) => openModal({ initialData: data as SaleReturn, isViewMode: true })}
-          deleteMutation={row.original.status === RETURN_STATUS.COMPLETED ? null : deleteMutation}
+          deleteMutation={row.original.status === RETURN_STATUS.COMPLETED ? undefined : deleteMutation}
         />
       )
     }
@@ -113,7 +103,6 @@ export function ReturnList() {
       useResourceQuery={useReturns}
       onAdd={() => openModal()}
       addLabel="Process Return"
-      // bulkDeleteMutation={bulkDeleteMutation}
       searchPlaceholder="Search return number or sale ID..."
       filterDefinitions={[
         {

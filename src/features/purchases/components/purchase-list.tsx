@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ShoppingCart, Truck, CreditCard, Calendar } from "lucide-react"
+import { Truck } from "lucide-react"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
@@ -13,8 +13,6 @@ import { ResourceActions } from "@/components/shared/resource-actions"
 import { usePurchases, useDeletePurchase, useDeleteManyPurchases } from "../purchases.api"
 import { ProductPurchase } from "../purchases.schema"
 import { usePurchaseModal } from "../purchase-modal-context"
-import { PURCHASE_PAYMENT_STATUS } from "../purchases.constants"
-import { PurchaseInvoiceView } from "./purchase-invoice-view"
 
 export function PurchaseList() {
     const { openModal } = usePurchaseModal()

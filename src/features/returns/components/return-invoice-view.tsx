@@ -1,6 +1,6 @@
 "use client"
 
-import { FileText, Printer, RotateCcw, Receipt } from "lucide-react"
+import { Printer, RotateCcw, Receipt } from "lucide-react"
 import { SaleReturn } from "../returns.schema"
 import { Button } from "@/components/ui/button"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"

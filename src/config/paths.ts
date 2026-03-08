@@ -1,4 +1,5 @@
 export const DASHBOARD_BASE_HREF = "/dashboard"
+export const DASHBOARD_OVERVIEW_HREF = `${DASHBOARD_BASE_HREF}/overview`
 export const DASHBOARD_FRONTDESK_HREF = `${DASHBOARD_BASE_HREF}/frontdesk`
 
 export const ACCEPTANCES_BASE_HREF = `${DASHBOARD_BASE_HREF}/acceptances`

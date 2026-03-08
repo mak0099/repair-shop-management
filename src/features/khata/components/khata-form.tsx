@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Wallet, MessageSquare, LayoutGrid, Settings2, Edit3, User2 } from "lucide-react"
+import { Wallet, MessageSquare } from "lucide-react"
 import { toast } from "sonner"
 
 import { Form } from "@/components/ui/form"
@@ -12,7 +12,6 @@ import { DatePickerField } from "@/components/forms/date-picker-field"
 import { SelectField } from "@/components/forms/select-field"
 import { RadioGroupField } from "@/components/forms/radio-group-field"
 import { FormFooter } from "@/components/forms/form-footer"
-import { Button } from "@/components/ui/button"
 
 import { SupplierSelectField } from "@/features/suppliers"
 import { CustomerSelectField } from "@/features/customers"
@@ -28,6 +27,7 @@ import {
 } from "../khata.constants"
 import { useCreateKhata, usePartialUpdateKhata } from "../khata.api"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function KhataForm({ initialData, onSuccess, isViewMode: initialIsViewMode = false }: any) {
   const { mutate: createKhata, isPending: isCreating } = useCreateKhata()
   const { mutate: updateKhata, isPending: isUpdating } = usePartialUpdateKhata()
@@ -39,7 +39,8 @@ export function KhataForm({ initialData, onSuccess, isViewMode: initialIsViewMod
   const isPending = isCreating || isUpdating
 
   const form = useForm<KhataFormValues>({
-    resolver: zodResolver(khataSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(khataSchema) as any,
     defaultValues: initialData || {
       date: new Date(),
       direction: "OUT",
@@ -51,9 +52,9 @@ export function KhataForm({ initialData, onSuccess, isViewMode: initialIsViewMod
     },
   })
 
-  const { control, handleSubmit, watch } = form
-  const currentDirection = watch("direction") as keyof typeof KHATA_FLOWS;
-  const partyType = watch("partyType");
+  const { control, handleSubmit } = form
+  const currentDirection = useWatch({ control, name: "direction" }) as keyof typeof KHATA_FLOWS;
+  const partyType = useWatch({ control, name: "partyType" });
   const flowConfig = KHATA_FLOWS[currentDirection] || KHATA_FLOWS.OUT;
 
   const onSubmit = (data: KhataFormValues) => {
@@ -82,16 +83,20 @@ export function KhataForm({ initialData, onSuccess, isViewMode: initialIsViewMod
                 ? "shadow-[0_10px_30px_rgba(16,185,129,0.06)] bg-white"
                 : "shadow-[0_10px_30px_rgba(244,63,94,0.06)] bg-white"
               }`}>
-              <SelectField name="direction" control={control} label="Money Flow" options={FLOW_OPTIONS} readOnly={isViewMode} required />
-              <TextField name="amount" control={control} label="Amount (€)" type="number" icon={<Wallet className={`h-4 w-4 ${flowConfig.iconColor}`} />} readOnly={isViewMode} required />
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <SelectField name="direction" control={control as any} label="Money Flow" options={FLOW_OPTIONS} readOnly={isViewMode} required placeholder="Select Flow" />
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <TextField name="amount" control={control as any} label="Amount (€)" type="number" icon={<Wallet className={`h-4 w-4 ${flowConfig.iconColor}`} />} readOnly={isViewMode} required />
             </div>
 
             {/* Section 2: Ledger Data */}
             <div className="bg-white p-6 rounded-2xl border border-slate-200/60 space-y-6 shadow-sm">
               {/* Row 1: Date & Type */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <DatePickerField name="date" control={control} label="Date" readOnly={isViewMode} required />
-                <SelectField name="type" control={control} label="Category" options={TRANSACTION_TYPE_OPTIONS} readOnly={isViewMode} required />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <DatePickerField name="date" control={control as any} label="Date" readOnly={isViewMode} required />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <SelectField name="type" control={control as any} label="Category" options={TRANSACTION_TYPE_OPTIONS} readOnly={isViewMode} required placeholder="Select Category" />
               </div>
 
               {/* Row 2: Party Selection (RadioGroup Layout Fix) */}
@@ -100,7 +105,8 @@ export function KhataForm({ initialData, onSuccess, isViewMode: initialIsViewMod
                   <RadioGroupField
                     layout="partial-horizontal"
                     name="partyType"
-                    control={control}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    control={control as any}
                     label="Party Category"
                     options={PARTY_TYPE_OPTIONS}
                     readOnly={isViewMode}
@@ -108,24 +114,30 @@ export function KhataForm({ initialData, onSuccess, isViewMode: initialIsViewMod
                 </div>
                 <div className="md:col-span-7">
                   {partyType === "SUPPLIER" ? (
-                    <SupplierSelectField name="partyId" control={control} label="Select Supplier" readOnly={isViewMode} />
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    <SupplierSelectField name="partyId" control={control as any} label="Select Supplier" readOnly={isViewMode} />
                   ) : (
-                    <CustomerSelectField name="partyId" control={control} label="Select Customer" readOnly={isViewMode} />
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    <CustomerSelectField name="partyId" control={control as any} label="Select Customer" readOnly={isViewMode} />
                   )}
                 </div>
               </div>
 
               {/* Row 3: Method & Reason */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <SelectField name="paymentMethod" control={control} label="Payment Method" options={PAYMENT_METHOD_OPTIONS} readOnly={isViewMode} required />
-                <SelectField name="adjustmentReason" control={control} label="Adjustment Reason" options={ADJUSTMENT_REASON_OPTIONS} readOnly={isViewMode} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <SelectField name="paymentMethod" control={control as any} label="Payment Method" options={PAYMENT_METHOD_OPTIONS} readOnly={isViewMode} required placeholder="Select Method" />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <SelectField name="adjustmentReason" control={control as any} label="Adjustment Reason" options={ADJUSTMENT_REASON_OPTIONS} readOnly={isViewMode} placeholder="Select Reason" />
               </div>
 
               {/* Row 4: Reference & Note */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <TextField name="referenceId" control={control} label="Ref / Invoice" readOnly={isViewMode} />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <TextField name="referenceId" control={control as any} label="Ref / Invoice" readOnly={isViewMode} />
                 <div className="md:col-span-2">
-                  <TextField name="note" control={control} label="Internal Notes" icon={<MessageSquare className="h-3.5 w-3.5 text-slate-300" />} readOnly={isViewMode} />
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <TextField name="note" control={control as any} label="Internal Notes" icon={<MessageSquare className="h-3.5 w-3.5 text-slate-300" />} readOnly={isViewMode} />
                 </div>
               </div>
             </div>

@@ -16,7 +16,7 @@ export function InvoicePreview() {
   const formatDate = (date: Date) => {
     try {
       return format(date, values.dateFormat || 'dd/MM/yyyy');
-    } catch (e) {
+    } catch {
       return format(date, 'dd/MM/yyyy'); // Fallback format
     }
   };

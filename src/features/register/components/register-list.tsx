@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Lock, Unlock, User, Wallet, History } from "lucide-react"
+import { Lock, Unlock, User } from "lucide-react"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"

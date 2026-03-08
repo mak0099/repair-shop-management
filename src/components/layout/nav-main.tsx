@@ -53,17 +53,18 @@ export function NavMain({
 
   const isUrlActive = (url?: string) => {
     if (!url) return false
-    // Prevent /dashboard from being active for all sub-routes
-    if (url === '/dashboard' && pathname !== '/dashboard') return false
     return pathname === url || pathname.startsWith(url + '/')
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isGroupActive = (item: any): boolean => {
     if (isUrlActive(item.url)) return true
     if (item.items) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return item.items.some((subItem: any) => {
         if (isUrlActive(subItem.url)) return true
         if (subItem.items) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return subItem.items.some((nestedItem: any) => isUrlActive(nestedItem.url))
         }
         return false
@@ -177,9 +178,9 @@ export function NavMain({
                                       isActive={isUrlActive(nestedItem.url)}
                                       className={isUrlActive(nestedItem.url) ? "data-[active=true]:bg-primary/10 data-[active=true]:text-primary font-medium" : ""}
                                     >
-                                      <a href={nestedItem.url}>
+                                      <Link href={nestedItem.url || "#"}>
                                         <span className="truncate">{nestedItem.title}</span>
-                                      </a>
+                                      </Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 ))}
@@ -192,9 +193,9 @@ export function NavMain({
                             isActive={isUrlActive(subItem.url)}
                             className={isUrlActive(subItem.url) ? "data-[active=true]:bg-primary/10 data-[active=true]:text-primary font-medium" : ""}
                           >
-                            <a href={subItem.url}>
+                            <Link href={subItem.url || "#"}>
                               <span className="truncate">{subItem.title}</span>
-                            </a>
+                            </Link>
                           </SidebarMenuSubButton>
                         )}
                       </SidebarMenuSubItem>

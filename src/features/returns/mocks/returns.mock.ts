@@ -6,6 +6,7 @@ export const mockReturns: SaleReturn[] = [
     id: "ret-101",
     returnNumber: "RET-9901",
     saleId: "INV-98542", // Reference to a real invoice
+    customerId: "cust-101",
     items: [
       { 
         productId: "p-item-100", 
@@ -16,11 +17,12 @@ export const mockReturns: SaleReturn[] = [
         condition: ITEM_CONDITION_ON_RETURN.RESALABLE 
       }
     ],
+    subtotal: 15000,
     totalRefundAmount: 15000,
     restockingFee: 0,
-    reason: "Customer changed mind before installation",
     status: RETURN_STATUS.COMPLETED,
-    processedBy: "staff-001",
+    returnDate: new Date().toISOString(),
+    createdBy: "staff-001",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }

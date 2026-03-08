@@ -57,7 +57,7 @@ export function FrontdeskView() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-black tracking-tight text-slate-800 uppercase">Frontdesk Counter</h1>
-          <p className="text-xs text-slate-500">Manage today's operations and customer flow</p>
+          <p className="text-xs text-slate-500">Manage today&apos;s operations and customer flow</p>
         </div>
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -178,6 +178,7 @@ export function FrontdeskView() {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function StatCard({ title, value, change, icon, color = "text-slate-900", isCurrency = false }: any) {
   return (
     <Card className="rounded-2xl shadow-sm border-slate-100">

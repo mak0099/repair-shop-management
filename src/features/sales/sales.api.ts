@@ -36,7 +36,8 @@ export const usePOSItems = (search: string = "", categoryId: string = "") => {
         } 
       })
       
-      return response.data || []
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (response.data as any) || []
     },
     // POS data should be relatively fresh
     staleTime: 1000 * 60 * 5, 

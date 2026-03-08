@@ -1,4 +1,4 @@
-import { DashboardStats, FrontdeskStats, RecentActivity, UrgentJob, RevenueChartData, StatusDistribution, InventoryReport, SalesReport, PurchaseReport } from "../dashboard.schema"
+import { DashboardStats, FrontdeskStats, RecentActivity, UrgentJob, InventoryReport, SalesReport, PurchaseReport } from "../dashboard.schema"
 import { mockAcceptances } from "@/features/acceptances/mocks/acceptances.mock"
 import { mockCustomers } from "@/features/customers/mocks/customers.mock"
 import { mockItems } from "@/features/items/mocks/items.mock"
@@ -58,7 +58,7 @@ export const mockRecentActivities: RecentActivity[] = mockAcceptances
       id: acc.acceptanceNumber,
       customer: customer ? customer.name : "Unknown Customer",
       device: `${acc.brandId} ${acc.modelId}`, // In real app, these would be names resolved from IDs
-      issue: acc.defectDescription.substring(0, 30) + "...",
+      issue: (acc.defectDescription || "").substring(0, 30) + "...",
       status: acc.currentStatus,
       time: format(new Date(acc.createdAt), "p"), // e.g., 2:30 PM
     }
@@ -74,14 +74,14 @@ export const mockUrgentJobs: UrgentJob[] = mockAcceptances
       id: acc.acceptanceNumber,
       customer: customer ? customer.name : "Unknown",
       device: `${acc.brandId} ${acc.modelId}`,
-      issue: acc.defectDescription,
+      issue: acc.defectDescription || "No description",
       priority: "High",
       dueDate: acc.urgentDate ? format(new Date(acc.urgentDate), "dd MMM") : "ASAP",
     }
   })
 
 // --- 5. Revenue Chart Data (Last 7 Days) ---
-export const mockRevenueChartData: RevenueChartData[] = Array.from({ length: 7 }).map((_, i) => {
+export const mockRevenueChartData = Array.from({ length: 7 }).map((_, i) => {
   const date = subDays(today, 6 - i)
   const dayAcceptances = mockAcceptances.filter(a => isSameDay(new Date(a.acceptanceDate), date))
   const dailyTotal = dayAcceptances.reduce((sum, acc) => sum + (acc.priceOffered || 0), 0)
@@ -106,7 +106,7 @@ const statusColors: Record<string, string> = {
   "Cancelled": "#ef4444", // red
 }
 
-export const mockStatusDistribution: StatusDistribution[] = Object.entries(statusCounts).map(([status, count]) => ({
+export const mockStatusDistribution = Object.entries(statusCounts).map(([status, count]) => ({
   name: status,
   value: count,
   fill: statusColors[status] || "#94a3b8",
@@ -115,7 +115,7 @@ export const mockStatusDistribution: StatusDistribution[] = Object.entries(statu
 // --- 7. Inventory Report ---
 export const mockInventoryReport: InventoryReport = {
   totalItems: mockItems.length,
-  lowStockItems: mockItems.filter(i => i.initialStock <= (i.lowStockThreshold || 5)).length,
+  lowStockItems: mockItems.filter(i => i.initialStock <= (i.minStockLevel || 5)).length,
   totalValue: mockItems.reduce((sum, i) => sum + (i.initialStock * i.purchasePrice), 0),
 }
 

@@ -28,7 +28,6 @@ export function DataTableCard<TData>({
   children,
   bulkActions,
   showPagination = true,
-  pageSizeOptions,
 }: DataTableCardProps<TData>) {
   const selectedRowCount = table.getFilteredSelectedRowModel().rows.length
 

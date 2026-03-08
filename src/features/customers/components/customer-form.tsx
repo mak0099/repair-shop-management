@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm, Resolver, FieldValues, Control } from "react-hook-form"
+import { useForm, Resolver, useWatch } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -51,14 +51,14 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
     },
   })
 
-  const isDealer = form.watch("isDealer")
+  const isDealer = useWatch({ control: form.control, name: "isDealer" })
 
   const onSubmit = (data: CustomerFormValues) => {
     const callbacks = {
       onSuccess: (res: Customer) => {
         toast.success(`Customer ${isEditMode ? "updated" : "created"} successfully`)
         queryClient.invalidateQueries({ queryKey: ["customers"] })
-        onSuccess ? onSuccess(res) : router.push(CUSTOMERS_BASE_HREF)
+        if (onSuccess) onSuccess(res); else router.push(CUSTOMERS_BASE_HREF)
       },
       onError: (err: Error) => toast.error(err.message)
     }

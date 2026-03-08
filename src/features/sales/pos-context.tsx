@@ -18,6 +18,8 @@ export interface POSCartItem extends Omit<SaleItem, "productId"> {
   selectedIMEI?: string;    // ইউজার যেটি সিলেক্ট করেছে
 }
 
+export type POSProduct = Item;
+
 interface POSContextType {
   cart: POSCartItem[]
   selectedCustomerId: string | null
@@ -73,9 +75,9 @@ export function POSProvider({ children }: { children: React.ReactNode }) {
       // নতুন আইটেম অথবা সিরিয়ালাইজড আইটেম যোগ করা (নতুন ইউনিক cartId সহ)
       const newItem: POSCartItem = {
         cartId: `pos-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-        productId: product.id,
-        name: product.name,
-        sku: product.sku || "",
+        productId: product.id as string,
+        name: (product.name || "Unknown Product") as string,
+        sku: (product.sku || "") as string,
         price: product.salePrice,
         quantity: 1,
         discount: 0,
@@ -84,9 +86,9 @@ export function POSProvider({ children }: { children: React.ReactNode }) {
         type: "PRODUCT", // Fixed: Schema expects "PRODUCT" or "SERVICE", not categoryId
         isSerialized: isSerialized,
         // সিরিয়াল নম্বরগুলোকে অ্যারেতে কনভার্ট করা
-        availableSerials: product.imei 
-          ? product.imei.split(",").map(s => s.trim()).filter(Boolean) 
-          : ((product as any).serialList || []),
+        availableSerials: (product as unknown as { imei?: string }).imei 
+          ? (product as unknown as { imei: string }).imei.split(",").map((s: string) => s.trim()).filter(Boolean) 
+          : ((product as unknown as { serialList?: string[] }).serialList || []),
         selectedIMEI: "",
       };
       
@@ -164,7 +166,7 @@ export function POSProvider({ children }: { children: React.ReactNode }) {
     updatePrice,
     clearCart,
     totals,
-  }), [cart, selectedCustomerId, addItem, removeItem, updateQuantity, updateItemIMEI, updatePrice, clearCart, totals]);
+  }), [cart, selectedCustomerId, setCustomerId, addItem, removeItem, updateQuantity, updateItemIMEI, updatePrice, clearCart, totals]);
 
   return <POSContext.Provider value={value}>{children}</POSContext.Provider>
 }

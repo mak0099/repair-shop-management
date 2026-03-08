@@ -86,7 +86,7 @@ export const khataHandlers = [
 
       khataEntries.unshift(newEntry)
       return HttpResponse.json(newEntry, { status: 201 })
-    } catch (error) {
+    } catch {
       return HttpResponse.json({ message: "Failed to create entry" }, { status: 400 })
     }
   }),
@@ -124,7 +124,7 @@ export const khataHandlers = [
       const { ids } = (await request.json()) as { ids: string[] }
       khataEntries = khataEntries.filter((e) => !ids.includes(e.id))
       return HttpResponse.json({ status: "ok" })
-    } catch (error) {
+    } catch {
       return HttpResponse.json({ message: "Bulk delete failed" }, { status: 500 })
     }
   }),

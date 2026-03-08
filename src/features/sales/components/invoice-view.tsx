@@ -1,10 +1,10 @@
 "use client"
 
-import { Receipt, Printer, X } from "lucide-react"
+import Image from "next/image"
+import { Receipt, Printer } from "lucide-react"
 import { Sale } from "../sales.schema"
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 import { useInvoiceSetup } from "@/features/invoice-setup/invoice-setup.api"
 import { INVOICE_PAPER_SIZES } from "@/features/invoice-setup/invoice-setup.constants"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
@@ -24,8 +24,8 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
   const formatDate = (date: Date) => {
     if (!invoiceSetup?.dateFormat) return new Date(date).toLocaleDateString('it-IT');
     try {
-      return format(date, invoiceSetup.dateFormat);
-    } catch (e) {
+      return format(new Date(date), invoiceSetup.dateFormat);
+    } catch {
       return new Date(date).toLocaleDateString('it-IT'); // Fallback
     }
   };
@@ -64,7 +64,9 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
             <div className="space-y-1 flex flex-row gap-2">
               {invoiceSetup?.showLogo && (
                 shopProfile?.logoUrl ? (
-                  <img src={shopProfile.logoUrl} alt="Logo" className="h-16 w-auto object-contain mb-2" />
+                  <div className="relative h-16 w-24">
+                    <Image src={shopProfile.logoUrl} alt="Logo" fill className="object-contain" />
+                  </div>
                 ) : (
                   <div className="h-10 w-32 bg-slate-100 rounded flex items-center justify-center text-[10px] text-slate-400 font-bold mb-2">
                     SHOP LOGO

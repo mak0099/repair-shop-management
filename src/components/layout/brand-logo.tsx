@@ -8,14 +8,14 @@ export function BrandLogo() {
 
   return (
     <>
-      <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
+      <div className="relative flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
         <Image 
           src={shopProfile?.logoUrl || "/images/logo.png"} 
           alt="Logo" 
-          width={32} 
-          height={32} 
-          className="object-contain" 
+          fill
+          className="object-contain p-0.5" 
           unoptimized 
+          priority
         />
       </div>
       <div className="grid flex-1 text-left text-sm leading-tight">

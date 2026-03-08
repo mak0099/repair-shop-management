@@ -26,8 +26,8 @@ export function QuotationModalProvider({ children }: { children: ReactNode }) {
     isViewMode: false,
   })
 
-  const openModal = useCallback(({ initialData = null, isViewMode = false } = {}) => {
-    setState({ isOpen: true, initialData, isViewMode })
+  const openModal = useCallback(({ initialData, isViewMode = false }: { initialData?: Quotation | null, isViewMode?: boolean } = {}) => {
+    setState({ isOpen: true, initialData: initialData || null, isViewMode })
   }, [])
 
   const closeModal = useCallback(() => {

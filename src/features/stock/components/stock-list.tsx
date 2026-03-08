@@ -10,16 +10,15 @@ import { TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { useStock } from "../stock.api"
+import { useDeleteStock, useStock } from "../stock.api"
 import { useStockAdjustmentModal } from "@/features/stock-adjustment/stock-adjustment-modal-context"
 import { Stock } from "../stock.schema"
 import { STOCK_CATEGORY_FILTER_OPTIONS, STOCK_STATUS_FILTER_OPTIONS } from "../stock.constants"
 import { StockDetailsModal } from "./stock-details-modal"
-import { useDeleteStockAdjustment } from "@/features/stock-adjustment"
 
 export function StockList() {
   const { openModal } = useStockAdjustmentModal()
-  const deleteStockAdjustmentMutation = useDeleteStockAdjustment()
+  const deleteStockMutation = useDeleteStock()
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
 
   const columns: ColumnDef<Stock>[] = useMemo(() => [
@@ -114,11 +113,11 @@ export function StockList() {
           resourceName="Stock Item"
           resourceTitle={row.original.itemName}
           onView={() => setSelectedStock(row.original)}
-          deleteMutation={deleteStockAdjustmentMutation}
+          deleteMutation={deleteStockMutation}
         />
       )
     }
-  ], [deleteStockAdjustmentMutation])
+  ], [deleteStockMutation])
 
   const filterDefinitions: FilterDefinition[] = [
     {

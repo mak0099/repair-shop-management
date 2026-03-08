@@ -27,6 +27,7 @@ interface ModalConfig {
   // has its own specific props interface for `initialData`. Trying to enforce a
   // single generic type here leads to assignability issues. This is a pragmatic
   // trade-off for creating a dynamic modal registry.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contentComponent: React.ComponentType<any>
 }
 

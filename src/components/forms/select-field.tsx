@@ -67,6 +67,7 @@ export function SelectField<TFieldValues extends FieldValues>({
     return options.find((opt) => opt.value === value)?.label || ""
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSelect = (optionValue: string, field: any) => {
     if (isMulti) {
       const currentValues = Array.isArray(field.value) ? field.value : []
@@ -80,6 +81,7 @@ export function SelectField<TFieldValues extends FieldValues>({
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRemove = (optionValue: string, field: any, e: React.MouseEvent) => {
     e.stopPropagation()
     if (isMulti && Array.isArray(field.value)) {

@@ -1,10 +1,10 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useDashboardStats, useRevenueChart, useStatusDistribution } from "../dashboard.api"
-import { CurrencyText } from "@/components/shared/data-table-cells"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, Legend } from "recharts"
-import { TrendingUp, CreditCard, ShoppingBag, Package, Badge } from "lucide-react"
+import { TrendingUp, CreditCard, ShoppingBag, Package } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 export function Overview() {
   const { data: stats } = useDashboardStats()
@@ -20,9 +20,9 @@ export function Overview() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard title="Total Revenue" value={stats?.totalRevenue} change={`+${stats?.revenueChange}%`} icon={<TrendingUp className="h-4 w-4" />} color="text-emerald-600" />
-        <MetricCard title="Net Profit" value={stats?.netProfit} change={`+${stats?.profitChange}%`} icon={<CreditCard className="h-4 w-4" />} color="text-blue-600" />
+        <MetricCard title="Net Profit" value={(stats as unknown as { netProfit: number })?.netProfit} change={`+${(stats as unknown as { profitChange: number })?.profitChange}%`} icon={<CreditCard className="h-4 w-4" />} color="text-blue-600" />
         <MetricCard title="Sales Count" value={stats?.totalOrders} change={`+${stats?.ordersChange}%`} icon={<ShoppingBag className="h-4 w-4" />} />
-        <MetricCard title="Total Stock Value" value={stats?.totalStockValue} change="Inventory Asset" icon={<Package className="h-4 w-4" />} />
+        <MetricCard title="Total Stock Value" value={(stats as unknown as { totalStockValue: number })?.totalStockValue} change="Inventory Asset" icon={<Package className="h-4 w-4" />} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-7">
@@ -50,7 +50,7 @@ export function Overview() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={8}>
-                  {statusData?.map((entry: any, index: number) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
+                  {statusData?.map((entry: { fill: string }, index: number) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
                 </Pie>
                 <Tooltip />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }} />
@@ -63,7 +63,13 @@ export function Overview() {
   )
 }
 
-function MetricCard({ title, value, change, icon, color = "text-slate-900" }: any) {
+function MetricCard({ title, value, change, icon, color = "text-slate-900" }: {
+  title: string;
+  value: number | string | undefined;
+  change: string;
+  icon: React.ReactNode;
+  color?: string;
+}) {
   return (
     <Card className="rounded-3xl border-slate-100 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">

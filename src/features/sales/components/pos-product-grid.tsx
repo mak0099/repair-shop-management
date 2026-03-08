@@ -9,32 +9,32 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { usePOS } from "../pos-context"
 import { usePOSItems } from "../sales.api"
 import { useCategoryOptions } from "@/features/categories/category.api"
-import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { cn } from "@/lib/utils"
 import { CurrencyText } from "@/components/shared/data-table-cells"
+import { Item } from "@/features/items/item.schema"
 
 export function POSProductGrid() {
   const [search, setSearch] = useState("")
   const [categoryId, setCategoryId] = useState("")
   const [viewType, setViewType] = useState<"grid" | "list">("grid")
   
-  const { data: rawData, isLoading: isProductsLoading } = usePOSItems(search, categoryId)
+  const { data: products, isLoading: isProductsLoading } = usePOSItems(search, categoryId)
   const { data: categoriesData, isLoading: isCategoriesLoading } = useCategoryOptions()
   const { addItem } = usePOS()
-  const { data: shopProfile } = useShopProfile()
-  const currency = shopProfile?.currency || "BDT"
 
-  const products = Array.isArray(rawData) ? rawData : ((rawData as any)?.data || [])
   const categories = categoriesData || []
 
   // Client-side filtering fallback (in case API ignores params)
   const filteredProducts = useMemo(() => {
-    return products.filter((product: any) => {
+    const productList = Array.isArray(products) ? products : (products as any)?.data || []
+    if (!Array.isArray(productList)) return []
+    return productList.filter((product: Item) => {
       const matchesCategory = categoryId ? product.categoryId === categoryId : true
       const matchesSearch = search 
         ? (product.name?.toLowerCase().includes(search.toLowerCase()) || 
            product.sku?.toLowerCase().includes(search.toLowerCase()) ||
-           (product.imei && product.imei.toLowerCase().includes(search.toLowerCase())))
+           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           ((product as any).imei && (product as any).imei.toLowerCase().includes(search.toLowerCase())))
         : true
       return matchesCategory && matchesSearch
     })
@@ -65,22 +65,22 @@ export function POSProductGrid() {
           
           <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
             <Button 
-              variant={viewType === "grid" ? "white" : "ghost"} 
+              variant={viewType === "grid" ? "secondary" : "ghost"} 
               size="icon" 
               className={cn(
                 "h-9 w-9 rounded-lg transition-all",
-                viewType === "grid" && "shadow-sm text-blue-600 ring-1 ring-black/5"
+                viewType === "grid" && "shadow-sm text-blue-600 ring-1 ring-black/5 bg-white"
               )}
               onClick={() => setViewType("grid")}
             >
               <LayoutGrid className="h-4 w-4" />
             </Button>
             <Button 
-              variant={viewType === "list" ? "white" : "ghost"} 
+              variant={viewType === "list" ? "secondary" : "ghost"} 
               size="icon" 
               className={cn(
                 "h-9 w-9 rounded-lg transition-all",
-                viewType === "list" && "shadow-sm text-blue-600 ring-1 ring-black/5"
+                viewType === "list" && "shadow-sm text-blue-600 ring-1 ring-black/5 bg-white"
               )}
               onClick={() => setViewType("list")}
             >
@@ -112,7 +112,7 @@ export function POSProductGrid() {
                 ))}
               </div>
             ) : (
-              categories.map((cat: any) => (
+              categories.map((cat: { id: string; name: string }) => (
                 <Button 
                   key={cat.id} 
                   variant={categoryId === cat.id ? "default" : "outline"} 
@@ -156,7 +156,7 @@ export function POSProductGrid() {
               ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4" 
               : "flex flex-col gap-3"
           )}>
-            {filteredProducts.map((product: any) => (
+            {filteredProducts.map((product: Item) => (
               <button
                 key={product.id}
                 onClick={() => addItem(product)}

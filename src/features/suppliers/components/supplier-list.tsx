@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { DateCell, StatusCell, TitleCell } from "@/components/shared/data-table-cells"
+import { DateCell, TitleCell } from "@/components/shared/data-table-cells"
 
 import {
   useSuppliers,

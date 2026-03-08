@@ -2,12 +2,11 @@
 
 import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { UseMutationResult } from "@tanstack/react-query"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { DateCell, ImageCell, StatusCell, TitleCell } from "@/components/shared/data-table-cells"
+import { DateCell, ImageCell, TitleCell } from "@/components/shared/data-table-cells"
 
 import {
   useBrands,

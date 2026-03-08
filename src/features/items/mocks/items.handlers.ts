@@ -1,5 +1,4 @@
 import { delay, http, HttpResponse } from "msw"
-import { applySort } from "@/mocks/mock-utils"
 import { Item } from "../item.schema"
 import { mockItems } from "./items.mock"
 

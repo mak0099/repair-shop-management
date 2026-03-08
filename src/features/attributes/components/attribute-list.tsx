@@ -1,6 +1,6 @@
 "use client"
 
-import { Tag, Loader2, Edit3, Layers } from "lucide-react"
+import { Tag, Loader2, Edit3 } from "lucide-react"
 import { useAttributes } from "../attribute.api"
 import { useAttributeModal } from "../attribute-modal-context"
 import { Button } from "@/components/ui/button"

@@ -62,10 +62,10 @@ export const returnsHandlers = [
       ...data,
       id: `ret-${Date.now()}`,
       returnNumber: `RET-${Math.floor(1000 + Math.random() * 9000)}`,
-      processedBy: "staff-001",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      customerName: customer?.name || "Unknown Customer"
+      customerName: customer?.name || "Unknown Customer",
+      createdBy: "current-user"
     };
     
     returnsHistory.unshift(newReturn);

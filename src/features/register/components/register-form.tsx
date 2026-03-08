@@ -1,9 +1,9 @@
 "use client"
 
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, FormProvider, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Wallet, Banknote, CreditCard, Landmark, AlertCircle } from "lucide-react"
+import { Wallet, Banknote, CreditCard, AlertCircle } from "lucide-react"
 
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
@@ -26,7 +26,8 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
   const { mutate: updateRegister, isPending: isUpdating } = useUpdateRegister()
 
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(registerSchema) as any,
     defaultValues: {
       openedAt: initialData?.openedAt || new Date().toISOString(),
       openedBy: initialData?.openedBy || "current-user",
@@ -40,11 +41,15 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
     }
   })
 
+  const totalCashSales = useWatch({ control: form.control, name: "totalCashSales" })
+  const totalCardSales = useWatch({ control: form.control, name: "totalCardSales" })
+  const totalDigitalSales = useWatch({ control: form.control, name: "totalDigitalSales" })
+  const openingBalance = useWatch({ control: form.control, name: "openingBalance" })
+
   const onSubmit = (data: RegisterFormValues) => {
     if (isClosing) {
       // Close Register Logic
       const finalData = { ...data, status: REGISTER_STATUS.CLOSED, closedAt: new Date().toISOString() }
-      // @ts-ignore
       updateRegister({ id: initialData.id, data: finalData }, {
         onSuccess: () => {
           toast.success("Register closed and reconciled successfully")
@@ -65,7 +70,8 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
   return (
     <FormProvider {...form}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full bg-white">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <form onSubmit={form.handleSubmit(onSubmit as any)} className="flex flex-col h-full bg-white">
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             
             {/* Summary Cards during Close/View */}
@@ -76,21 +82,21 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
                     <Banknote className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Cash Sales</span>
                   </div>
-                  <p className="text-xl font-black text-slate-900">৳{form.watch("totalCashSales").toLocaleString()}</p>
+                  <p className="text-xl font-black text-slate-900">৳{totalCashSales.toLocaleString()}</p>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                   <div className="flex items-center gap-2 text-blue-600 mb-1">
                     <CreditCard className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Card/Digital</span>
                   </div>
-                  <p className="text-xl font-black text-slate-900">৳{(form.watch("totalCardSales") + form.watch("totalDigitalSales")).toLocaleString()}</p>
+                  <p className="text-xl font-black text-slate-900">৳{(totalCardSales + totalDigitalSales).toLocaleString()}</p>
                 </div>
                 <div className="bg-slate-900 p-4 rounded-xl text-white">
                   <div className="flex items-center gap-2 text-slate-400 mb-1">
                     <Wallet className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Expected Total</span>
                   </div>
-                  <p className="text-xl font-black">৳{(form.watch("openingBalance") + form.watch("totalCashSales")).toLocaleString()}</p>
+                  <p className="text-xl font-black">৳{(openingBalance + totalCashSales).toLocaleString()}</p>
                 </div>
               </div>
             )}
@@ -98,7 +104,8 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
             <div className="space-y-4">
               <TextField 
                 name="openingBalance" 
-                control={form.control} 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                control={form.control as any}
                 label="Opening Cash (Drawer Start)" 
                 type="number" 
                 disabled={!!initialData}
@@ -107,7 +114,8 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
               {isClosing && (
                 <TextField 
                   name="actualBalance" 
-                  control={form.control} 
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  control={form.control as any}
                   label="Actual Cash in Hand (Counted)" 
                   type="number" 
                   required
@@ -116,7 +124,8 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
 
               <TextareaField 
                 name="notes" 
-                control={form.control} 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                control={form.control as any}
                 label="Session Notes" 
                 placeholder="Any cash shortages or observations..."
                 disabled={isViewMode}
@@ -137,7 +146,7 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
             <FormFooter 
               isPending={isCreating || isUpdating} 
               isEditMode={!!initialData} 
-              submitLabel={isClosing ? "Close Register & Reconcile" : "Open Register"}
+              saveLabel={isClosing ? "Close Register & Reconcile" : "Open Register"}
               onCancel={onSuccess} 
               className="p-6 bg-slate-50 border-t"
             />

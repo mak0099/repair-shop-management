@@ -1,11 +1,10 @@
 "use client"
 
 import { useMemo } from "react"
-import { useFormContext, Control, FieldValues, Path, PathValue } from "react-hook-form"
+import { Control, FieldValues, Path } from "react-hook-form"
 
 import { SelectField } from "@/components/forms/select-field"
 import { useItemOptions } from "../item.api"
-import { useItemModal } from "../item-modal-context"
 
 interface ItemSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>

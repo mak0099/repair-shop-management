@@ -6,13 +6,14 @@ import { mockRoles } from "@/features/roles/mocks/roles.mock"
 // Local mock state
 // We extend User to include the extra fields that might be present in the mock but not in the base User type
 interface MockUser extends User {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   roles: any[];
   createdAt: string;
   updatedAt: string;
 }
 
 // Use the first user from MOCK_USERS as the logged-in user (Admin)
-const { password, ...defaultUser } = MOCK_USERS[0];
+const { ...defaultUser } = MOCK_USERS[0];
 
 let mockUserProfile: MockUser = {
   ...defaultUser,

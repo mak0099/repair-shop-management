@@ -55,6 +55,7 @@ export function ProfileForm({ user }: { user: UserType }) {
   const onProfileSubmit = (data: ProfileFormValues) => {
     updateProfile(data, {
       onSuccess: () => toast.success("Profile information updated!"),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (err: any) => toast.error(err?.message || "Failed to update profile"),
     })
   }
@@ -66,6 +67,7 @@ export function ProfileForm({ user }: { user: UserType }) {
         toast.success("Security credentials updated!")
         passwordForm.reset() // পাসওয়ার্ড রিসেট করা জরুরি
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (err: any) => toast.error(err?.message || "Failed to change password"),
     })
   }

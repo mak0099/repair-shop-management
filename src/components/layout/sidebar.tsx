@@ -67,13 +67,15 @@ import {
   ADMIN_SETTINGS_HREF,
   ADMIN_USERS_HREF,
   ADMIN_ROLES_HREF,
+  DASHBOARD_OVERVIEW_HREF,
 } from "@/config/paths";
+import Link from "next/link";
 
 export const data = {
   user: {
     name: "Admin User",
     email: "admin@example.com",
-    avatar: "/avatars/user.jpg",
+    avatar: "/images/user.svg",
   },
   navMain: [
     {
@@ -83,7 +85,7 @@ export const data = {
       isActive: true,
       items: [
         { title: "Frontdesk View", url: DASHBOARD_FRONTDESK_HREF },
-        { title: "Overview", url: DASHBOARD_BASE_HREF },
+        { title: "Overview", url: DASHBOARD_OVERVIEW_HREF },
       ],
     },
     {
@@ -179,12 +181,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a
+              <Link
                 href={SHOP_PROFILE_BASE_HREF}
                 className="group-data-[collapsible=icon]:!p-0 group-data-[collapsible=icon]:justify-center [&>div:last-child]:group-data-[collapsible=icon]:hidden"
               >
                 <BrandLogo />
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>

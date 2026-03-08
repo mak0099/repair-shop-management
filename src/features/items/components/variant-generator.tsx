@@ -32,6 +32,7 @@ export function VariantGenerator({ onGenerate, productName }: VariantGeneratorPr
       
       const newSelections = { ...prev, [attrName]: newValues }
       if (newValues.length === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [attrName]: _, ...rest } = newSelections
         return rest
       }

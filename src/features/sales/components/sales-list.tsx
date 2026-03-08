@@ -109,7 +109,7 @@ export function SalesList() {
         )
       }
     }
-  ], [deleteMutation])
+  ], [deleteMutation, openInvoice])
 
   return (
     <ResourceListPage<Sale, unknown>

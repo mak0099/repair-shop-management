@@ -79,7 +79,7 @@ export const userHandlers = [
   http.post("*/users", async ({ request }) => {
     await delay(800)
     const data = (await request.json()) as UserFormValues
-    const { password, extraPermissions, ...rest } = data;
+    const { extraPermissions, ...rest } = data;
 
     const newUser: User = {
       id: `user-${Date.now()}`,
@@ -105,7 +105,7 @@ export const userHandlers = [
     let updatedUser: User | undefined
     users = users.map((user) => {
       if (user.id === id) {
-        const { password, extraPermissions, ...rest } = updates;
+        const { extraPermissions, ...rest } = updates;
         
         updatedUser = { 
           ...user, 

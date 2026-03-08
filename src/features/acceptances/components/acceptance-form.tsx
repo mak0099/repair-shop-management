@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { FormProvider, useForm, Resolver } from "react-hook-form"
+import { FormProvider, useForm, Resolver, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 
@@ -80,10 +80,10 @@ export function AcceptanceForm({
     },
   })
 
-  const { control, watch, setValue, formState } = form
-  const pinUnlock = watch("pinUnlock")
-  const urgent = watch("urgent")
-  const brandId = watch("brandId")
+  const { control, setValue, formState } = form
+  const pinUnlock = useWatch({ control, name: "pinUnlock" })
+  const urgent = useWatch({ control, name: "urgent" })
+  const brandId = useWatch({ control, name: "brandId" })
 
   useEffect(() => {
     if (formState.dirtyFields.brandId) {

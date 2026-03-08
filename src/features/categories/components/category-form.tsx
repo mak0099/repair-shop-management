@@ -10,7 +10,6 @@ import { toast } from "sonner"
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
-import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { FormFooter } from "@/components/forms/form-footer"
 import { CategorySelectField } from "./category-select-field"
@@ -74,7 +73,7 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
           onSuccess: (updatedCategory: Category) => {
             toast.success("Category updated successfully")
             queryClient.invalidateQueries({ queryKey: ["categories"] })
-            onSuccess ? onSuccess(updatedCategory) : router.push(CATEGORIES_BASE_HREF)
+            if (onSuccess) onSuccess(updatedCategory); else router.push(CATEGORIES_BASE_HREF)
           },
           onError: (error) => toast.error("Update failed: " + error.message),
         }
@@ -84,7 +83,7 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
         onSuccess: (newCategory) => {
           toast.success("Category created successfully")
           queryClient.invalidateQueries({ queryKey: ["categories"] })
-          onSuccess ? onSuccess(newCategory) : router.push(CATEGORIES_BASE_HREF)
+          if (onSuccess) onSuccess(newCategory); else router.push(CATEGORIES_BASE_HREF)
         },
         onError: (error) => toast.error("Creation failed: " + error.message),
       })

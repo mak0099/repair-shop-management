@@ -1,12 +1,8 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -30,7 +26,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useLayout } from "@/components/layout/layout-context"
 import { signOut, useSession } from "next-auth/react"
 
 export function NavUser({
@@ -94,7 +89,6 @@ export function NavUserMenuContent({
     avatar: string
   }
 }) {
-  const { toggleLayout, isTopNav } = useLayout()
   const router = useRouter()
 
   const handleLogout = async () => {

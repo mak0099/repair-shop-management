@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Building2, Mail, Phone, MapPin, Globe, CreditCard, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
           <CardContent className="pt-6 flex flex-col items-center text-center">
             <div className="w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 mb-4 overflow-hidden">
               {profile.logoUrl ? (
-                <img src={profile.logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                <Image src={profile.logoUrl} alt="Logo" fill className="object-cover" />
               ) : (
                 <Building2 className="h-12 w-12 text-slate-400" />
               )}

@@ -25,6 +25,7 @@ import { registerHandlers } from "@/features/register";
 import { purchaseHandlers } from "@/features/purchases";
 import { khataHandlers } from "@/features/khata";
 import { profileHandlers } from "@/features/profile";
+import { dashboardHandlers } from "@/features/dashboard";
 
 export const handlers = [
   ...authHandlers,
@@ -52,5 +53,6 @@ export const handlers = [
   ...registerHandlers,
   ...purchaseHandlers,
   ...khataHandlers,
-  ...profileHandlers
+  ...profileHandlers,
+  ...dashboardHandlers
 ]

@@ -5,7 +5,6 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
-  LayoutDashboard,
   LogOut,
   Sparkles,
 } from "lucide-react"
@@ -119,14 +118,13 @@ export function NavUserMenuContent({
           </div>
         </div>
       </DropdownMenuLabel>
-      <DropdownMenuSeparator />
       {/* <DropdownMenuGroup>
         <DropdownMenuItem>
           <Sparkles />
           Upgrade to Pro
         </DropdownMenuItem>
       </DropdownMenuGroup> */}
-      <DropdownMenuSeparator />
+      {/* <DropdownMenuSeparator /> */}
       <DropdownMenuGroup>
         {/* <DropdownMenuItem>
           <BadgeCheck />
@@ -140,10 +138,6 @@ export function NavUserMenuContent({
           <Bell />
           Notifications
         </DropdownMenuItem> */}
-        <DropdownMenuItem onClick={toggleLayout}>
-          <LayoutDashboard />
-          {isTopNav ? "Switch to Sidebar" : "Switch to Top Nav"}
-        </DropdownMenuItem>
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={handleLogout}>

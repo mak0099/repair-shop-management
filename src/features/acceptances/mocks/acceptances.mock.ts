@@ -3,13 +3,20 @@ import { mockCustomers } from "@/features/customers/mocks/customers.mock";
 import { mockBrands } from "@/features/brands/mocks/brands.mock";
 import { mockModels } from "@/features/models/mocks/models.mock";
 import { mockUsers } from "@/features/users/mocks/users.mock";
+import { mockMasterSettings } from "@/features/master-settings/mocks/master-setting.mock";
 
-const deviceTypes = ["SMARTPHONE", "TABLET", "LAPTOP", "DESKTOP", "OTHER"];
-const statuses = ["IN REPAIR", "WAITING PARTS", "READY", "DELIVERED", "CANCELLED"];
-const warranties = ["No Warranty", "3 Months", "6 Months", "12 Months", "Lifetime"];
+const getMasterValues = (key: string) => {
+    const setting = mockMasterSettings.find(s => s.key === key);
+    return setting ? setting.values.map(v => v.value) : [];
+};
+
+const deviceTypes = getMasterValues("DEVICE_TYPE");
+const statuses = getMasterValues("REPAIR_STATUS");
+const warranties = getMasterValues("WARRANTY");
+const colors = getMasterValues("COLOR");
+const accessories = getMasterValues("ACCESSORY");
+
 const booleans = [true, false];
-const colors = ["Black", "White", "Titanium Gray", "Blue", "Red", "Green"];
-const accessories = ["Charger", "Cable", "Case", "No accessories", "Original Box"];
 const defects = [
     "Screen is cracked and touch not responding in lower half.",
     "Battery draining very fast, needs replacement.",
@@ -59,7 +66,6 @@ const generateAcceptances = (count: number): Acceptance[] => {
             urgentDate: urgent ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000) : undefined,
             quote: getRandom(booleans),
             photos: i % 3 === 0 ? ["/mock/iphone-front.jpg", "/mock/iphone-back.jpg"] : [],
-            branchId: "roma-main",
             createdAt: dateObj.toISOString(),
             updatedAt: new Date().toISOString(),
             isActive: true,

@@ -70,6 +70,10 @@ export function TextField<TFieldValues extends FieldValues>({
                 )}
                 {...props}
                 {...field}
+                onChange={(e) => {
+                  field.onChange(e)
+                  props.onChange?.(e)
+                }}
                 value={field.value ?? ""}
               />
             </FormControl>

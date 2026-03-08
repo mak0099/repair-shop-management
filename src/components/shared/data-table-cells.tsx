@@ -188,6 +188,8 @@ export interface CurrencyCellProps {
   locale?: string
   className?: string
   subtitle?: React.ReactNode
+  minimumFractionDigits?: number
+  maximumFractionDigits?: number
 }
 
 export function CurrencyCell({
@@ -224,7 +226,9 @@ export function CurrencyText({
   amount,
   currencyCode,
   locale = "it-IT",
-}: Pick<CurrencyCellProps, "amount" | "currencyCode" | "locale">) {
+  minimumFractionDigits,
+  maximumFractionDigits,
+}: Pick<CurrencyCellProps, "amount" | "currencyCode" | "locale" | "minimumFractionDigits" | "maximumFractionDigits">) {
   const { data: shopProfile } = useShopProfile()
   const currency = currencyCode || shopProfile?.currency || "EUR"
   const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
@@ -236,5 +240,7 @@ export function CurrencyText({
   return <>{new Intl.NumberFormat(locale, {
     style: "currency",
     currency: currency,
+    minimumFractionDigits,
+    maximumFractionDigits,
   }).format(numericAmount)}</>
 }

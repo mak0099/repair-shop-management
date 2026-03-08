@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LucideIcon, GalleryVerticalEnd } from "lucide-react"
+import { LucideIcon, LayoutTemplate } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { data } from "@/components/layout/sidebar"
 import { useLayout } from "@/components/layout/layout-context"
@@ -20,6 +20,8 @@ import {
 import { NavUserMenuContent } from "@/components/layout/nav-user"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSession } from "next-auth/react"
+import { Button } from "@/components/ui/button"
+import { BrandLogo } from "@/components/layout/brand-logo"
 
 interface NavItem {
   title: string
@@ -36,7 +38,6 @@ export function AppTopNav() {
   const pathname = usePathname()
   const { toggleLayout } = useLayout()
   const { user: initialUser } = data
-  const Logo = GalleryVerticalEnd
   const { data: session } = useSession()
 
   const user = session?.user ? {
@@ -46,18 +47,24 @@ export function AppTopNav() {
   } : initialUser
 
   const getIsActive = (item: NavItem): boolean => {
+    if (item.items && item.items.some((subItem) => getIsActive(subItem as NavItem))) {
+      return true;
+    }
+
     if (item.url) {
       if (item.url === '/dashboard') {
         return pathname === '/dashboard';
       }
-      if (pathname.startsWith(item.url)) {
-        return true;
-      }
+      return pathname.startsWith(item.url);
     }
-    if (item.items) {
-      return item.items.some((subItem) => getIsActive(subItem as NavItem));
-    }
+
     return false;
+  }
+
+  const isUrlActive = (url?: string) => {
+    if (!url) return false
+    if (url === '/dashboard') return pathname === '/dashboard'
+    return pathname === url || pathname.startsWith(url + '/')
   }
 
   return (
@@ -65,12 +72,7 @@ export function AppTopNav() {
       <div className="container flex h-20 items-center justify-between px-4">
         <div className="mr-4 hidden md:flex items-center">
           <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Logo className="size-4" />
-            </div>
-            <span className="hidden font-bold sm:inline-block">
-              TELEFIX
-            </span>
+            <BrandLogo />
           </Link>
           <nav className="flex items-center space-x-2 text-[11px] font-medium">
             {data.navMain.map((item) => {
@@ -94,13 +96,16 @@ export function AppTopNav() {
                     {item.items.map((subItem) =>
                       'items' in subItem && Array.isArray(subItem.items) ? (
                         <DropdownMenuSub key={subItem.title}>
-                          <DropdownMenuSubTrigger>
+                          <DropdownMenuSubTrigger className={cn(subItem.items?.some(i => isUrlActive(i.url)) && "text-primary font-medium")}>
                             {subItem.title}
                           </DropdownMenuSubTrigger>
                           <DropdownMenuSubContent>
                             {subItem.items.map((nestedItem) => (
                               <DropdownMenuItem key={nestedItem.title} asChild>
-                                <Link href={nestedItem.url || "#"}>
+                                <Link 
+                                  href={nestedItem.url || "#"}
+                                  className={cn(isUrlActive(nestedItem.url) && "bg-primary/10 text-primary font-medium")}
+                                >
                                   {nestedItem.title}
                                 </Link>
                               </DropdownMenuItem>
@@ -109,7 +114,12 @@ export function AppTopNav() {
                         </DropdownMenuSub>
                       ) : (
                         <DropdownMenuItem key={subItem.title} asChild>
-                          <Link href={subItem.url || "#"}>{subItem.title}</Link>
+                          <Link 
+                            href={subItem.url || "#"}
+                            className={cn(isUrlActive(subItem.url) && "bg-primary/10 text-primary font-medium")}
+                          >
+                            {subItem.title}
+                          </Link>
                         </DropdownMenuItem>
                       )
                     )}
@@ -125,6 +135,9 @@ export function AppTopNav() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={toggleLayout} title="Toggle Layout">
+            <LayoutTemplate className="h-5 w-5" />
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="h-8 w-8 cursor-pointer">

@@ -1,9 +1,15 @@
-import { AcceptanceList } from "@/features/acceptances"
+"use client"
 
-export default function AcceptanceListPage() {
-  return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <AcceptanceList />
-    </div>
-  )
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { ACCEPTANCES_LIST_HREF } from '@/config/paths'
+
+export default function Acceptances() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace(ACCEPTANCES_LIST_HREF)
+  }, [router])
+
+  return null
 }

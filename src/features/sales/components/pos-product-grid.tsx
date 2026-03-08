@@ -11,6 +11,7 @@ import { usePOSItems } from "../sales.api"
 import { useCategoryOptions } from "@/features/categories/category.api"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { cn } from "@/lib/utils"
+import { CurrencyText } from "@/components/shared/data-table-cells"
 
 export function POSProductGrid() {
   const [search, setSearch] = useState("")
@@ -191,7 +192,7 @@ export function POSProductGrid() {
                   viewType === "grid" ? "justify-between mt-auto pt-3 border-t border-slate-50" : "gap-6 pl-4"
                 )}>
                   <span className="text-sm font-black text-slate-900">
-                    {currency} {Number(product.salePrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    <CurrencyText amount={product.salePrice} />
                   </span>
                   
                   <Badge 

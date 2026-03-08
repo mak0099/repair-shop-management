@@ -15,7 +15,7 @@ export const invoiceSetupMock: InvoiceSetup = {
   showSignature: true,
 
   // Shop Identity
-  shopName: "OFFICINA RIPARAZIONI ROSSI",
+  shopName: "Telefix IT",
   shopAddress: "Via Montenapoleone, 20121 Milano MI, Italia",
   shopContact: "Tel: +39 02 1234 5678",
 

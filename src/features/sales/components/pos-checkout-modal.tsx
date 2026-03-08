@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useForm, FormProvider } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { CreditCard, Banknote, Smartphone, Check, ArrowRight, Calculator, Coins } from "lucide-react"
+import { CreditCard, Banknote, Smartphone, Check, ArrowRight, Calculator, Coins, Euro } from "lucide-react"
 import { z } from "zod"
 
 import { usePOS } from "../pos-context"
@@ -17,12 +17,13 @@ import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { FormField, FormMessage, FormItem, FormControl } from "@/components/ui/form"
+import { FormField } from "@/components/ui/form"
+import { CurrencyText } from "@/components/shared/data-table-cells"
+import { TextField } from "@/components/forms/text-field"
 
 export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
   const { totals, cart, selectedCustomerId, clearCart } = usePOS()
@@ -54,8 +55,8 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
   })
 
   const { control, watch, setValue, handleSubmit, reset } = form
-  const amountReceived = watch("amountReceived") || 0
-  const grandTotal = watch("grandTotal") || 0
+  const amountReceived = Number(watch("amountReceived") || 0)
+  const grandTotal = Number(watch("grandTotal") || 0)
   const paymentMethod = watch("paymentMethod")
   const changeAmount = Math.max(0, amountReceived - grandTotal)
   const dueAmount = Math.max(0, grandTotal - amountReceived)
@@ -186,8 +187,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1">Total Payable Amount</span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-medium text-slate-400">{currency}</span>
-                  <span className="text-4xl font-black tracking-tighter">{totals.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-4xl font-black tracking-tighter"><CurrencyText amount={totals.grandTotal} /></span>
                 </div>
               </div>
 
@@ -233,83 +233,45 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
 
               {/* Discount & Final Price Adjustment */}
               <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                 <FormField
+                 <TextField
                     control={control}
                     name="totalDiscount"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Discount ({currency})</Label>
-                        <FormControl>
-                        <Input 
-                            {...field}
-                            type="number" 
-                            step="0.01"
-                            onFocus={(e) => e.target.select()}
-                            value={field.value === 0 ? "" : field.value}
-                            onChange={(e) => {
-                              field.onChange(e.target.value)
-                              handleDiscountChange(e.target.value)
-                            }}
-                            className="h-8 bg-white text-sm font-bold"
-                        />
-                        </FormControl>
-                        <FormMessage className="text-[10px]" />
-                      </FormItem>
-                    )}
+                    label="Discount"
+                    labelClassName="text-[10px] font-bold text-slate-500 uppercase"
+                    className="space-y-1"
+                    type="number"
+                    icon={<Euro className="h-4 w-4 text-slate-400" />}
+                    inputClassName="h-10 bg-white font-bold border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => handleDiscountChange(e.target.value)}
                  />
-                 <FormField
+                 <TextField
                     control={control}
                     name="grandTotal"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <Label className="text-[10px] font-bold text-slate-500 uppercase">Total Selling Price ({currency})</Label>
-                        <FormControl>
-                        <Input 
-                            {...field}
-                            type="number" 
-                            step="0.01"
-                            onFocus={(e) => e.target.select()}
-                            value={field.value === 0 ? "" : field.value}
-                            onChange={(e) => {
-                              field.onChange(e.target.value)
-                              handleTotalChange(e.target.value)
-                            }}
-                            className="h-8 bg-white text-sm font-bold border-blue-200 focus:border-blue-500"
-                        />
-                        </FormControl>
-                        <FormMessage className="text-[10px]" />
-                      </FormItem>
-                    )}
+                    label="Total Selling Price"
+                    labelClassName="text-[10px] font-bold text-slate-500 uppercase"
+                    className="space-y-1"
+                    type="number"
+                    icon={<Euro className="h-4 w-4 text-slate-400" />}
+                    inputClassName="h-10 bg-white font-bold border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => handleTotalChange(e.target.value)}
                  />
               </div>
 
               {/* Amount & Change Calculation */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Receive Amount</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">{currency}</span>
-                    <FormField
-                      control={control}
-                      name="amountReceived"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input 
-                              {...field}
-                              type="number" 
-                              className="pl-7 h-10 text-base font-bold bg-white border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
-                              placeholder="0.00"
-                              onFocus={(e) => e.target.select()}
-                              value={field.value === 0 ? "" : field.value}
-                              onChange={(e) => field.onChange(e.target.value)}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-[10px]" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <TextField
+                    control={control}
+                    name="amountReceived"
+                    label="Receive Amount"
+                    type="number"
+                    icon={<Euro className="h-4 w-4 text-slate-400" />}
+                    inputClassName="h-10 bg-white font-bold border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                    placeholder="0.00"
+                    onFocus={(e) => e.target.select()}
+                  />
                   
                   {/* Quick Cash Suggestions */}
                   {paymentMethod === "CASH" && (
@@ -323,7 +285,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                       >
                         Exact
                       </Button>
-                      {[10, 20, 50, 100].map(amt => (
+                      {[5, 10, 20, 50, 100, 200, 500].map(amt => (
                         amt > grandTotal && (
                           <Button 
                             key={amt}
@@ -333,7 +295,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                             className="h-6 text-[10px] font-medium bg-white text-slate-600 px-2"
                             onClick={() => handleQuickAmount(amt)}
                           >
-                            {currency} {amt}
+                            <CurrencyText amount={amt} minimumFractionDigits={0} maximumFractionDigits={0} />
                           </Button>
                         )
                       ))}
@@ -353,7 +315,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                       ? "bg-emerald-50 border-emerald-100 text-emerald-600" 
                       : "bg-slate-100 border-slate-200 text-slate-400"
                   )}>
-                    {currency} {(dueAmount > 0 ? dueAmount : changeAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    <CurrencyText amount={dueAmount > 0 ? dueAmount : changeAmount} />  
                   </div>
                 </div>
               </div>

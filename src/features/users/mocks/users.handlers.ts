@@ -55,6 +55,24 @@ export const userHandlers = [
     })
   }),
 
+    // GET user options
+    http.get("*/users/options", async ({ request }) => {
+      await delay(200)
+      const url = new URL(request.url)
+      const search = url.searchParams.get("search")?.toLowerCase() || ""
+  
+      const filtered = users.filter(
+        (u) => u.isActive && (u.name.toLowerCase().includes(search))
+      )
+  
+      const options = filtered.map((u) => ({
+        id: u.id,
+        name: u.name,
+      }))
+  
+      return HttpResponse.json(options)
+    }),
+
   /**
    * POST a new user
    */

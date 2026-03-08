@@ -1,22 +1,20 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   BarChart3,
   CheckCircle,
   FileText,
-  GalleryVerticalEnd,
   Home,
+  LayoutTemplate,
   Package,
   Settings2,
   ShoppingCart,
   Users,
-  History,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/layout/nav-main"
-import { NavProjects } from "@/components/layout/nav-projects"
-import { NavUser } from "@/components/layout/nav-user"
+import { NavMain } from "@/components/layout/nav-main";
+import { NavUser } from "@/components/layout/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -26,7 +24,50 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useLayout } from "@/components/layout/layout-context";
+import { BrandLogo } from "@/components/layout/brand-logo";
+import {
+  SHOP_PROFILE_BASE_HREF,
+  DASHBOARD_BASE_HREF,
+  DASHBOARD_FRONTDESK_HREF,
+  ACCEPTANCES_BASE_HREF,
+  ACCEPTANCES_ADD_HREF,
+  ACCEPTANCES_LIST_HREF,
+  INVENTORY_BASE_HREF,
+  INVENTORY_STOCK_HREF,
+  INVENTORY_PRODUCTS_HREF,
+  INVENTORY_ATTRIBUTES_HREF,
+  INVENTORY_STOCK_ADJUSTMENT_HREF,
+  INVENTORY_BARCODE_HREF,
+  INVENTORY_CATEGORIES_HREF,
+  INVENTORY_BRANDS_HREF,
+  INVENTORY_MODELS_HREF,
+  INVENTORY_BOX_NUMBERS_HREF,
+  SALES_BASE_HREF,
+  SALES_POS_HREF,
+  SALES_LIST_HREF,
+  SALES_QUOTATIONS_HREF,
+  SALES_RETURNS_HREF,
+  SALES_REGISTER_HREF,
+  FINANCE_BASE_HREF,
+  FINANCE_PURCHASE_HREF,
+  FINANCE_EXPENSES_HREF,
+  FINANCE_KHATA_HREF,
+  REPORTS_BASE_HREF,
+  REPORTS_PROFIT_LOSS_HREF,
+  REPORTS_SALE_HREF,
+  REPORTS_EXPENSE_HREF,
+  REPORTS_BALANCE_HREF,
+  CRM_BASE_HREF,
+  CRM_CUSTOMERS_HREF,
+  CRM_SUPPLIERS_HREF,
+  ADMIN_BASE_HREF,
+  ADMIN_INVOICE_SETUP_HREF,
+  ADMIN_SETTINGS_HREF,
+  ADMIN_USERS_HREF,
+  ADMIN_ROLES_HREF,
+} from "@/config/paths";
 
 export const data = {
   user: {
@@ -37,132 +78,119 @@ export const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: DASHBOARD_BASE_HREF,
       icon: Home,
       isActive: true,
       items: [
-        { title: "Frontdesk View", url: "/dashboard/frontdesk" },
-        { title: "Quick Statistics", url: "/dashboard" },
+        { title: "Frontdesk View", url: DASHBOARD_FRONTDESK_HREF },
+        { title: "Overview", url: DASHBOARD_BASE_HREF },
       ],
     },
     {
       title: "Repairs (Acceptance)",
-      url: "/dashboard/acceptances",
+      url: ACCEPTANCES_BASE_HREF,
       icon: CheckCircle,
       items: [
-        { title: "New Acceptance", url: "/dashboard/acceptances/add" },
-        { title: "Acceptance List", url: "/dashboard/acceptances" },
+        { title: "New Acceptance", url: ACCEPTANCES_ADD_HREF },
+        { title: "Acceptance List", url: ACCEPTANCES_LIST_HREF },
         // { title: "Recycle Bin", url: "/dashboard/acceptances/deleted" },
       ],
     },
     {
       title: "Inventory & Stock",
-      url: "/dashboard/inventory",
+      url: INVENTORY_BASE_HREF,
       icon: Package,
       items: [
-        { title: "Current Stock", url: "/dashboard/inventory/stock" },
-        { title: "Products & Items", url: "/dashboard/inventory/products" },
-        { title: "Product Attributes", url: "/dashboard/inventory/attributes" },
-        { title: "Stock Adjustment", url: "/dashboard/inventory/stock-adjustment" },
-        { title: "Print Labels/Barcodes", url: "/dashboard/inventory/barcode" },
+        { title: "Current Stock", url: INVENTORY_STOCK_HREF },
+        { title: "Products & Items", url: INVENTORY_PRODUCTS_HREF },
+        { title: "Product Attributes", url: INVENTORY_ATTRIBUTES_HREF },
+        { title: "Stock Adjustment", url: INVENTORY_STOCK_ADJUSTMENT_HREF },
+        { title: "Print Labels/Barcodes", url: INVENTORY_BARCODE_HREF },
         // { title: "Used Devices (Tracking)", url: "/dashboard/inventory/tracking" },
-        { title: "Categories", url: "/dashboard/inventory/categories" },
-        { title: "Brands", url: "/dashboard/inventory/brands" },
-        { title: "Models", url: "/dashboard/inventory/models" },
-        { title: "Box Locations", url: "/dashboard/inventory/box-numbers" },
+        { title: "Categories", url: INVENTORY_CATEGORIES_HREF },
+        { title: "Brands", url: INVENTORY_BRANDS_HREF },
+        { title: "Models", url: INVENTORY_MODELS_HREF },
+        { title: "Box Locations", url: INVENTORY_BOX_NUMBERS_HREF },
       ],
     },
     {
       title: "Sales & POS",
-      url: "/dashboard/sales",
+      url: SALES_BASE_HREF,
       icon: ShoppingCart,
       items: [
-        {
-          title: "POS Terminal",
-          url: "/dashboard/sales/pos"
-        },
-        {
-          title: "All Sales",
-          url: "/dashboard/sales"
-        },
-        {
-          title: "Quotations",
-          url: "/dashboard/sales/quotations"
-        },
-        {
-          title: "Returns",
-          url: "/dashboard/sales/returns"
-        },
-        {
-          title: "Register Log",
-          url: "/dashboard/sales/register"
-        },
+        { title: "POS Terminal", url: SALES_POS_HREF },
+        { title: "All Sales", url: SALES_LIST_HREF },
+        { title: "Quotations", url: SALES_QUOTATIONS_HREF },
+        { title: "Returns", url: SALES_RETURNS_HREF },
+        { title: "Register Log", url: SALES_REGISTER_HREF },
       ],
     },
     {
       title: "Purchases & Expenses",
-      url: "/dashboard/finance",
+      url: FINANCE_BASE_HREF,
       icon: BarChart3,
       items: [
-        { title: "Product Purchases", url: "/dashboard/finance/purchase" },
-        { title: "General Expenses", url: "/dashboard/finance/expenses" },
-        { title: "Daily Khata", url: "/dashboard/finance/khata" },
+        { title: "Product Purchases", url: FINANCE_PURCHASE_HREF },
+        { title: "General Expenses", url: FINANCE_EXPENSES_HREF },
+        { title: "Daily Khata", url: FINANCE_KHATA_HREF },
       ],
     },
     {
       title: "Business Reports",
-      url: "/dashboard/reports",
+      url: REPORTS_BASE_HREF,
       icon: FileText,
       items: [
-        { title: "Profit/Loss Report", url: "/dashboard/reports/profit-loss" },
-        { title: "Sale Report", url: "/dashboard/reports/sale-report" },
-        { title: "Expense Report", url: "/dashboard/reports/expense-report" },
-        { title: "Cash Balance", url: "/dashboard/reports/balance" },
+        { title: "Profit/Loss Report", url: REPORTS_PROFIT_LOSS_HREF },
+        { title: "Sale Report", url: REPORTS_SALE_HREF },
+        { title: "Expense Report", url: REPORTS_EXPENSE_HREF },
+        { title: "Cash Balance", url: REPORTS_BALANCE_HREF },
       ],
     },
     {
       title: "People (CRM)",
-      url: "/dashboard/crm",
+      url: CRM_BASE_HREF,
       icon: Users,
       items: [
-        { title: "Customers", url: "/dashboard/crm/customers" },
-        { title: "Suppliers", url: "/dashboard/crm/suppliers" },
+        { title: "Customers", url: CRM_CUSTOMERS_HREF },
+        { title: "Suppliers", url: CRM_SUPPLIERS_HREF },
       ],
     },
     {
       title: "Administration",
-      url: "/dashboard/admin",
+      url: ADMIN_BASE_HREF,
       icon: Settings2,
       items: [
-        { title: "Shop Profile", url: "/dashboard/admin/shop-profile" },
-        { title: "Invoice Setup", url: "/dashboard/admin/invoice-setup" },
-        { title: "Business Settings", url: "/dashboard/admin/master-settings" },
-        { title: "Users", url: "/dashboard/admin/users" },
-        { title: "Roles", url: "/dashboard/admin/roles" },
+        { title: "Shop Profile", url: SHOP_PROFILE_BASE_HREF },
+        { title: "Invoice Setup", url: ADMIN_INVOICE_SETUP_HREF },
+        { title: "Business Settings", url: ADMIN_SETTINGS_HREF },
+        { title: "Users", url: ADMIN_USERS_HREF },
+        { title: "Roles", url: ADMIN_ROLES_HREF },
       ],
     },
   ],
-  // projects: [
-  //   { name: "Activity Logs", url: "/dashboard/logs", icon: History },
-  // ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { toggleLayout } = useLayout();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">TELEFIX</span>
-                  <span className="truncate text-xs">Professional Edition</span>
-                </div>
+              <a
+                href={SHOP_PROFILE_BASE_HREF}
+                className="group-data-[collapsible=icon]:!p-0 group-data-[collapsible=icon]:justify-center [&>div:last-child]:group-data-[collapsible=icon]:hidden"
+              >
+                <BrandLogo />
               </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={toggleLayout} tooltip="Switch Layout">
+              <LayoutTemplate className="size-4" />
+              <span>Switch Layout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -176,5 +204,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

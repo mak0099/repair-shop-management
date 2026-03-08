@@ -17,6 +17,7 @@ export const shopProfileSchema = z.object({
   returnPolicy: z.string().optional(),
   termsAndConditions: z.string().optional(),
   dateFormat: z.string().default("dd MMM yyyy"),
+  slogan: z.string().optional(),
 });
 
 export type ShopProfile = z.infer<typeof shopProfileSchema>;

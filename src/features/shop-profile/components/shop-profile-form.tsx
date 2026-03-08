@@ -37,6 +37,7 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
     defaultValues: initialData || {
       name: "",
       ownerName: "",
+      slogan: "",
       phone: "",
       email: "",
       address: "",
@@ -78,6 +79,7 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-6">
             <TextField control={form.control} name="name" label="Shop Name" required />
+            <TextField control={form.control} name="slogan" label="Slogan / Tagline" placeholder="e.g. Professional Repair Services" />
             <TextField control={form.control} name="ownerName" label="Owner Name" required />
             <TextField control={form.control} name="phone" label="Phone Number" required />
             <TextField control={form.control} name="email" label="Email Address" required />

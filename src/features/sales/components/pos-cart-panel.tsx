@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { CurrencyText } from "@/components/shared/data-table-cells"
 
 export function POSCartPanel() {
   const { cart, totals, updateQuantity, removeItem, clearCart, selectedCustomerId, setCustomerId, updateItemIMEI, updatePrice } = usePOS()
@@ -147,7 +148,7 @@ export function POSCartPanel() {
                         />
                     </div>
                     <div className="text-xs font-black text-slate-900">
-                        Total: {currency} {(item.price * item.quantity).toLocaleString()}
+                        Total: <CurrencyText amount={item.price * item.quantity} />
                     </div>
                   </div>
 
@@ -163,15 +164,15 @@ export function POSCartPanel() {
         <div className="space-y-1">
           <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
             <span>Subtotal</span>
-            <span>{currency} {totals.subtotal.toLocaleString()}</span>
+            <span><CurrencyText amount={totals.subtotal} /></span>
           </div>
           <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
             <span>Tax (VAT)</span>
-            <span>{currency} {totals.tax.toLocaleString()}</span>
+            <span><CurrencyText amount={totals.tax} /></span>
           </div>
           <div className="flex justify-between items-center pt-2 border-t border-slate-200 mt-2">
             <span className="text-xs font-black text-slate-700 uppercase">Total Payable</span>
-            <span className="text-xl font-black text-blue-600">{currency} {totals.grandTotal.toLocaleString()}</span>
+            <span className="text-xl font-black text-blue-600"><CurrencyText amount={totals.grandTotal} /></span>
           </div>
         </div>
         

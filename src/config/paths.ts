@@ -1,12 +1,60 @@
-export const ACCEPTANCES_BASE_HREF = "/dashboard/acceptances"
+export const DASHBOARD_BASE_HREF = "/dashboard"
+export const DASHBOARD_FRONTDESK_HREF = `${DASHBOARD_BASE_HREF}/frontdesk`
+
+export const ACCEPTANCES_BASE_HREF = `${DASHBOARD_BASE_HREF}/acceptances`
 export const ACCEPTANCES_ADD_HREF = `${ACCEPTANCES_BASE_HREF}/add`
-export const CUSTOMERS_BASE_HREF = "/dashboard/system/customers"
-export const BRANDS_BASE_HREF = "/dashboard/inventory/brands"
-export const BOX_NUMBERS_BASE_HREF = "/dashboard/system/box-numbers"
-export const CATEGORIES_BASE_HREF = "/dashboard/inventory/categories"
-export const ITEMS_BASE_HREF = "/dashboard/inventory/items"
-export const STOCK_ADJUSTMENTS_BASE_HREF = "/dashboard/inventory/stock-adjustments"
-export const BARCODE_GENERATOR_HREF = "/dashboard/inventory/barcode-generator"
-export const EXPENSES_BASE_HREF = "/dashboard/finance/expenses"
-export const SUPPLIERS_BASE_HREF = "/dashboard/system/suppliers"
+export const ACCEPTANCES_LIST_HREF = `${ACCEPTANCES_BASE_HREF}/list`
+
+export const INVENTORY_BASE_HREF = `${DASHBOARD_BASE_HREF}/inventory`
+export const INVENTORY_STOCK_HREF = `${INVENTORY_BASE_HREF}/stock`
+export const INVENTORY_PRODUCTS_HREF = `${INVENTORY_BASE_HREF}/products`
+export const INVENTORY_ATTRIBUTES_HREF = `${INVENTORY_BASE_HREF}/attributes`
+export const INVENTORY_STOCK_ADJUSTMENT_HREF = `${INVENTORY_BASE_HREF}/stock-adjustment`
+export const INVENTORY_BARCODE_HREF = `${INVENTORY_BASE_HREF}/barcode`
+export const INVENTORY_CATEGORIES_HREF = `${INVENTORY_BASE_HREF}/categories`
+export const INVENTORY_BRANDS_HREF = `${INVENTORY_BASE_HREF}/brands`
+export const INVENTORY_MODELS_HREF = `${INVENTORY_BASE_HREF}/models`
+export const INVENTORY_BOX_NUMBERS_HREF = `${INVENTORY_BASE_HREF}/box-numbers`
+
+export const SALES_BASE_HREF = `${DASHBOARD_BASE_HREF}/sales`
+export const SALES_POS_HREF = `${SALES_BASE_HREF}/pos`
+export const SALES_LIST_HREF = `${SALES_BASE_HREF}/list`
+export const SALES_QUOTATIONS_HREF = `${SALES_BASE_HREF}/quotations`
+export const SALES_RETURNS_HREF = `${SALES_BASE_HREF}/returns`
+export const SALES_REGISTER_HREF = `${SALES_BASE_HREF}/register`
+
+export const FINANCE_BASE_HREF = `${DASHBOARD_BASE_HREF}/finance`
+export const FINANCE_PURCHASE_HREF = `${FINANCE_BASE_HREF}/purchase`
+export const FINANCE_EXPENSES_HREF = `${FINANCE_BASE_HREF}/expenses`
+export const FINANCE_KHATA_HREF = `${FINANCE_BASE_HREF}/khata`
+
+export const REPORTS_BASE_HREF = `${DASHBOARD_BASE_HREF}/reports`
+export const REPORTS_PROFIT_LOSS_HREF = `${REPORTS_BASE_HREF}/profit-loss`
+export const REPORTS_SALE_HREF = `${REPORTS_BASE_HREF}/sale-report`
+export const REPORTS_EXPENSE_HREF = `${REPORTS_BASE_HREF}/expense-report`
+export const REPORTS_BALANCE_HREF = `${REPORTS_BASE_HREF}/balance`
+
+export const CRM_BASE_HREF = `${DASHBOARD_BASE_HREF}/crm`
+export const CRM_CUSTOMERS_HREF = `${CRM_BASE_HREF}/customers`
+export const CRM_SUPPLIERS_HREF = `${CRM_BASE_HREF}/suppliers`
+
+export const ADMIN_BASE_HREF = `${DASHBOARD_BASE_HREF}/admin`
+export const ADMIN_SHOP_PROFILE_HREF = `${ADMIN_BASE_HREF}/shop-profile`
+export const ADMIN_INVOICE_SETUP_HREF = `${ADMIN_BASE_HREF}/invoice-setup`
+export const ADMIN_SETTINGS_HREF = `${ADMIN_BASE_HREF}/master-settings`
+export const ADMIN_USERS_HREF = `${ADMIN_BASE_HREF}/users`
+export const ADMIN_ROLES_HREF = `${ADMIN_BASE_HREF}/roles`
+
 export const USER_PROFILE_BASE_HREF = "/dashboard/settings/profile"
+
+// Aliases for backward compatibility
+export const SHOP_PROFILE_BASE_HREF = ADMIN_SHOP_PROFILE_HREF
+export const CUSTOMERS_BASE_HREF = CRM_CUSTOMERS_HREF
+export const BRANDS_BASE_HREF = INVENTORY_BRANDS_HREF
+export const BOX_NUMBERS_BASE_HREF = INVENTORY_BOX_NUMBERS_HREF
+export const CATEGORIES_BASE_HREF = INVENTORY_CATEGORIES_HREF
+export const ITEMS_BASE_HREF = INVENTORY_PRODUCTS_HREF
+export const STOCK_ADJUSTMENTS_BASE_HREF = INVENTORY_STOCK_ADJUSTMENT_HREF
+export const BARCODE_GENERATOR_HREF = INVENTORY_BARCODE_HREF
+export const EXPENSES_BASE_HREF = FINANCE_EXPENSES_HREF
+export const SUPPLIERS_BASE_HREF = CRM_SUPPLIERS_HREF

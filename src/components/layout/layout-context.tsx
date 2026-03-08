@@ -15,8 +15,8 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
   // Load preference from localStorage on mount
   React.useEffect(() => {
     const savedMode = localStorage.getItem("layout_mode")
-    if (savedMode === "top") {
-      setIsTopNav(true)
+    if (savedMode === "side") {
+      setIsTopNav(false)
     }
   }, [])
 

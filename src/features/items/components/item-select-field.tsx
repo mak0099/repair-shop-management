@@ -26,8 +26,8 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
   disabled = false,
   readOnly = false,
 }: ItemSelectFieldProps<TFieldValues>) {
-  const { setValue } = useFormContext<TFieldValues>()
-  const { openModal } = useItemModal()
+  // const { setValue } = useFormContext<TFieldValues>()
+  // const { openModal } = useItemModal()
   const { data: itemOptionsData, isLoading } = useItemOptions()
 
   const itemOptions = useMemo(() => {
@@ -38,15 +38,15 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
     }))
   }, [itemOptionsData])
 
-  const handleAddItem = () => {
-    openModal({
-      onSuccess: (newItem) => {
-        if (newItem?.id) {
-          setValue(name, newItem.id as PathValue<TFieldValues, Path<TFieldValues>>)
-        }
-      },
-    })
-  }
+  // const handleAddItem = () => {
+  //   openModal({
+  //     onSuccess: (newItem) => {
+  //       if (newItem?.id) {
+  //         setValue(name, newItem.id as PathValue<TFieldValues, Path<TFieldValues>>)
+  //       }
+  //     },
+  //   })
+  // }
 
   return (
     <>
@@ -58,7 +58,7 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
         searchPlaceholder="Search items..."
         noResultsMessage="No item found."
         options={itemOptions}
-        onAdd={handleAddItem}
+        // onAdd={handleAddItem}
         required={required}
         isLoading={isLoading}
         disabled={disabled}

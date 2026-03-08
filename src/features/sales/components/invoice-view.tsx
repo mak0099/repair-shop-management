@@ -58,18 +58,24 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
       {/* The Actual Receipt Content */}
       <div id="printable-invoice" className="p-8 md:p-12 print:p-0 overflow-y-auto flex-1">
         <div className="max-w-[800px] mx-auto space-y-8">
-          
+
           {/* Company Info */}
           <div className="flex justify-between items-start border-b pb-6">
-            <div className="space-y-1">
+            <div className="space-y-1 flex flex-row gap-2">
               {invoiceSetup?.showLogo && (
-                <div className="h-10 w-32 bg-slate-100 rounded flex items-center justify-center text-[10px] text-slate-400 font-bold mb-2">
-                  SHOP LOGO
-                </div>
+                shopProfile?.logoUrl ? (
+                  <img src={shopProfile.logoUrl} alt="Logo" className="h-16 w-auto object-contain mb-2" />
+                ) : (
+                  <div className="h-10 w-32 bg-slate-100 rounded flex items-center justify-center text-[10px] text-slate-400 font-bold mb-2">
+                    SHOP LOGO
+                  </div>
+                )
               )}
-              <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">{invoiceSetup?.shopName || shopProfile?.name || "NOME OFFICINA"}</h1>
-              <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopAddress || shopProfile?.address || "Indirizzo, Città, CAP"}</p>
-              <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopContact || [shopProfile?.phone, shopProfile?.email].filter(Boolean).join(" • ") || "Contatto (Tel/Email)"}</p>
+              <div>
+                <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">{invoiceSetup?.shopName || shopProfile?.name || "NOME OFFICINA"}</h1>
+                <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopAddress || shopProfile?.address || "Indirizzo, Città, CAP"}</p>
+                <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopContact || [shopProfile?.phone, shopProfile?.email].filter(Boolean).join(" • ") || "Contatto (Tel/Email)"}</p>
+              </div>
             </div>
             <div className="text-right">
               <h2 className="text-lg font-black text-slate-400 uppercase tracking-widest">{invoiceSetup?.invoiceTitle || "RICEVUTA"}</h2>
@@ -162,7 +168,7 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Custom Global Styles for Print */}
       <style jsx global>{`
         @page {

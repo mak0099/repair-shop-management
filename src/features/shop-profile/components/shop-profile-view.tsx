@@ -41,6 +41,7 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
               )}
             </div>
             <h3 className="text-xl font-bold">{profile.name}</h3>
+            {profile.slogan && <p className="text-sm text-muted-foreground italic">{profile.slogan}</p>}
             <p className="text-sm text-muted-foreground">{profile.ownerName}</p>
             <Badge className="mt-2" variant="outline">{profile.currency}</Badge>
           </CardContent>

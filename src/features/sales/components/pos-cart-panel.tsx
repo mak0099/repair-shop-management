@@ -21,8 +21,15 @@ export function POSCartPanel() {
   const { control, reset } = form
   const watchedCustomerId = useWatch({ control, name: "customerId" })
 
-  useEffect(() => { if (watchedCustomerId !== selectedCustomerId) setCustomerId(watchedCustomerId) }, [watchedCustomerId, selectedCustomerId, setCustomerId])
-  useEffect(() => { reset({ customerId: selectedCustomerId || "" }) }, [selectedCustomerId, reset])
+  useEffect(() => { 
+    if (watchedCustomerId && watchedCustomerId !== selectedCustomerId) {
+      setCustomerId(watchedCustomerId)
+    }
+  }, [watchedCustomerId, selectedCustomerId, setCustomerId])
+  
+  useEffect(() => { 
+    reset({ customerId: selectedCustomerId || "" }) 
+  }, [selectedCustomerId, reset])
 
   return (
     <div className="flex flex-col h-full bg-white relative">
@@ -139,7 +146,7 @@ export function POSCartPanel() {
                         <span className="text-[10px] text-slate-400 font-bold">@</span>
                         <Input 
                             type="number" 
-                            className="h-6 w-16 text-right text-[11px] font-bold px-1 py-0 bg-slate-50 border-slate-200 focus:bg-white focus:ring-1 focus:ring-blue-500"
+                            className="h-6 w-20 text-right text-[11px] font-bold px-1 py-0 bg-slate-50 border-slate-200 focus:bg-white focus:ring-1 focus:ring-blue-500"
                             value={item.price}
                             onChange={(e) => updatePrice(item.cartId, parseFloat(e.target.value) || 0)}
                             onFocus={(e) => e.target.select()}

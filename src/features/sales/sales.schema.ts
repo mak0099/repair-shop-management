@@ -39,4 +39,5 @@ export interface Sale extends BaseEntity, Omit<SaleFormValues, "items"> {
   invoiceNumber: string;
   items: SaleItem[];
   processedBy: string;
+  customerName?: string; // Optional customer name for display
 }

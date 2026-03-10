@@ -1,13 +1,8 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
-  LayoutDashboard,
   LogOut,
-  Sparkles,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -31,7 +26,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useLayout } from "@/components/layout/layout-context"
 import { signOut, useSession } from "next-auth/react"
 
 export function NavUser({
@@ -95,7 +89,7 @@ export function NavUserMenuContent({
     avatar: string
   }
 }) {
-  const { toggleLayout, isTopNav } = useLayout()
+  const router = useRouter()
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/login" })
@@ -104,7 +98,10 @@ export function NavUserMenuContent({
   return (
     <>
       <DropdownMenuLabel className="p-0 font-normal">
-        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+        <div 
+          className="flex items-center gap-2 px-1 py-1.5 text-left text-sm cursor-pointer hover:bg-slate-100 rounded-md transition-colors"
+          onClick={() => router.push("/dashboard/settings/profile")}
+        >
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src={user.avatar} alt={user.name} />
             <AvatarFallback className="rounded-lg">AU</AvatarFallback>
@@ -115,14 +112,13 @@ export function NavUserMenuContent({
           </div>
         </div>
       </DropdownMenuLabel>
-      <DropdownMenuSeparator />
       {/* <DropdownMenuGroup>
         <DropdownMenuItem>
           <Sparkles />
           Upgrade to Pro
         </DropdownMenuItem>
       </DropdownMenuGroup> */}
-      <DropdownMenuSeparator />
+      {/* <DropdownMenuSeparator /> */}
       <DropdownMenuGroup>
         {/* <DropdownMenuItem>
           <BadgeCheck />
@@ -136,10 +132,6 @@ export function NavUserMenuContent({
           <Bell />
           Notifications
         </DropdownMenuItem> */}
-        <DropdownMenuItem onClick={toggleLayout}>
-          <LayoutDashboard />
-          {isTopNav ? "Switch to Sidebar" : "Switch to Top Nav"}
-        </DropdownMenuItem>
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={handleLogout}>

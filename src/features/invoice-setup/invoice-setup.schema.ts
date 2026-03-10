@@ -11,10 +11,38 @@ export const invoiceSetupSchema = z.object({
     .max(5, "Prefix cannot exceed 5 characters")
     .toUpperCase(),
   nextInvoiceNumber: z.number().int().min(1, "Must be at least 1"),
-  templateSize: z.enum(["A4", "THERMAL_80MM", "THERMAL_58MM"]),
+  dateFormat: z.string().default("dd/MM/yyyy"),
+  templateSize: z.enum(["A4", "A5", "Thermal 80mm"]),
   showLogo: z.boolean().catch(true), // Robust boolean handling
   showSignature: z.boolean().catch(true),
+  
+  // Shop Identity
+  shopName: z.string().optional(),
+  shopAddress: z.string().optional(),
+  shopContact: z.string().optional(),
+
+  // Labels
+  invoiceTitle: z.string().optional(),
+  invoiceNumberLabel: z.string().optional(),
+  dateLabel: z.string().optional(),
+  customerInfoLabel: z.string().optional(),
+  paymentMethodLabel: z.string().optional(),
+  
+  itemColumnLabel: z.string().optional(),
+  quantityColumnLabel: z.string().optional(),
+  priceColumnLabel: z.string().optional(),
+  totalColumnLabel: z.string().optional(),
+  
+  subtotalLabel: z.string().optional(),
+  taxLabel: z.string().optional(),
+  discountLabel: z.string().optional(),
+  grandTotalLabel: z.string().optional(),
+  amountPaidLabel: z.string().optional(),
+
+  // Footer
+  thankYouMessage: z.string().optional(),
   termsAndConditions: z.string().optional().nullable(),
+  signatureLabel: z.string().optional(),
   notes: z.string().optional().nullable(),
 });
 

@@ -18,6 +18,14 @@ import { shopProfileHandlers } from "@/features/shop-profile/mocks/shop-profile.
 import { invoiceSetupHandlers } from "@/features/invoice-setup/mocks/invoice-setup.handlers";
 import { authHandlers } from "@/features/auth";
 import { roleHandlers } from "@/features/roles/mocks/roles.handlers";
+import { salesHandlers } from "@/features/sales";
+import { quotationHandlers } from "@/features/quotations";
+import { returnsHandlers } from "@/features/returns";
+import { registerHandlers } from "@/features/register";
+import { purchaseHandlers } from "@/features/purchases";
+import { khataHandlers } from "@/features/khata";
+import { profileHandlers } from "@/features/profile";
+import { dashboardHandlers } from "@/features/dashboard";
 
 export const handlers = [
   ...authHandlers,
@@ -39,4 +47,12 @@ export const handlers = [
   ...stockAdjustmentHandlers,
   ...shopProfileHandlers,
   ...invoiceSetupHandlers,
+  ...salesHandlers,
+  ...quotationHandlers,
+  ...returnsHandlers,
+  ...registerHandlers,
+  ...purchaseHandlers,
+  ...khataHandlers,
+  ...profileHandlers,
+  ...dashboardHandlers
 ]

@@ -13,18 +13,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Calendar as CalendarIcon, ChevronDown, Download, Search } from "lucide-react"
+import { ArrowUpDown, Calendar as CalendarIcon, Download, Search } from "lucide-react"
 import { format } from "date-fns"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   Popover,
@@ -230,6 +224,7 @@ export default function ProfitLossPage() {
   const [dateFrom, setDateFrom] = React.useState<Date>()
   const [dateTo, setDateTo] = React.useState<Date>()
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,

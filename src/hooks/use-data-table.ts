@@ -80,6 +80,7 @@ export function useDataTable<TData, TValue>({
     }
   };
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable<TData>({
     data,
     columns: finalColumns,

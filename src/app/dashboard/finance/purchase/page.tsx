@@ -1,23 +1,9 @@
-"use client"
+import { PurchaseList } from "@/features/purchases"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-
-export default function ProductPurchaseSearchPage() {
+export default function PurchasePage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div>
-        <h1 className="text-3xl font-bold">Product Purchase Search</h1>
-        <p className="text-muted-foreground">Search and view product purchase records</p>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Purchase Records</CardTitle>
-          <CardDescription>Search through product purchase history</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>This page is under development. Product purchase search will be implemented here.</p>
-        </CardContent>
-      </Card>
+      <PurchaseList />
     </div>
   )
 }

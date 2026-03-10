@@ -1,5 +1,5 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
-import { apiClient as api } from "@/lib/api-client";
+import { api as api } from "@/lib/api-client";
 import { BarcodeRequest } from "./barcode.schema";
 
 const BARCODE_API_URL = "/barcodes/generate";

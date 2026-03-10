@@ -1,63 +1,106 @@
 "use client"
 
 import { useFormContext } from "react-hook-form";
+import { format } from "date-fns";
 import { InvoiceSetup } from "../invoice-setup.schema";
+import { INVOICE_PAPER_SIZES } from "../invoice-setup.constants";
 
 export function InvoicePreview() {
   const { watch } = useFormContext<InvoiceSetup>();
   const values = watch();
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(amount);
+  };
+
+  const formatDate = (date: Date) => {
+    try {
+      return format(date, values.dateFormat || 'dd/MM/yyyy');
+    } catch {
+      return format(date, 'dd/MM/yyyy'); // Fallback format
+    }
+  };
+
   return (
-    <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 bg-white shadow-inner sticky top-6">
-      <div className="text-center border-b pb-4 mb-4">
-        <div className="h-8 w-24 bg-slate-100 mx-auto mb-2 rounded flex items-center justify-center text-[10px] text-slate-400">LOGO</div>
-        <h4 className="font-bold uppercase text-xs">Arif Mobile & Gadget</h4>
-      </div>
-      
-      <div className="flex justify-between text-[10px] mb-4">
-        <div>
-          <p>Bill To: Customer Name</p>
-          <p>Phone: 017XXXXXXXX</p>
-        </div>
-        <div className="text-right font-mono">
-          <p>Invoice: {values.invoicePrefix || "INV"}-{values.nextInvoiceNumber || "1001"}</p>
-          <p>Date: {new Date().toLocaleDateString()}</p>
-        </div>
+    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm sticky top-6">
+      <div className="bg-slate-50 px-4 py-2 border-b flex justify-between items-center">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Live Preview</span>
+        <span className="text-[10px] font-bold text-slate-400">{values.templateSize || INVOICE_PAPER_SIZES.A4}</span>
       </div>
 
-      <div className="min-h-[100px] border-y py-2 mb-4">
-        <table className="w-full text-[10px]">
+      <div className="p-8 space-y-6 text-xs">
+        {/* Header */}
+        <div className="flex justify-between items-start border-b pb-4">
+          <div className="space-y-1">
+            {values.showLogo && (
+              <div className="h-8 w-24 bg-slate-100 rounded flex items-center justify-center text-[9px] text-slate-400 font-bold mb-2">
+                SHOP LOGO
+              </div>
+            )}
+            <h1 className="text-xl font-black tracking-tighter text-slate-900 uppercase">{values.shopName || "NOME OFFICINA"}</h1>
+            <p className="text-[10px] text-slate-500 font-medium">{values.shopAddress || "Indirizzo, Città, CAP"}</p>
+            <p className="text-[10px] text-slate-500 font-medium">{values.shopContact || "Contatto (Tel/Email)"}</p>
+          </div>
+          <div className="text-right">
+            <h2 className="text-base font-black text-slate-400 uppercase tracking-widest">{values.invoiceTitle || "RICEVUTA"}</h2>
+            <p className="text-[10px] font-bold text-slate-700 mt-1">{values.invoiceNumberLabel || "Fattura N"}: {values.invoicePrefix || "INV"}-{values.nextInvoiceNumber || "1001"}</p>
+            <p className="text-[9px] text-slate-400">{values.dateLabel || "Data"}: {formatDate(new Date())}</p>
+          </div>
+        </div>
+
+        {/* Customer Info */}
+        <div className="grid grid-cols-2 gap-4 py-2">
+          <div>
+            <p className="text-[9px] font-bold text-slate-400 uppercase mb-0.5">{values.customerInfoLabel || "Dati Cliente"}</p>
+            <p className="font-black text-slate-800">Walk-in Customer</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[9px] font-bold text-slate-400 uppercase mb-0.5">{values.paymentMethodLabel || "Metodo di Pagamento"}</p>
+            <p className="font-black text-slate-800 uppercase">CASH</p>
+          </div>
+        </div>
+
+        {/* Items Table */}
+        <table className="w-full text-left text-xs">
           <thead>
-            <tr className="border-b">
-              <th className="text-left py-1">Item</th>
-              <th className="text-right py-1">Qty</th>
-              <th className="text-right py-1">Total</th>
+            <tr className="border-b-2 border-slate-900">
+              <th className="py-1.5 font-black uppercase">{values.itemColumnLabel || "Descrizione"}</th>
+              <th className="py-1.5 font-black uppercase text-center">{values.quantityColumnLabel || "Qtà"}</th>
+              <th className="py-1.5 font-black uppercase text-right">{values.priceColumnLabel || "Prezzo"}</th>
+              <th className="py-1.5 font-black uppercase text-right">{values.totalColumnLabel || "Totale"}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y border-b border-slate-200">
             <tr>
-              <td className="py-1">iPhone 15 Pro (IMEI: 3546...)</td>
-              <td className="text-right py-1">1</td>
-              <td className="text-right py-1">৳120,000</td>
+              <td className="py-2 font-medium text-slate-700">
+                <span className="font-bold block">Sostituzione Schermo iPhone 15</span>
+                <span className="text-[9px] text-slate-400 uppercase">SERVIZIO</span>
+              </td>
+              <td className="py-2 text-center font-bold text-slate-600">1</td>
+              <td className="py-2 text-right text-slate-600">{formatCurrency(120)}</td>
+              <td className="py-2 text-right font-black text-slate-900">{formatCurrency(120)}</td>
             </tr>
           </tbody>
         </table>
-      </div>
 
-      <div className="space-y-2">
-        <p className="text-[9px] font-bold">Terms & Conditions:</p>
-        <p className="text-[8px] whitespace-pre-wrap text-slate-500 italic">
-          {values.termsAndConditions || "No terms specified."}
-        </p>
-      </div>
-
-      {values.showSignature && (
-        <div className="mt-8 flex justify-end">
-          <div className="border-t border-slate-400 w-32 text-center pt-1 text-[8px]">
-            Authorized Signature
+        {/* Footer */}
+        <div className="pt-4 space-y-6">
+          <div className="text-left border-t border-dashed pt-4 space-y-1">
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{values.thankYouMessage || "Grazie per averci scelto!"}</p>
+            <p className="text-[9px] text-slate-400 whitespace-pre-wrap">
+              {values.termsAndConditions || "La merce venduta non si cambia."}
+            </p>
           </div>
+
+          {values.showSignature && (
+            <div className="flex justify-end pt-4">
+              <div className="border-t border-slate-400 w-32 text-center pt-1 text-[9px] font-bold text-slate-600">
+                {values.signatureLabel || "Firma Autorizzata"}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

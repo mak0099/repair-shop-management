@@ -10,7 +10,7 @@ export const authHandlers = [
     const user = MOCK_USERS.find(u => u.email === email && u.password === password)
 
     if (user) {
-      const { password, ...userWithoutPassword } = user
+      const { ...userWithoutPassword } = user
       return HttpResponse.json(userWithoutPassword)
     }
 

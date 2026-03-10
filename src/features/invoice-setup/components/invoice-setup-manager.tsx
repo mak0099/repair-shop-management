@@ -43,7 +43,7 @@ export function InvoiceSetupManager() {
   return (
     <InvoiceSetupProvider>
       <FormProvider {...form}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-7xl mx-auto">
           {/* Configuration Side */}
           <div className="space-y-6">
             <InvoiceSetupForm initialData={initialData} />

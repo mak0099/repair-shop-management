@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
-import { TitleCell, StatusCell, DateCell } from "@/components/shared/data-table-cells"
+import { TitleCell, DateCell } from "@/components/shared/data-table-cells"
 import { Badge } from "@/components/ui/badge"
 
 import { User } from "../user.schema"
@@ -92,7 +92,7 @@ export function UserList() {
         />
       ),
     },
-  ], [openModal, deleteMutation, updateMutation, roleOptions])
+  ], [openModal, deleteMutation, updateMutation])
 
   return (
     <ResourceListPage<User, unknown>

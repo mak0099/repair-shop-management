@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Building2, Mail, Phone, MapPin, Globe, CreditCard, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,12 +36,13 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
           <CardContent className="pt-6 flex flex-col items-center text-center">
             <div className="w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 mb-4 overflow-hidden">
               {profile.logoUrl ? (
-                <img src={profile.logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                <Image src={profile.logoUrl} alt="Logo" fill className="object-cover" />
               ) : (
                 <Building2 className="h-12 w-12 text-slate-400" />
               )}
             </div>
             <h3 className="text-xl font-bold">{profile.name}</h3>
+            {profile.slogan && <p className="text-sm text-muted-foreground italic">{profile.slogan}</p>}
             <p className="text-sm text-muted-foreground">{profile.ownerName}</p>
             <Badge className="mt-2" variant="outline">{profile.currency}</Badge>
           </CardContent>
@@ -92,17 +94,43 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
         </Card>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm font-medium">Invoice Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-xs text-muted-foreground mb-1">Footer Message:</p>
-          <div className="p-3 bg-slate-50 rounded border text-sm italic text-slate-600">
-            "{profile.invoiceFooterMessage || "No message set"}"
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Financial Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between border-b pb-2">
+                 <span className="text-xs text-muted-foreground">Currency</span>
+                 <span className="text-sm font-medium">{profile.currency}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                 <span className="text-xs text-muted-foreground">Default Tax Rate</span>
+                 <span className="text-sm font-medium">{profile.taxRate ? `${profile.taxRate}%` : "N/A"}</span>
+              </div>
+              <div>
+                 <p className="text-xs text-muted-foreground mb-1">Bank Details:</p>
+                 <p className="text-sm whitespace-pre-wrap text-slate-700">{profile.bankAccountInfo || "Not Set"}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Policies</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               <div>
+                 <p className="text-xs text-muted-foreground mb-1">Invoice Footer:</p>
+                 <p className="text-sm italic text-slate-600">{profile.invoiceFooterMessage || "Not Set"}</p>
+               </div>
+               <div>
+                 <p className="text-xs text-muted-foreground mb-1">Return Policy:</p>
+                 <p className="text-xs text-slate-600 line-clamp-3">{profile.returnPolicy || "Not Set"}</p>
+               </div>
+            </CardContent>
+          </Card>
+      </div>
     </div>
   );
 }

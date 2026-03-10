@@ -9,7 +9,6 @@ import { toast } from "sonner"
 import { TextField } from "@/components/forms/text-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
-import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Card, CardContent } from "@/components/ui/card"
 import { FormFooter } from "@/components/forms/form-footer"
@@ -42,20 +41,20 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
   const form = useForm<SupplierFormValues>({
     resolver: zodResolver(supplierSchema),
     defaultValues: initialData ? {
-      company_name: initialData.company_name,
-      contact_person: initialData.contact_person || "",
+      companyName: initialData.companyName,
+      contactPerson: initialData.contactPerson || "",
       email: initialData.email || "",
       phone: initialData.phone,
-      vat_number: initialData.vat_number || "",
+      vatNumber: initialData.vatNumber || "",
       address: initialData.address || "",
       city: initialData.city || "",
       isActive: initialData.isActive,
     } : {
-      company_name: "",
-      contact_person: "",
+      companyName: "",
+      contactPerson: "",
       email: "",
       phone: "",
-      vat_number: "",
+      vatNumber: "",
       address: "",
       city: "",
       isActive: true,
@@ -67,14 +66,6 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
     toast.error("Please fill all required fields correctly.")
   }
 
-  /**
-   * Simple close handler for modal-based forms.
-   */
-  const handleClose = () => {
-    if (onSuccess) {
-      onSuccess(initialData || undefined)
-    }
-  }
 
   function onSubmit(data: SupplierFormValues) {
     const mutationCallbacks = {
@@ -103,7 +94,7 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <TextField
                 control={form.control}
-                name="company_name"
+                name="companyName"
                 label="Company Name"
                 required
                 readOnly={isViewMode}
@@ -111,14 +102,14 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
               />
               <TextField
                 control={form.control}
-                name="contact_person"
+                name="contactPerson"
                 label="Contact Person"
                 readOnly={isViewMode}
                 placeholder="e.g., Tim Cook"
               />
               <TextField
                 control={form.control}
-                name="vat_number"
+                name="vatNumber"
                 label="VAT / Trade License"
                 readOnly={isViewMode}
                 placeholder="Business ID"

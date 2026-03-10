@@ -12,6 +12,12 @@ export const shopProfileSchema = z.object({
   currency: z.string().min(1, "Currency is required"),
   invoiceFooterMessage: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
+  taxRate: z.coerce.number().min(0).default(0),
+  bankAccountInfo: z.string().optional(),
+  returnPolicy: z.string().optional(),
+  termsAndConditions: z.string().optional(),
+  dateFormat: z.string().default("dd MMM yyyy"),
+  slogan: z.string().optional(),
 });
 
 export type ShopProfile = z.infer<typeof shopProfileSchema>;

@@ -16,6 +16,7 @@ export const stockHandlers = [
     const order = url.searchParams.get("_order")
     const status = url.searchParams.get("status")
     const category = url.searchParams.get("category")
+    const isActive = url.searchParams.get("isActive")
 
     const filteredData = stocks.filter((item) => {
       const searchMatch =
@@ -34,8 +35,13 @@ export const stockHandlers = [
         }
       }
       const categoryMatch = !category || category === "all" || item.categoryName === category
+      
+      let isActiveMatch = true
+      if (isActive && isActive !== "all") {
+        isActiveMatch = String(item.isActive) === isActive
+      }
 
-      return searchMatch && statusMatch && categoryMatch
+      return searchMatch && statusMatch && categoryMatch && isActiveMatch
     })
 
     const sortedData = applySort(filteredData, sort, order)

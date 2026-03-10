@@ -8,7 +8,7 @@ import {
   type UseQueryResult,
   type UseMutationResult,
 } from "@tanstack/react-query"
-import { apiClient } from "./api-client"
+import { api } from "./api-client"
 
 /**
  * Basic structure for any resource in the system.
@@ -77,7 +77,7 @@ export function createApiHooksFor<
     return useQuery({
       queryKey: [...resourceQueryKey, params],
       queryFn: async () => {
-        const response = await apiClient.get<PaginatedResponse<TResource>>(`/${resourceName}`, {
+        const response = await api.get<PaginatedResponse<TResource>>(`/${resourceName}`, {
           params,
         })
         return response.data
@@ -94,7 +94,7 @@ export function createApiHooksFor<
       queryKey: [...resourceQueryKey, id],
       queryFn: async () => {
         if (!id) throw new Error("ID is required")
-        const response = await apiClient.get<TResource>(`/${resourceName}/${id}`)
+        const response = await api.get<TResource>(`/${resourceName}/${id}`)
         return response.data
       },
       enabled: !!id,
@@ -108,7 +108,7 @@ export function createApiHooksFor<
     const queryClient = useQueryClient()
     return useMutation<TResource, Error, TCreateParams>({
       mutationFn: async (data) => {
-        const response = await apiClient.post<TResource>(`/${resourceName}`, data)
+        const response = await api.post<TResource>(`/${resourceName}`, data)
         return response.data
       },
       onSuccess: () => {
@@ -126,7 +126,7 @@ export function createApiHooksFor<
     return useMutation<TResource, Error, TCreateParams>({
       mutationFn: async (data) => {
         const payload = convertToFormData(data)
-        const response = await apiClient.post<TResource>(`/${resourceName}`, payload)
+        const response = await api.post<TResource>(`/${resourceName}`, payload)
         return response.data
       },
       onSuccess: () => {
@@ -143,7 +143,7 @@ export function createApiHooksFor<
     const queryClient = useQueryClient()
     return useMutation<TResource, Error, { id: string; data: TUpdateParams }>({
       mutationFn: async ({ id, data }) => {
-        const response = await apiClient.patch<TResource>(`/${resourceName}/${id}`, data)
+        const response = await api.patch<TResource>(`/${resourceName}/${id}`, data)
         return response.data
       },
       onSuccess: (data) => {
@@ -167,7 +167,7 @@ export function createApiHooksFor<
       mutationFn: async ({ id, data }) => {
         const payload = convertToFormData(data)
         payload.append("_method", "PUT")
-        const response = await apiClient.post<TResource>(`/${resourceName}/${id}`, payload)
+        const response = await api.post<TResource>(`/${resourceName}/${id}`, payload)
         return response.data
       },
       onSuccess: (data) => {
@@ -185,7 +185,7 @@ export function createApiHooksFor<
     const queryClient = useQueryClient()
     return useMutation<void, Error, string>({
       mutationFn: async (id: string) => {
-        await apiClient.delete(`/${resourceName}/${id}`)
+        await api.delete(`/${resourceName}/${id}`)
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: resourceQueryKey })
@@ -204,7 +204,7 @@ export function createApiHooksFor<
     return useQuery({
       queryKey: [`${resourceName}-options`, params],
       queryFn: async () => {
-        const response = await apiClient.get<TOption[]>(`/${resourceName}/options`, {
+        const response = await api.get<TOption[]>(`/${resourceName}/options`, {
           params,
         })
         return response.data

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { FormProvider, useForm, Resolver } from "react-hook-form"
+import { FormProvider, useForm, Resolver, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 
@@ -34,6 +34,9 @@ export function AcceptanceForm({
   onSuccess,
   isViewMode: initialIsViewMode = false,
 }: AcceptanceFormProps) {
+
+  console.log("initialData", initialData);
+  console.log("initialIsViewMode", initialIsViewMode)
   const queryClient = useQueryClient()
   const { mutate: createAcceptance, isPending: isCreating } = useCreateAcceptance()
   const { mutate: updateAcceptance, isPending: isUpdating } = useUpdateAcceptance()
@@ -56,8 +59,8 @@ export function AcceptanceForm({
       modelId: initialData?.modelId || "",
       color: initialData?.color || "",
       accessories: initialData?.accessories || "",
-      deviceType: initialData?.deviceType || "SMARTPHONE",
-      currentStatus: initialData?.currentStatus || "IN REPAIR",
+      deviceType: initialData?.deviceType || "Global",
+      currentStatus: initialData?.currentStatus || "Pending",
       defectDescription: initialData?.defectDescription || "",
       notes: initialData?.notes || "",
       imei: initialData?.imei || "",
@@ -77,10 +80,10 @@ export function AcceptanceForm({
     },
   })
 
-  const { control, watch, setValue, formState } = form
-  const pinUnlock = watch("pinUnlock")
-  const urgent = watch("urgent")
-  const brandId = watch("brandId")
+  const { control, setValue, formState } = form
+  const pinUnlock = useWatch({ control, name: "pinUnlock" })
+  const urgent = useWatch({ control, name: "urgent" })
+  const brandId = useWatch({ control, name: "brandId" })
 
   useEffect(() => {
     if (formState.dirtyFields.brandId) {
@@ -145,7 +148,7 @@ export function AcceptanceForm({
                   />
                   <TextField control={control} name="imei" label="IMEI/Serial" required readOnly={isViewMode} />
                   <TextField control={control} name="secondaryImei" label="Secondary IMEI" readOnly={isViewMode} />
-                  <UserSelectField control={control} name="technicianId" label="Technician" required readOnly={isViewMode} />
+                  <UserSelectField variant="technician" control={control} name="technicianId" label="Technician" required readOnly={isViewMode} />
                   <MasterSettingSelectField control={control} name="warranty" type="WARRANTY" label="Warranty" readOnly={isViewMode} />
                   <ItemSelectField control={control} name="replacementDeviceId" label="Replacement" readOnly={isViewMode} />
                   <TextField control={control} name="dealer" label="Dealer" readOnly={isViewMode} />
@@ -197,7 +200,7 @@ export function AcceptanceForm({
                       name="urgentDate"
                       label="Deadline"
                       required
-                      disabled={(date) => isViewMode || date < new Date(new Date().setHours(0,0,0,0))}
+                      readOnly={isViewMode}
                     />
                   )}
                   <RadioGroupField 

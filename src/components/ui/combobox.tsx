@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -28,6 +27,7 @@ import {
 } from "@/components/ui/popover"
 
 interface ComboboxProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any
   name: string
   label: string

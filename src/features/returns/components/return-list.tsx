@@ -1,0 +1,116 @@
+"use client"
+
+import { useMemo } from "react"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Receipt } from "lucide-react"
+
+import { ResourceListPage } from "@/components/shared/resource-list-page"
+import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
+import { Badge } from "@/components/ui/badge"
+import { DateCell, TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
+import { ResourceActions } from "@/components/shared/resource-actions"
+
+import { useReturns, useDeleteReturn } from "../returns.api"
+import { SaleReturn } from "../returns.schema"
+import { useReturnModal } from "../return-modal-context"
+import { RETURN_STATUS } from "../returns.constants"
+
+export function ReturnList() {
+  const { openModal } = useReturnModal()
+  const deleteMutation = useDeleteReturn()
+
+  const columns: ColumnDef<SaleReturn>[] = useMemo(() => [
+    {
+      accessorKey: "returnNumber",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Return #" />,
+      cell: ({ row }) => (
+        <TitleCell
+          value={row.original.returnNumber}
+          isActive={row.original.status === RETURN_STATUS.COMPLETED}
+          onClick={() => openModal({ initialData: row.original, isViewMode: true })}
+          subtitle={
+            <span className="text-[10px] text-slate-400 flex items-center gap-1">
+              <Receipt className="h-3 w-3" />
+              Ref: {row.original.saleId}
+            </span>
+          }
+        />
+      ),
+    },
+    {
+      accessorKey: "customerName",
+      header: "Customer",
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-slate-700 text-xs">{row.original.customerName || "Unknown"}</span>
+          <span className="text-[10px] text-slate-400">{row.original.customerId}</span>
+        </div>
+      )
+    },
+    {
+      accessorKey: "totalRefundAmount",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Refund Total" className="justify-end" />,
+      cell: ({ row }) => (
+        <CurrencyCell
+          amount={row.original.totalRefundAmount}
+          subtitle={row.original.restockingFee > 0 ? `Fee: €${row.original.restockingFee}` : undefined}
+        />
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status;
+        const colorMap: Record<string, string> = {
+          PENDING: "bg-amber-100 text-amber-700 border-amber-200",
+          COMPLETED: "bg-emerald-100 text-emerald-700 border-emerald-200",
+          REJECTED: "bg-red-100 text-red-700 border-red-200",
+        };
+
+        return (
+          <Badge className={`text-[9px] uppercase font-black px-2 py-0 border ${colorMap[status]}`}>
+            {status}
+          </Badge>
+        )
+      }
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Return Date",
+      cell: ({ row }) => <DateCell date={row.original.createdAt} />,
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <ResourceActions
+          resourceTitle={row.original.returnNumber}
+          resource={row.original}
+          resourceName="Return"
+          onView={(data) => openModal({ initialData: data as SaleReturn, isViewMode: true })}
+          deleteMutation={row.original.status === RETURN_STATUS.COMPLETED ? undefined : deleteMutation}
+        />
+      )
+    }
+  ], [openModal, deleteMutation])
+
+  return (
+    <ResourceListPage<SaleReturn, unknown>
+      title="Sales Returns"
+      description="Process and track customer returns, restock items, and manage refunds."
+      resourceName="returns"
+      columns={columns}
+      useResourceQuery={useReturns}
+      onAdd={() => openModal()}
+      addLabel="Process Return"
+      searchPlaceholder="Search return number or sale ID..."
+      filterDefinitions={[
+        {
+          key: "status",
+          title: "Status",
+          options: Object.values(RETURN_STATUS).map(s => ({ label: s, value: s }))
+        }
+      ]}
+    />
+  )
+}

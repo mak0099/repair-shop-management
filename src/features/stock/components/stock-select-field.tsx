@@ -2,7 +2,6 @@
 
 import { useMemo } from "react"
 import { FieldValues, Control, Path } from "react-hook-form"
-import { Smartphone } from "lucide-react"
 
 import { SelectField } from "@/components/forms/select-field"
 import { useStockOptions } from "../stock.api"

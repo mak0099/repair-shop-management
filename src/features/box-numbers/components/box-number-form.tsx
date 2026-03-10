@@ -74,7 +74,7 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
           onSuccess: (updatedData) => {
             toast.success("Box details updated successfully.")
             queryClient.invalidateQueries({ queryKey: ["box-numbers"] })
-            onSuccess ? onSuccess(updatedData) : router.push(BOX_NUMBERS_BASE_HREF)
+            if (onSuccess) onSuccess(updatedData); else router.push(BOX_NUMBERS_BASE_HREF)
           },
           onError: (error) => toast.error(error.message),
         }
@@ -84,7 +84,7 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
         onSuccess: (newData) => {
           toast.success("New Box created successfully.")
           queryClient.invalidateQueries({ queryKey: ["box-numbers"] })
-          onSuccess ? onSuccess(newData) : router.push(BOX_NUMBERS_BASE_HREF)
+          if (onSuccess) onSuccess(newData); else router.push(BOX_NUMBERS_BASE_HREF)
         },
         onError: (error) => toast.error(error.message),
       })

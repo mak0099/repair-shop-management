@@ -28,7 +28,6 @@ export function FormFooter({
   className,
 }: FormFooterProps) {
   const defaultSaveLabel = isEditMode ? "Save Changes" : "Save"
-  const defaultCancelLabel = isViewMode ? "Close" : "Cancel"
 
   return (
     <div className={cn("flex items-center justify-end gap-3 pt-6 border-t mt-auto", className)}>

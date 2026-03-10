@@ -30,7 +30,7 @@ export function ImageUploadField<TFieldValues extends FieldValues>({
   layout = "default",
 }: ImageUploadFieldProps<TFieldValues>) {
   const {
-    field: { value, onChange },
+    field: { onChange },
     fieldState: { error },
   } = useController({ name, control })
 

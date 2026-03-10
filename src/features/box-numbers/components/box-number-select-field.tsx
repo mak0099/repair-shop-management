@@ -25,7 +25,7 @@ export function BoxNumberSelectField<TFieldValues extends FieldValues>({
   disabled = false,
   readOnly = false,
 }: BoxNumberSelectFieldProps<TFieldValues>) {
-  const { setValue, trigger } = useFormContext<TFieldValues>()
+  const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useBoxNumberModal()
   const { data: boxNumberOptionsData, isLoading } = useBoxNumberOptions()
 

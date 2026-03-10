@@ -1,14 +1,19 @@
-import { withAuth } from "next-auth/middleware";
+import { withAuth, NextRequestWithAuth } from "next-auth/middleware";
+import { NextRequest, NextFetchEvent } from "next/server";
 
-export default withAuth({
+const authMiddleware = withAuth({
   pages: {
     signIn: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET || "super-secret-secret",
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     authorized: ({ token }) => !!token,
   },
 });
+
+export function proxy(req: NextRequest, event: NextFetchEvent) {
+  return authMiddleware(req as NextRequestWithAuth, event);
+}
 
 export const config = {
   matcher: ["/dashboard/:path*"],

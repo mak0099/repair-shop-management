@@ -10,7 +10,7 @@ interface InvoiceSetupModalContextType {
 const InvoiceSetupModalContext = createContext<InvoiceSetupModalContextType | undefined>(undefined)
 
 export function InvoiceSetupProvider({ children }: { children: React.ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [, setIsOpen] = useState(false)
 
   const openModal = useCallback(() => setIsOpen(true), [])
   const closeModal = useCallback(() => setIsOpen(false), [])

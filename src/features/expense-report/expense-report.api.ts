@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 import { ExpenseReport, ExpenseReportFilters } from "./expense-report.schema";
 
 export function useGenerateExpenseReport() {
@@ -7,7 +7,7 @@ export function useGenerateExpenseReport() {
     mutationFn: async (
       filters: ExpenseReportFilters
     ): Promise<ExpenseReport> => {
-      const { data } = await apiClient.post("/expense-report", filters);
+      const { data } = await api.post("/expense-report", filters);
       return data;
     },
   });

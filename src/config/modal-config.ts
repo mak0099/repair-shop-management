@@ -15,6 +15,10 @@ import { PermissionForm } from "@/features/permissions/components/permission-for
 import { StockAdjustmentForm } from "@/features/stock-adjustment"
 import { BoxNumberForm } from "@/features/box-numbers"
 import { RoleForm } from "@/features/roles"
+import { ReturnForm } from "@/features/returns"
+import { RegisterForm } from "@/features/register"
+import { PurchaseForm } from "@/features/purchases"
+import { KhataForm } from "@/features/khata"
 
 // 1. Define a structure for each modal configuration
 interface ModalConfig {
@@ -23,6 +27,7 @@ interface ModalConfig {
   // has its own specific props interface for `initialData`. Trying to enforce a
   // single generic type here leads to assignability issues. This is a pragmatic
   // trade-off for creating a dynamic modal registry.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contentComponent: React.ComponentType<any>
 }
 
@@ -87,6 +92,22 @@ const modalRegistry: readonly ModalConfig[] = [
   {
     type: "boxNumberForm",
     contentComponent: BoxNumberForm,
+  },
+  {
+    type: "returnForm",
+    contentComponent: ReturnForm,
+  },
+  {
+    type: "registerForm",
+    contentComponent: RegisterForm,
+  },
+  {
+    type: "purchaseForm",
+    contentComponent: PurchaseForm,
+  },
+  {
+    type: "khataForm",
+    contentComponent: KhataForm,
   },
 ] as const // Using 'as const' for better type inference
 

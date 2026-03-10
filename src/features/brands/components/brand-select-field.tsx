@@ -26,7 +26,7 @@ export function BrandSelectField<TFieldValues extends FieldValues>({
   disabled = false,
   readOnly = false,
 }: BrandSelectFieldProps<TFieldValues>) {
-  const { setValue, trigger } = useFormContext<TFieldValues>()
+  const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useBrandModal()
   const { data: brandOptionsData, isLoading } = useBrandOptions()
 

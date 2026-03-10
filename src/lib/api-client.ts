@@ -3,7 +3,7 @@
 import axios from "axios";
 import { config } from "./config";
 
-export const apiClient = axios.create({
+export const api = axios.create({
   baseURL: config.apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export const apiClient = axios.create({
 // =============================
 // Request Interceptor
 // =============================
-apiClient.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     // example: auth token
     const token = localStorage.getItem("access_token");
@@ -32,7 +32,7 @@ apiClient.interceptors.request.use(
 // =============================
 // Response Interceptor
 // =============================
-apiClient.interceptors.response.use(
+api.interceptors.response.use(
   (response) => response,
   (error) => {
     // example global error log

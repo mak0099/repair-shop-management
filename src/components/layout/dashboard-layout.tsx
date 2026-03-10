@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 
 import { AppSidebar } from "@/components/layout/sidebar"
 import { AppTopNav } from "@/components/layout/top-nav"
@@ -26,6 +27,7 @@ export function DashboardLayoutContent({
   children: React.ReactNode
 }) {
   const { isTopNav } = useLayout()
+  const pathname = usePathname()
 
   if (isTopNav) {
     return (
@@ -48,13 +50,22 @@ export function DashboardLayoutContent({
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Admin Panel</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                </BreadcrumbItem>
+                {pathname.split('/').filter(Boolean).map((segment, index, array) => {
+                  const href = `/${array.slice(0, index + 1).join('/')}`
+                  const title = segment === 'pos' || segment === 'crm' 
+                    ? segment.toUpperCase() 
+                    : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ')
+                  const isLast = index === array.length - 1
+
+                  return (
+                    <React.Fragment key={href}>
+                      <BreadcrumbItem className={!isLast ? "hidden md:block" : ""}>
+                        {isLast ? <BreadcrumbPage>{title}</BreadcrumbPage> : <BreadcrumbLink href={href}>{title}</BreadcrumbLink>}
+                      </BreadcrumbItem>
+                      {!isLast && <BreadcrumbSeparator className="hidden md:block" />}
+                    </React.Fragment>
+                  )
+                })}
               </BreadcrumbList>
             </Breadcrumb>
           </div>

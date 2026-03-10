@@ -69,7 +69,6 @@ export type FormData = z.input<typeof formSchema>;
  */
 export interface Acceptance extends BaseEntity, Omit<z.output<typeof formSchema>, 'photo1' | 'photo2' | 'photo3' | 'photo4' | 'photo5'> {
   acceptanceNumber: string;
-  branchId: string;
   photos: string[];
   isActive: boolean;
 }

@@ -22,6 +22,7 @@ interface TextFieldProps<TFieldValues extends FieldValues>
   readOnly?: boolean
   labelClassName?: string
   inputClassName?: string
+  icon?: React.ReactNode
 }
 
 export function TextField<TFieldValues extends FieldValues>({
@@ -35,6 +36,7 @@ export function TextField<TFieldValues extends FieldValues>({
   className,
   labelClassName,
   inputClassName,
+  icon,
   ...props
 }: TextFieldProps<TFieldValues>) {
   return (
@@ -49,21 +51,33 @@ export function TextField<TFieldValues extends FieldValues>({
             readOnly={readOnly} 
             className={labelClassName} 
           />
-          <FormControl>
-            <Input
-              type={type}
-              readOnly={readOnly}
-              tabIndex={readOnly ? -1 : 0}
-              placeholder={readOnly ? "" : placeholder}
-              className={cn(
-                readOnly && "cursor-default bg-muted/30 focus-visible:ring-0",
-                inputClassName
-              )}
-              {...props}
-              {...field}
-              value={field.value ?? ""}
-            />
-          </FormControl>
+          <div className="relative">
+            {icon && (
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                {icon}
+              </div>
+            )}
+            <FormControl>
+              <Input
+                type={type}
+                readOnly={readOnly}
+                tabIndex={readOnly ? -1 : 0}
+                placeholder={readOnly ? "" : placeholder}
+                className={cn(
+                  readOnly && "cursor-default bg-muted/30 focus-visible:ring-0",
+                  icon && "pl-10",
+                  inputClassName
+                )}
+                {...props}
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e)
+                  props.onChange?.(e)
+                }}
+                value={field.value ?? ""}
+              />
+            </FormControl>
+          </div>
           <FormMessage />
         </FormItem>
       )}

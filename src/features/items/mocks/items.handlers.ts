@@ -1,5 +1,4 @@
 import { delay, http, HttpResponse } from "msw"
-import { applySort } from "@/mocks/mock-utils"
 import { Item } from "../item.schema"
 import { mockItems } from "./items.mock"
 
@@ -34,6 +33,12 @@ export const itemHandlers = [
     const paginatedData = filtered.slice(start, end)
 
     return HttpResponse.json({ data: paginatedData, meta: { total, page, pageSize, totalPages } })
+  }),
+
+  // GET item options for dropdowns
+  http.get("*/items/options", () => {
+    const itemOptions = items.map((b) => ({ id: b.id, name: b.name }))
+    return HttpResponse.json(itemOptions)
   }),
 
   http.post("*/items", async ({ request }) => {

@@ -42,6 +42,12 @@ export const brandHandlers = [
     return HttpResponse.json({ data: paginatedData, meta: { total, page, pageSize, totalPages } })
   }),
 
+  // GET brand options for dropdowns
+  http.get("*/brands/options", () => {
+    const brandOptions = brands.map((b) => ({ id: b.id, name: b.name }))
+    return HttpResponse.json(brandOptions)
+  }),
+
   // Create Brand
   http.post("*/brands", async ({ request }) => {
     try {
@@ -142,11 +148,5 @@ export const brandHandlers = [
     const { id } = params
     brands = brands.filter((b) => b.id !== id)
     return new HttpResponse(null, { status: 204 })
-  }),
-
-  // GET brand options for dropdowns
-  http.get("*/brands/options", () => {
-    const brandOptions = brands.map((b) => ({ id: b.id, name: b.name }))
-    return HttpResponse.json(brandOptions)
   }),
 ]

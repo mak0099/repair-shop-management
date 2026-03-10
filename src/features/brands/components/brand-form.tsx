@@ -6,7 +6,7 @@ import { useForm, FieldErrors, Resolver } from "react-hook-form" // Added Resolv
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2, Save, X, Edit3, Trash2 } from "lucide-react"
+import { Edit3 } from "lucide-react"
 
 import { TextField } from "@/components/forms/text-field"
 import { CheckboxField } from "@/components/forms/checkbox-field"
@@ -57,19 +57,11 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
       },
   })
 
-  const { handleSubmit, control, reset } = form
+  const { handleSubmit, control } = form
 
   const onFormError = (errors: FieldErrors<BrandFormValues>) => {
     console.error("Brand form validation errors:", errors)
     toast.error("Please fill all required fields correctly.")
-  }
-
-  const handleCancel = () => {
-    if (onSuccess && initialData) {
-      onSuccess(initialData)
-    } else {
-      router.push(BRANDS_BASE_HREF)
-    }
   }
 
   function onSubmit(data: BrandFormValues) {
@@ -80,7 +72,7 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
           onSuccess: (updatedBrand: Brand) => {
             toast.success("Brand updated successfully")
             queryClient.invalidateQueries({ queryKey: ["brands"] })
-            onSuccess ? onSuccess(updatedBrand) : router.push(BRANDS_BASE_HREF)
+            if (onSuccess) onSuccess(updatedBrand); else router.push(BRANDS_BASE_HREF)
           },
           onError: (error) => toast.error("Update failed: " + error.message),
         }
@@ -90,7 +82,7 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
         onSuccess: (newBrand) => {
           toast.success("Brand created successfully")
           queryClient.invalidateQueries({ queryKey: ["brands"] })
-          onSuccess ? onSuccess(newBrand) : router.push(BRANDS_BASE_HREF)
+          if (onSuccess) onSuccess(newBrand); else router.push(BRANDS_BASE_HREF)
         },
         onError: (error) => toast.error("Creation failed: " + error.message),
       })

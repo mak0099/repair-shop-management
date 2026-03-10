@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
         )
 
         if (user && user.isActive) {
-          const { password, ...userWithoutPassword } = user
+          const { ...userWithoutPassword } = user
           // Ensure we return the object structure that matches our User interface
           return {
             ...userWithoutPassword,

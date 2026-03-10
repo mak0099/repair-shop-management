@@ -55,13 +55,31 @@ export const userHandlers = [
     })
   }),
 
+    // GET user options
+    http.get("*/users/options", async ({ request }) => {
+      await delay(200)
+      const url = new URL(request.url)
+      const search = url.searchParams.get("search")?.toLowerCase() || ""
+  
+      const filtered = users.filter(
+        (u) => u.isActive && (u.name.toLowerCase().includes(search))
+      )
+  
+      const options = filtered.map((u) => ({
+        id: u.id,
+        name: u.name,
+      }))
+  
+      return HttpResponse.json(options)
+    }),
+
   /**
    * POST a new user
    */
   http.post("*/users", async ({ request }) => {
     await delay(800)
     const data = (await request.json()) as UserFormValues
-    const { password, extraPermissions, ...rest } = data;
+    const { extraPermissions, ...rest } = data;
 
     const newUser: User = {
       id: `user-${Date.now()}`,
@@ -87,7 +105,7 @@ export const userHandlers = [
     let updatedUser: User | undefined
     users = users.map((user) => {
       if (user.id === id) {
-        const { password, extraPermissions, ...rest } = updates;
+        const { extraPermissions, ...rest } = updates;
         
         updatedUser = { 
           ...user, 

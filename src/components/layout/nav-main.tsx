@@ -56,12 +56,15 @@ export function NavMain({
     return pathname === url || pathname.startsWith(url + '/')
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isGroupActive = (item: any): boolean => {
     if (isUrlActive(item.url)) return true
     if (item.items) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return item.items.some((subItem: any) => {
         if (isUrlActive(subItem.url)) return true
         if (subItem.items) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return subItem.items.some((nestedItem: any) => isUrlActive(nestedItem.url))
         }
         return false
@@ -78,12 +81,14 @@ export function NavMain({
           const groupActive = isGroupActive(item)
 
           if (!item.items) {
+            const active = isUrlActive(item.url)
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
-                  isActive={isUrlActive(item.url)}
+                  isActive={active}
+                  className={active ? "data-[active=true]:bg-primary/10 data-[active=true]:text-primary font-medium" : ""}
                 >
                   <Link href={item.url || "#"}>
                     {item.icon && <item.icon />}
@@ -139,7 +144,11 @@ export function NavMain({
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title} isActive={groupActive}>
+                  <SidebarMenuButton 
+                    tooltip={item.title} 
+                    isActive={groupActive}
+                    className={groupActive ? "font-medium text-primary" : ""}
+                  >
                     {item.icon && <item.icon />}
                     <span className="truncate">{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -152,7 +161,10 @@ export function NavMain({
                         {subItem.items ? (
                           <Collapsible>
                             <CollapsibleTrigger asChild>
-                              <SidebarMenuSubButton isActive={isUrlActive(subItem.url)}>
+                              <SidebarMenuSubButton 
+                                isActive={isUrlActive(subItem.url)}
+                                className={isUrlActive(subItem.url) ? "font-medium text-primary" : ""}
+                              >
                                 <span className="truncate">{subItem.title}</span>
                                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                               </SidebarMenuSubButton>
@@ -161,10 +173,14 @@ export function NavMain({
                               <SidebarMenuSub>
                                 {subItem.items.map((nestedItem) => (
                                   <SidebarMenuSubItem key={nestedItem.title}>
-                                    <SidebarMenuSubButton asChild isActive={isUrlActive(nestedItem.url)}>
-                                      <a href={nestedItem.url}>
+                                    <SidebarMenuSubButton 
+                                      asChild 
+                                      isActive={isUrlActive(nestedItem.url)}
+                                      className={isUrlActive(nestedItem.url) ? "data-[active=true]:bg-primary/10 data-[active=true]:text-primary font-medium" : ""}
+                                    >
+                                      <Link href={nestedItem.url || "#"}>
                                         <span className="truncate">{nestedItem.title}</span>
-                                      </a>
+                                      </Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 ))}
@@ -172,10 +188,14 @@ export function NavMain({
                             </CollapsibleContent>
                           </Collapsible>
                         ) : (
-                          <SidebarMenuSubButton asChild isActive={isUrlActive(subItem.url)}>
-                            <a href={subItem.url}>
+                          <SidebarMenuSubButton 
+                            asChild 
+                            isActive={isUrlActive(subItem.url)}
+                            className={isUrlActive(subItem.url) ? "data-[active=true]:bg-primary/10 data-[active=true]:text-primary font-medium" : ""}
+                          >
+                            <Link href={subItem.url || "#"}>
                               <span className="truncate">{subItem.title}</span>
-                            </a>
+                            </Link>
                           </SidebarMenuSubButton>
                         )}
                       </SidebarMenuSubItem>

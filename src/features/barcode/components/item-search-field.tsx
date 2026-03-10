@@ -4,6 +4,7 @@ import { Control } from "react-hook-form"
 import { ItemSelectField } from "@/features/items/components/item-select-field"
 
 interface ItemSearchFieldProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any>
   name: string
   label?: string

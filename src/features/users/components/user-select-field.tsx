@@ -15,6 +15,7 @@ interface UserSelectFieldProps<TFieldValues extends FieldValues> {
   required?: boolean
   disabled?: boolean
   readOnly?: boolean
+  variant?: "technician" | "all"
 }
 
 export function UserSelectField<TFieldValues extends FieldValues>({
@@ -25,6 +26,7 @@ export function UserSelectField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
+  variant = "all",
 }: UserSelectFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useUserModal()
@@ -32,11 +34,18 @@ export function UserSelectField<TFieldValues extends FieldValues>({
 
   const userOptions = useMemo(() => {
     const users = userOptionsData || []
-    return users.map((u) => ({
+
+    const filteredUsers = users
+    if (variant === "technician") {
+      // TODO: Implement internal permission check to filter technicians
+      // filteredUsers = users.filter(u => hasPermission(u, 'repair:execute'))
+    }
+
+    return filteredUsers.map((u) => ({
       value: u.id,
       label: u.name,
     }))
-  }, [userOptionsData])
+  }, [userOptionsData, variant])
 
   const handleAddUser = () => {
     openModal({

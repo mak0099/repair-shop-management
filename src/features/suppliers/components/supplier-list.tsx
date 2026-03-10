@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
-import { DateCell, StatusCell, TitleCell } from "@/components/shared/data-table-cells"
+import { DateCell, TitleCell } from "@/components/shared/data-table-cells"
 
 import {
   useSuppliers,
@@ -28,18 +28,18 @@ export function SupplierList() {
   const columns: ColumnDef<Supplier>[] = useMemo(
     () => [
       {
-        accessorKey: "company_name",
+        accessorKey: "companyName",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Company Name" />,
         cell: ({ row }) => (
           <TitleCell
-            value={row.getValue("company_name")}
+            value={row.getValue("companyName")}
             isActive={row.original.isActive}
             onClick={() => openModal({ initialData: row.original, isViewMode: true })}
           />
         ),
       },
       {
-        accessorKey: "contact_person",
+        accessorKey: "contactPerson",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Contact Person" />,
       },
       {
@@ -67,7 +67,7 @@ export function SupplierList() {
           <ResourceActions
             resource={row.original}
             resourceName="Supplier"
-            resourceTitle={row.original.company_name}
+            resourceTitle={row.original.companyName}
             onView={(supplier) => openModal({ initialData: supplier, isViewMode: true })}
             onEdit={(supplier) => openModal({ initialData: supplier })}
             deleteMutation={deleteSupplierMutation}

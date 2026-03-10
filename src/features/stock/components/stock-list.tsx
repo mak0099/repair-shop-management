@@ -10,16 +10,15 @@ import { TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { useStock } from "../stock.api"
+import { useDeleteStock, useStock } from "../stock.api"
 import { useStockAdjustmentModal } from "@/features/stock-adjustment/stock-adjustment-modal-context"
 import { Stock } from "../stock.schema"
 import { STOCK_CATEGORY_FILTER_OPTIONS, STOCK_STATUS_FILTER_OPTIONS } from "../stock.constants"
 import { StockDetailsModal } from "./stock-details-modal"
-import { useDeleteStockAdjustment } from "@/features/stock-adjustment"
 
 export function StockList() {
   const { openModal } = useStockAdjustmentModal()
-  const deleteStockAdjustmentMutation = useDeleteStockAdjustment()
+  const deleteStockMutation = useDeleteStock()
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
 
   const columns: ColumnDef<Stock>[] = useMemo(() => [
@@ -28,11 +27,12 @@ export function StockList() {
       header: ({ column }) => <DataTableColumnHeader column={column} title="Product & Specs" />,
       cell: ({ row }) => (
         <TitleCell
+          isActive={row.original.isActive}
           value={row.original.itemName}
           onClick={() => setSelectedStock(row.original)}
           subtitle={
             <div className="flex flex-wrap gap-1 mt-1">
-              {Object.entries(row.original.attributes).map(([key, value]) => (
+              {Object.entries(row.original.attributes || {}).map(([key, value]) => (
                 <Badge key={key} variant="secondary" className="text-[9px] h-4 px-1.5 bg-slate-100 text-slate-600 border-none">
                   {value}
                 </Badge>
@@ -113,11 +113,11 @@ export function StockList() {
           resourceName="Stock Item"
           resourceTitle={row.original.itemName}
           onView={() => setSelectedStock(row.original)}
-          deleteMutation={deleteStockAdjustmentMutation}
+          deleteMutation={deleteStockMutation}
         />
       )
     }
-  ], [deleteStockAdjustmentMutation])
+  ], [deleteStockMutation])
 
   const filterDefinitions: FilterDefinition[] = [
     {
@@ -143,7 +143,7 @@ export function StockList() {
         useResourceQuery={useStock}
         filterDefinitions={filterDefinitions}
         searchPlaceholder="Search SKU, IMEI or Product..."
-        initialFilters={{ category: "all", status: "all" }}
+        initialFilters={{ category: "all", status: "all", isActive: "true" }}
         onAdd={() => openModal()}
         addLabel="Adjust Stock"
       />

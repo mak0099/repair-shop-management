@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ShieldCheck, Shield } from "lucide-react"
 import { toast } from "sonner"
@@ -56,8 +56,8 @@ export function RoleForm({ initialData, onSuccess, isViewMode = false }: RoleFor
     }
   })
 
-  const { control, handleSubmit, watch, setValue, reset } = form
-  const selectedPermissions = watch("permissions") as PermissionType[]
+  const { control, handleSubmit, setValue, reset } = form
+  const selectedPermissions = useWatch({ control, name: "permissions" }) as PermissionType[]
 
   useEffect(() => {
     if (initialData && mode !== 'create') {

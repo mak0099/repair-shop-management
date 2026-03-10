@@ -5,6 +5,7 @@ import Image from "next/image"
 import { CheckCircle, XCircle, ImageIcon } from "lucide-react"
 import { format, isValid } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
 import { cn } from "@/lib/utils"
 
@@ -39,6 +40,9 @@ export function DateCell({
   includeTime = false,
   isActive = true
 }: DateCellProps) {
+  const { data: shopProfile } = useShopProfile()
+  const dateFormat = shopProfile?.dateFormat || "dd MMM yyyy"
+
   if (!date) {
     return <span className="text-muted-foreground italic text-xs">{placeholder}</span>
   }
@@ -54,7 +58,7 @@ export function DateCell({
       "text-sm font-medium",
       isActive ? "text-foreground" : "text-muted-foreground"
     )}>
-      {format(dateObj, includeTime ? "dd MMM yyyy, p" : "dd MMM yyyy")}
+      {format(dateObj, includeTime ? `${dateFormat}, p` : dateFormat)}
     </span>
   )
 }
@@ -142,7 +146,7 @@ function InternalImageContent({
 
 // --- TitleCell ---
 interface TitleCellProps {
-  value: string
+  value: string | React.ReactNode
   subtitle?: React.ReactNode
   isActive?: boolean
   onClick?: () => void
@@ -151,24 +155,26 @@ interface TitleCellProps {
 }
 
 export function TitleCell({ value, subtitle, isActive = true, onClick, avatar, fallback }: TitleCellProps) {
+  const fallbackInitials = typeof value === 'string' ? value.substring(0, 2).toUpperCase() : "??"
+
   return (
     <div className="flex items-center gap-3">
-      {(avatar || fallback) && (
+      {(avatar || fallback || typeof value === 'string') && (
         <Avatar className="h-8 w-8 border">
-          <AvatarImage src={avatar} alt={value} />
+          <AvatarImage src={avatar} alt={typeof value === 'string' ? value : ""} />
           <AvatarFallback className="bg-blue-50 text-blue-700 font-bold text-[10px]">
-            {fallback || value.substring(0, 2).toUpperCase()}
+            {fallback || fallbackInitials}
           </AvatarFallback>
         </Avatar>
       )}
       <div className="flex flex-col">
-        <p
+        <div
           className={cn(
             "font-medium text-sm cursor-pointer hover:underline",
             isActive ? "text-slate-800" : "text-muted-foreground"
           )}
           onClick={onClick}
-        >{value}</p>
+        >{value}</div>
         {subtitle && (
           <div className="text-[10px] text-muted-foreground font-normal mt-0.5">{subtitle}</div>
         )}
@@ -178,21 +184,25 @@ export function TitleCell({ value, subtitle, isActive = true, onClick, avatar, f
 }
 
 // --- CurrencyCell ---
-interface CurrencyCellProps {
+export interface CurrencyCellProps {
   amount: number | string | undefined | null
   currencyCode?: string
   locale?: string
   className?: string
   subtitle?: React.ReactNode
+  minimumFractionDigits?: number
+  maximumFractionDigits?: number
 }
 
 export function CurrencyCell({
   amount,
-  currencyCode = "EUR",
+  currencyCode,
   locale = "it-IT",
   className,
   subtitle,
 }: CurrencyCellProps) {
+  const { data: shopProfile } = useShopProfile()
+  const currency = currencyCode || shopProfile?.currency || "EUR"
   const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
 
   if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
@@ -201,7 +211,7 @@ export function CurrencyCell({
 
   const formatted = new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: currencyCode,
+    currency: currency,
   }).format(numericAmount)
 
   return (
@@ -212,4 +222,27 @@ export function CurrencyCell({
       )}
     </div>
   )
+}
+
+export function CurrencyText({
+  amount,
+  currencyCode,
+  locale = "it-IT",
+  minimumFractionDigits,
+  maximumFractionDigits,
+}: Pick<CurrencyCellProps, "amount" | "currencyCode" | "locale" | "minimumFractionDigits" | "maximumFractionDigits">) {
+  const { data: shopProfile } = useShopProfile()
+  const currency = currencyCode || shopProfile?.currency || "EUR"
+  const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
+
+  if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
+    return <>-</>
+  }
+
+  return <>{new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+    minimumFractionDigits,
+    maximumFractionDigits,
+  }).format(numericAmount)}</>
 }

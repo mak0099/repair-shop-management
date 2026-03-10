@@ -15,9 +15,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// --- Enhanced Metadata for Multi-device Favicons ---
 export const metadata: Metadata = {
-  title: "Admin Panel",
-  description: "A gorgeous admin panel built with Next.js and React",
+  title: "Telefix | Repair Management",
+  description: "La tua felicità, la nostra priorità", // Using your Italian slogan
+  icons: {
+    icon: [
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({

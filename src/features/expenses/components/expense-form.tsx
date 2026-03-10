@@ -83,7 +83,7 @@ export function ExpenseForm({
       onSuccess: (res: Expense) => {
         toast.success(`Expense ${isEditMode ? "updated" : "created"} successfully`)
         queryClient.invalidateQueries({ queryKey: ["expenses"] })
-        onSuccess ? onSuccess(res) : router.push(EXPENSES_BASE_HREF)
+        if (onSuccess) onSuccess(res); else router.push(EXPENSES_BASE_HREF)
       },
       onError: (error: Error) => toast.error("Action failed: " + error.message),
     }

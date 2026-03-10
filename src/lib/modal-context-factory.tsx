@@ -94,7 +94,7 @@ export function createModalContext<
           ...rest,
         })
       },
-      [openGlobalModal, closeGlobalModal, addTitle, addDescription, viewTitle, viewDescription, editTitle, editDescription, formName, modalClassName]
+      [openGlobalModal, closeGlobalModal]
     )
 
     const closeModal = useCallback(() => closeGlobalModal(), [closeGlobalModal])

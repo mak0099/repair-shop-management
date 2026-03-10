@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { apiClient } from "@/lib/api-client"
+import { api } from "@/lib/api-client"
 
 /**
  * Capitalizes the first letter of a given string.
@@ -23,7 +23,7 @@ export function createBulkDeleteHook(resourceName: string) {
     
     return useMutation({
       mutationFn: async (ids: string[]) => {
-        await apiClient.delete(resourceName, { data: { ids } })
+        await api.delete(resourceName, { data: { ids } })
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [resourceName] })
@@ -57,7 +57,7 @@ export function createBulkUpdateHook<TResource extends { id?: string }>(resource
         /** * Using Record<string, unknown> for the data payload to 
          * maintain type safety while adhering to ESLint rules. 
          */
-        const response = await apiClient.patch<TResource[]>(resourceName, { ids, data })
+        const response = await api.patch<TResource[]>(resourceName, { ids, data })
         return response.data
       },
       onSuccess: () => {

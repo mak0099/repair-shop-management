@@ -2,7 +2,6 @@
 
 import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { UseMutationResult } from "@tanstack/react-query"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { ResourceActions } from "@/components/shared/resource-actions"

@@ -159,7 +159,7 @@ export function TitleCell({ value, subtitle, isActive = true, onClick, avatar, f
 
   return (
     <div className="flex items-center gap-3">
-      {(avatar || fallback || typeof value === 'string') && (
+      {(avatar || fallback) && (
         <Avatar className="h-8 w-8 border">
           <AvatarImage src={avatar} alt={typeof value === 'string' ? value : ""} />
           <AvatarFallback className="bg-blue-50 text-blue-700 font-bold text-[10px]">

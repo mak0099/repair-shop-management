@@ -34,7 +34,7 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-1">
           <CardContent className="pt-6 flex flex-col items-center text-center">
-            <div className="w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 mb-4 overflow-hidden">
+            <div className="relative w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 mb-4 overflow-hidden">
               {profile.logoUrl ? (
                 <Image src={profile.logoUrl} alt="Logo" fill className="object-cover" />
               ) : (

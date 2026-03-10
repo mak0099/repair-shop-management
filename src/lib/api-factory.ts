@@ -89,7 +89,7 @@ export function createApiHooksFor<
   /**
    * Hook for fetching a single resource by ID.
    */
-  const useGetOne = (id: string | null | undefined): UseQueryResult<TResource, Error> => {
+  const useGetOne = (id: string | null | undefined, options?: { staleTime?: number; gcTime?: number }): UseQueryResult<TResource, Error> => {
     return useQuery({
       queryKey: [...resourceQueryKey, id],
       queryFn: async () => {
@@ -98,6 +98,8 @@ export function createApiHooksFor<
         return response.data
       },
       enabled: !!id,
+      staleTime: options?.staleTime,
+      gcTime: options?.gcTime,
     })
   }
 

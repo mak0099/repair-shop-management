@@ -8,6 +8,7 @@ export const shopProfileMock: ShopProfile = {
   email: "contact@telefix.it",
   address: "Level 4, Block C, Jamuna Future Park, Dhaka",
   logoUrl: "/images/logo.png",
+  bannerLogoUrl: "/images/banner-logo.png",
   binNumber: "123456789-001",
   currency: "EUR",
   invoiceFooterMessage: "Thank you for shopping with us! No return without invoice.",

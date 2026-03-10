@@ -12,13 +12,17 @@ import { Smartphone, Lock, Loader2 } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
+import { useShopProfile } from "@/features/shop-profile"
+import Image from "next/image"
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { data: shopProfile } = useShopProfile()
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
-  
+  const displayLogo = shopProfile?.logoUrl || shopProfile?.bannerLogoUrl
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema) as unknown as Resolver<LoginFormValues>,
     defaultValues: { email: MOCK_USERS[0].email, password: MOCK_USERS[0].password, rememberMe: false }
@@ -50,31 +54,50 @@ export function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <Card className="w-full max-w-[400px] shadow-xl border-none">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto bg-slate-900 text-white p-3 rounded-2xl w-fit mb-4">
-            <Smartphone className="h-8 w-8" />
-          </div>
-          <CardTitle className="text-2xl font-bold">Mobile Shop Pro</CardTitle>
+          {displayLogo ? (
+            <div className="relative w-48 h-16 mx-auto">
+              <Image
+                src={displayLogo}
+                alt={shopProfile?.name || "Logo"}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          ) : (
+            <div className="mx-auto bg-slate-900 text-white p-3 rounded-2xl w-fit">
+              <Smartphone className="h-8 w-8" />
+            </div>
+          )}
+          <CardTitle>
+            <p className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              {shopProfile?.name || "Mobile Shop Pro"}
+            </p>
+            {shopProfile?.slogan && (
+              <p className="text-sm font-light text-muted-foreground italic">{shopProfile.slogan}</p>
+            )}
+          </CardTitle>
           <CardDescription>Enter your credentials to access the dashboard</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <TextField 
-                control={form.control} 
-                name="email" 
-                label="Email Address" 
-                placeholder="admin@shop.com" 
+              <TextField
+                control={form.control}
+                name="email"
+                label="Email Address"
+                placeholder="admin@shop.com"
               />
-              <TextField 
-                control={form.control} 
-                name="password" 
-                label="Password" 
-                type="password" 
-                placeholder="••••••••" 
+              <TextField
+                control={form.control}
+                name="password"
+                label="Password"
+                type="password"
+                placeholder="••••••••"
               />
-              
-              <Button type="submit" className="w-full bg-slate-900 h-11 text-base font-bold" disabled={isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />} 
+
+              <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-[length:200%_auto] text-white shadow-md h-11 text-base font-bold transition-all duration-500 ease-in-out hover:bg-right hover:shadow-[0_0_20px_rgba(236,72,153,0.5)]" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
                 Sign In
               </Button>
             </form>

@@ -14,8 +14,24 @@ interface InvoiceViewProps {
 }
 
 export function InvoiceView({ sale }: InvoiceViewProps) {
-  const { data: invoiceSetup } = useInvoiceSetup();
-  const { data: shopProfile } = useShopProfile();
+  const invoiceSetupQuery = useInvoiceSetup();
+  const shopProfileQuery = useShopProfile();
+  
+  const invoiceSetup = invoiceSetupQuery.data;
+  const shopProfile = shopProfileQuery.data;
+  
+  const isLoading = invoiceSetupQuery.isLoading || shopProfileQuery.isLoading;
+
+  if (isLoading || !invoiceSetup || !shopProfile) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[400px]">
+        <div className="text-center">
+          <div className="h-8 w-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm font-medium text-slate-500">Loading invoice...</p>
+        </div>
+      </div>
+    )
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('it-IT', { style: 'currency', currency: shopProfile?.currency || 'EUR' }).format(amount);
@@ -45,7 +61,7 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Header for Web - Hidden on Print */}
-      <div className="flex justify-between items-center p-4 border-b print:hidden bg-slate-50">
+      <div className="flex justify-between items-center p-4 border-b print:hidden bg-slate-50 pr-12">
         <div className="flex items-center gap-2">
           <Receipt className="h-4 w-4 text-blue-600" />
           <span className="text-sm font-black uppercase tracking-widest">Invoice Details</span>
@@ -90,7 +106,7 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
           <div className="grid grid-cols-2 gap-4 py-4 text-xs">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">{invoiceSetup?.customerInfoLabel || "Dati Cliente"}</p>
-              <p className="font-black text-slate-800">{sale.customerId || "Walk-in Customer"}</p>
+              <p className="font-black text-slate-800">{sale.customerName || "Walk-in Customer"}</p>
             </div>
             <div className="text-right">
               <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">{invoiceSetup?.paymentMethodLabel || "Metodo di Pagamento"}</p>

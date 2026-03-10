@@ -12,11 +12,20 @@ import { useFrontdeskStats, useUrgentJobs, useRecentActivities } from "../dashbo
 import { CurrencyText } from "@/components/shared/data-table-cells"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useAcceptanceModal } from "@/features/acceptances/acceptance-modal-context"
+import { useQuotationModal } from "@/features/quotations/quotation-modal-context"
+import { useExpenseModal } from "@/features/expenses/expense-modal-context"
+import { SALES_POS_HREF } from "@/config/paths"
+import { useRouter } from "next/navigation"
 
 export function FrontdeskView() {
   const { data: stats, isLoading: statsLoading } = useFrontdeskStats()
   const { data: urgentJobs, isLoading: urgentLoading } = useUrgentJobs()
   const { data: recentJobs, isLoading: recentLoading } = useRecentActivities()
+  const router = useRouter()
+  const { openModal: openAcceptanceModal } = useAcceptanceModal()
+  const { openModal: openQuotationModal } = useQuotationModal()
+  const { openModal: openExpenseModal } = useExpenseModal()
 
   if (statsLoading || urgentLoading || recentLoading) {
     return (
@@ -67,16 +76,16 @@ export function FrontdeskView() {
 
       {/* Quick Action Grid - বড় বাটন যা দ্রুত কাজ শুরু করতে সাহায্য করবে */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Button className="h-16 bg-slate-600 hover:bg-slate-700 rounded-2xl flex flex-col gap-1 shadow-lg shadow-slate-100">
+        <Button onClick={() => openAcceptanceModal()} className="h-16 bg-slate-600 hover:bg-slate-700 rounded-2xl flex flex-col gap-1 shadow-lg shadow-slate-100">
           <Wrench className="h-5 w-5" /> <span className="text-[10px] font-black uppercase">New Repair</span>
         </Button>
-        <Button variant="outline" className="h-16 border-slate-200 bg-white rounded-2xl flex flex-col gap-1 shadow-sm">
+        <Button onClick={() => router.push(SALES_POS_HREF)} variant="outline" className="h-16 border-slate-200 bg-white rounded-2xl flex flex-col gap-1 shadow-sm">
           <Smartphone className="h-5 w-5 text-emerald-600" /> <span className="text-[10px] font-black uppercase">Sell Product</span>
         </Button>
-        <Button variant="outline" className="h-16 border-slate-200 bg-white rounded-2xl flex flex-col gap-1 shadow-sm">
+        <Button onClick={() => openQuotationModal()} variant="outline" className="h-16 border-slate-200 bg-white rounded-2xl flex flex-col gap-1 shadow-sm">
           <Receipt className="h-5 w-5 text-amber-600" /> <span className="text-[10px] font-black uppercase">Create Quote</span>
         </Button>
-        <Button variant="outline" className="h-16 border-slate-200 bg-white rounded-2xl flex flex-col gap-1 shadow-sm">
+        <Button onClick={() => openExpenseModal()} variant="outline" className="h-16 border-slate-200 bg-white rounded-2xl flex flex-col gap-1 shadow-sm">
           <Wallet className="h-5 w-5 text-purple-600" /> <span className="text-[10px] font-black uppercase">Add Expense</span>
         </Button>
       </div>

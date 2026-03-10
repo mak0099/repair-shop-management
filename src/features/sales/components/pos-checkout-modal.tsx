@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { CreditCard, Banknote, Smartphone, Check, ArrowRight, Calculator, Euro } from "lucide-react"
 import { z } from "zod"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { usePOS } from "../pos-context"
 import { useCreateSale } from "../sales.api"
@@ -14,6 +15,7 @@ import { PAYMENT_METHODS } from "../sales.constants"
 import { InvoiceView } from "./invoice-view"
 import { Sale } from "../sales.schema"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
+import { useInvoiceSetup } from "@/features/invoice-setup/invoice-setup.api"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -31,6 +33,8 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
   const [open, setOpen] = useState(false)
   const [completedSale, setCompletedSale] = useState<Sale | null>(null)
   const { data: shopProfile } = useShopProfile()
+  const queryClient = useQueryClient()
+  const invoiceSetupQuery = useInvoiceSetup()
   const currency = shopProfile?.currency || "BDT"
 
   const form = useForm<SaleFormValues>({
@@ -65,18 +69,18 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
 
   // Sync form values when modal opens or totals change
   useEffect(() => {
-    if (open) {
-      const roundedTotal = Number(totals.grandTotal.toFixed(2))
-      setValue("subtotal", totals.subtotal)
-      setValue("totalTax", totals.tax)
-      setValue("totalDiscount", totals.discount)
-      setValue("grandTotal", roundedTotal)
-      setValue("items", cart)
-      setValue("customerId", selectedCustomerId || "")
-      // Reset amount received to grand total
-      setValue("amountReceived", roundedTotal)
-    }
-  }, [open, totals, cart, selectedCustomerId, setValue])
+    if (!open || completedSale) return
+    
+    const roundedTotal = Number(totals.grandTotal.toFixed(2))
+    setValue("subtotal", totals.subtotal)
+    setValue("totalTax", totals.tax)
+    setValue("totalDiscount", totals.discount)
+    setValue("grandTotal", roundedTotal)
+    setValue("items", cart)
+    setValue("customerId", selectedCustomerId || "")
+    // Reset amount received to grand total
+    setValue("amountReceived", roundedTotal)
+  }, [open, totals.grandTotal, totals.tax, totals.discount, totals.subtotal, cart, selectedCustomerId, setValue, completedSale])
 
   const onConfirm = (data: SaleFormValues) => {
     const paymentStatus = data.amountReceived >= data.grandTotal ? "PAID" : (data.amountReceived > 0 ? "PARTIAL" : "UNPAID")
@@ -88,11 +92,26 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
       changeAmount,
       paymentStatus
     }, {
-      onSuccess: (data) => {
+      onSuccess: (response) => {
         toast.success("Sale Recorded Successfully")
-        clearCart()
         reset()
-        setCompletedSale(data as Sale)
+        
+        // Ensure invoice-setup and shop-profile data are fetched before showing invoice
+        Promise.all([
+          queryClient.ensureQueryData({
+            queryKey: ["invoice-setup", "current"],
+            queryFn: async () => invoiceSetupQuery.data || (await queryClient.getQueryData(["invoice-setup", "current"])),
+          }),
+          queryClient.ensureQueryData({
+            queryKey: ["shop-profile", "current"],
+            queryFn: async () => shopProfile || (await queryClient.getQueryData(["shop-profile", "current"])),
+          }),
+        ]).finally(() => {
+          // Show invoice after ensuring data is cached
+          setCompletedSale(response as Sale)
+          // Clear cart in next render cycle to avoid infinite loop
+          Promise.resolve().then(() => clearCart())
+        })
       }
     })
   }
@@ -153,25 +172,25 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button 
-          className="w-full bg-blue-600 hover:bg-blue-700 font-bold h-12 text-base shadow-md shadow-blue-200 transition-all active:scale-[0.98]" 
+          className="w-full bg-primary hover:bg-blue-700 font-bold h-12 text-base shadow-md shadow-blue-200 transition-all active:scale-[0.98]" 
           disabled={disabled}
         >
           PROCEED TO PAYMENT
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className={cn("p-0 gap-0 overflow-hidden bg-white transition-all duration-300", completedSale ? "sm:max-w-[900px] h-[90vh]" : "sm:max-w-[600px]")}>
+      <DialogContent className={cn("p-0 gap-0 bg-white transition-all duration-300 flex flex-col", completedSale ? "sm:max-w-[900px] h-[90vh]" : "sm:max-w-[600px]")}>
         {completedSale ? (
-          <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-hidden">
+          <>
+            <div className="flex-1 overflow-y-auto">
               <InvoiceView sale={completedSale} />
             </div>
-            <div className="p-4 border-t bg-slate-50 flex justify-end">
+            <div className="flex-shrink-0 p-4 border-t bg-slate-50 flex justify-end">
               <Button onClick={() => handleOpenChange(false)} className="bg-slate-900 text-white hover:bg-slate-800 font-bold">
                 Close & Start New Sale
               </Button>
             </div>
-          </div>
+          </>
         ) : (
         <>
         <DialogHeader className="p-4 bg-white border-b sticky top-0 z-10">
@@ -352,7 +371,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                 type="submit" 
                 className={cn(
                   "w-full h-12 text-base font-black uppercase tracking-widest rounded-xl shadow-xl transition-all",
-                  "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-blue-200 hover:-translate-y-0.5"
+                  "bg-primary hover:bg-blue-700 text-white hover:shadow-blue-200 hover:-translate-y-0.5"
                 )}
                 disabled={isPending}
               >

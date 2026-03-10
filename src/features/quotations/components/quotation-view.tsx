@@ -11,7 +11,7 @@ export function QuotationView({ quotation }: { quotation: Quotation }) {
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Action Header */}
-      <div className="flex justify-between items-center p-4 border-b print:hidden bg-slate-50">
+      <div className="flex justify-between items-center p-4 border-b print:hidden bg-slate-50 pr-28">
         <div className="flex items-center gap-2 text-blue-600">
           <FileText className="h-4 w-4" />
           <span className="text-xs font-black uppercase tracking-widest">Quotation / Estimate</span>

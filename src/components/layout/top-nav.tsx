@@ -133,7 +133,7 @@ export function AppTopNav() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleLayout} title="Toggle Layout">
+          <Button variant="ghost" size="icon" onClick={toggleLayout} title="Switch Layout">
             <LayoutTemplate className="h-5 w-5" />
           </Button>
           <DropdownMenu>

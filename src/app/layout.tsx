@@ -4,6 +4,9 @@ import "@/styles/globals.css";
 import "@/styles/custom.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AppProviders } from "@/providers/app-providers";
+import { LoadingBar } from "@/components/shared/loading-bar"
+import { NavigationEvents } from "@/components/shared/navigation-events"
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +45,10 @@ export default function RootLayout({
         suppressHydrationWarning
       > 
         <AppProviders>
+          <LoadingBar />
+          <Suspense fallback={null}>
+            <NavigationEvents />
+          </Suspense>
           {children}
           <Toaster />
         </AppProviders>

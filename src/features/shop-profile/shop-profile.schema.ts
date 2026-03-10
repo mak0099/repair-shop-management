@@ -8,6 +8,7 @@ export const shopProfileSchema = z.object({
   email: z.string().email("Invalid email address"),
   address: z.string().min(5, "Full address is required"),
   logoUrl: z.string().optional(),
+  bannerLogoUrl: z.string().optional(),
   binNumber: z.string().optional(),
   currency: z.string().min(1, "Currency is required"),
   invoiceFooterMessage: z.string().optional(),

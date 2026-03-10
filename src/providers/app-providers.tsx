@@ -26,11 +26,13 @@ import { ReturnModalProvider } from "@/features/returns/return-modal-context"
 import { RegisterModalProvider } from "@/features/register/register-modal-context"
 import { PurchaseModalProvider } from "@/features/purchases/purchase-modal-context"
 import { KhataModalProvider } from "@/features/khata/khata-modal-context"
+import { LoadingProvider } from "@/components/shared/loading-context"
 
 // Add all new global providers to this array.
 // The order matters if one provider depends on another.
 
 const providers = [
+  LoadingProvider,
   MSWProvider,
   SessionProvider,
   QueryProvider,

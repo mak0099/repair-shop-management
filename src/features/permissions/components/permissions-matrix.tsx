@@ -43,7 +43,7 @@ export function PermissionsMatrix({ value = [], onChange, readOnly = false, clas
   }
 
   return (
-    <div className={cn("border-t divide-y border-slate-200", className)}>
+    <div className={cn("border-t divide-y border-border", className)}>
       {PERMISSION_GROUPS.map((group) => {
         const groupPerms = group.permissions
         const selectedInGroup = groupPerms.filter(p => value.includes(p as PermissionType))
@@ -52,8 +52,8 @@ export function PermissionsMatrix({ value = [], onChange, readOnly = false, clas
         const isExpanded = expandedGroups[group.name]
 
         return (
-          <div key={group.name} className="bg-white">
-            <div className="flex items-center justify-between p-3 px-5 hover:bg-slate-50/50 transition-colors">
+          <div key={group.name} className="bg-card">
+            <div className="flex items-center justify-between p-3 px-5 hover:bg-muted/50 transition-colors">
               <div className="flex items-center gap-4 flex-1">
                 <Checkbox 
                   checked={isAllSelected ? true : isIndeterminate ? "indeterminate" : false}
@@ -64,8 +64,8 @@ export function PermissionsMatrix({ value = [], onChange, readOnly = false, clas
                   className="flex items-center gap-2 cursor-pointer flex-1 select-none"
                   onClick={() => setExpandedGroups(p => ({...p, [group.name]: !isExpanded}))}
                 >
-                  <span className="text-xs font-bold text-slate-600">{group.name}</span>
-                  <Badge variant="secondary" className="text-[9px] h-4 bg-slate-100 text-slate-400 font-bold border-none">
+                  <span className="text-xs font-bold text-foreground">{group.name}</span>
+                  <Badge variant="secondary" className="text-[9px] h-4 bg-muted text-muted-foreground font-bold border-none">
                     {selectedInGroup.length}/{groupPerms.length}
                   </Badge>
                 </div>
@@ -89,7 +89,7 @@ export function PermissionsMatrix({ value = [], onChange, readOnly = false, clas
                       onCheckedChange={(checked) => togglePermission(perm, checked === true)}
                       disabled={readOnly}
                     />
-                    <label htmlFor={`perm-${perm}`} className="text-[10px] font-medium text-slate-500 cursor-pointer">
+                    <label htmlFor={`perm-${perm}`} className="text-[10px] font-medium text-muted-foreground cursor-pointer">
                       {perm.split(/[.:_]/).pop()?.replace('_', ' ').toUpperCase()}
                     </label>
                   </div>

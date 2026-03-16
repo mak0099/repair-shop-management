@@ -33,7 +33,7 @@ export function StockList() {
           subtitle={
             <div className="flex flex-wrap gap-1 mt-1">
               {Object.entries(row.original.attributes || {}).map(([key, value]) => (
-                <Badge key={key} variant="secondary" className="text-[9px] h-4 px-1.5 bg-slate-100 text-slate-600 border-none">
+                <Badge key={key} variant="secondary" className="text-[9px] h-4 px-1.5 border-none">
                   {value}
                 </Badge>
               ))}
@@ -51,7 +51,7 @@ export function StockList() {
             <Tag className="h-3 w-3" /> {row.original.sku}
           </div>
           {row.original.imei && (
-            <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-indigo-600">
+            <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-indigo-600 dark:text-indigo-400">
               <Smartphone className="h-3 w-3" /> {row.original.imei}
             </div>
           )}
@@ -70,12 +70,12 @@ export function StockList() {
             <div className="flex items-center gap-2">
               <span className={cn(
                 "text-base font-bold",
-                isOut ? "text-red-500" : isLow ? "text-orange-500" : "text-slate-900"
+                isOut ? "text-destructive" : isLow ? "text-orange-500" : "text-foreground"
               )}>
                 {/* FIX: unit property is now safe to use */}
                 {row.original.stockQuantity} {row.original.unit || "Pcs"}
               </span>
-              {isLow && !isOut && <AlertTriangle className="h-3.5 w-3.5 text-orange-500 animate-pulse" />}
+              {isLow && !isOut && <AlertTriangle className="h-3.5 w-3.5 text-orange-500" />}
             </div>
             <Badge variant="outline" className={cn("text-[9px] w-fit uppercase px-1.5 h-4 border-none", getStatusColor(row.original.status))}>
               {row.original.status}
@@ -90,10 +90,10 @@ export function StockList() {
       cell: ({ row }) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5 text-xs font-semibold">
-            <MapPin className="h-3 w-3 text-red-500" /> {row.original.boxNumber || "N/A"}
+            <MapPin className="h-3 w-3 text-destructive" /> {row.original.boxNumber || "N/A"}
           </div>
           {row.original.storageNote && (
-            <span className="text-[10px] text-slate-400 italic max-w-[120px] leading-tight">
+            <span className="text-[10px] text-muted-foreground italic max-w-[120px] leading-tight">
               {row.original.storageNote}
             </span>
           )}
@@ -158,8 +158,8 @@ export function StockList() {
 
 function getStatusColor(status: string) {
   const s = status.toLowerCase()
-  if (s.includes("ready")) return "bg-emerald-100 text-emerald-700"
-  if (s.includes("sold")) return "bg-slate-100 text-slate-500"
-  if (s.includes("testing") || s.includes("pending")) return "bg-amber-100 text-amber-700"
-  return "bg-blue-100 text-blue-700"
+  if (s.includes("ready")) return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500"
+  if (s.includes("sold")) return "bg-muted text-muted-foreground"
+  if (s.includes("testing") || s.includes("pending")) return "bg-amber-500/10 text-amber-600 dark:text-amber-500"
+  return "bg-primary/10 text-primary"
 }

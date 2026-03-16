@@ -14,37 +14,37 @@ export function Overview() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black tracking-tight text-slate-800">Business Overview</h2>
-        <Badge variant="outline" className="text-[10px] font-black uppercase px-3 py-1 border-slate-200">Past 30 Days</Badge>
+        <h2 className="text-2xl font-black tracking-tight text-foreground">Business Overview</h2>
+        <Badge variant="outline" className="text-[10px] font-black uppercase px-3 py-1">Past 30 Days</Badge>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <MetricCard title="Total Revenue" value={stats?.totalRevenue} change={`+${stats?.revenueChange}%`} icon={<TrendingUp className="h-4 w-4" />} color="text-emerald-600" />
-        <MetricCard title="Net Profit" value={(stats as unknown as { netProfit: number })?.netProfit} change={`+${(stats as unknown as { profitChange: number })?.profitChange}%`} icon={<CreditCard className="h-4 w-4" />} color="text-blue-600" />
+        <MetricCard title="Total Revenue" value={stats?.totalRevenue} change={`+${stats?.revenueChange}%`} icon={<TrendingUp className="h-4 w-4" />} color="text-emerald-600 dark:text-emerald-500" />
+        <MetricCard title="Net Profit" value={(stats as unknown as { netProfit: number })?.netProfit} change={`+${(stats as unknown as { profitChange: number })?.profitChange}%`} icon={<CreditCard className="h-4 w-4" />} color="text-primary" />
         <MetricCard title="Sales Count" value={stats?.totalOrders} change={`+${stats?.ordersChange}%`} icon={<ShoppingBag className="h-4 w-4" />} />
         <MetricCard title="Total Stock Value" value={(stats as unknown as { totalStockValue: number })?.totalStockValue} change="Inventory Asset" icon={<Package className="h-4 w-4" />} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-7">
-        <Card className="col-span-4 rounded-3xl border-slate-100 shadow-sm">
+        <Card className="col-span-4 rounded-3xl border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="text-sm font-black uppercase text-slate-500">Revenue Trend</CardTitle>
+            <CardTitle className="text-sm font-black uppercase text-muted-foreground">Revenue Trend</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={revenueData}>
-                <XAxis dataKey="name" stroke="#cbd5e1" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#cbd5e1" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `€${value}`} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
-                <Bar dataKey="total" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `€${value}`} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: 'hsl(var(--border))', background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }} />
+                <Bar dataKey="total" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="col-span-3 rounded-3xl border-slate-100 shadow-sm">
+        <Card className="col-span-3 rounded-3xl border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="text-sm font-black uppercase text-slate-500">Repair Success Rate</CardTitle>
+            <CardTitle className="text-sm font-black uppercase text-muted-foreground">Repair Success Rate</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -71,16 +71,16 @@ function MetricCard({ title, value, change, icon, color = "text-slate-900" }: {
   color?: string;
 }) {
   return (
-    <Card className="rounded-3xl border-slate-100 shadow-sm">
+    <Card className="rounded-3xl border-border shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-[10px] font-black uppercase text-slate-400">{title}</CardTitle>
-        <div className="text-slate-300">{icon}</div>
+        <CardTitle className="text-[10px] font-black uppercase text-muted-foreground">{title}</CardTitle>
+        <div className="text-muted-foreground">{icon}</div>
       </CardHeader>
       <CardContent>
-        <div className={`text-2xl font-black ${color}`}>
+        <div className={cn("text-2xl font-black", color)}>
           {typeof value === 'number' ? `€${value.toLocaleString()}` : value}
         </div>
-        <p className="text-[9px] font-bold text-slate-400 uppercase mt-1">{change}</p>
+        <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">{change}</p>
       </CardContent>
     </Card>
   )

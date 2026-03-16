@@ -48,19 +48,19 @@ export function VariantGenerator({ onGenerate, productName }: VariantGeneratorPr
   }
 
   return (
-    <Card className="bg-slate-50/50 border-dashed border-2 shadow-none">
+    <Card className="bg-muted/50 border-dashed border-2 shadow-none">
       <CardContent className="pt-6 space-y-6">
         <div className="flex items-center justify-between border-b pb-4">
           <div className="space-y-1">
-            <h4 className="text-sm font-bold text-slate-700 uppercase tracking-tight">Variant Generator</h4>
-            <p className="text-xs text-slate-500">Select specifications to create product combinations.</p>
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-tight">Variant Generator</h4>
+            <p className="text-xs text-muted-foreground">Select specifications to create product combinations.</p>
           </div>
           <Button 
             type="button" 
             size="sm" 
             onClick={handleGenerate}
             disabled={Object.keys(selections).length === 0}
-            className="bg-blue-600 hover:bg-blue-700 shadow-sm transition-all active:scale-95"
+            className="bg-primary hover:bg-primary/90 shadow-sm transition-all active:scale-95"
           >
             <Wand2 className="mr-2 h-4 w-4" /> 
             Generate Combinations
@@ -71,8 +71,8 @@ export function VariantGenerator({ onGenerate, productName }: VariantGeneratorPr
           {attributeList.map((attr) => (
             <div key={attr.id} className="space-y-3">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{attr.name}</span>
-                <div className="h-[1px] flex-1 bg-slate-200/60"></div>
+                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{attr.name}</span>
+                <div className="h-[1px] flex-1 bg-border/60"></div>
               </div>
               <div className="flex flex-wrap gap-2">
                 {attr.values.map((v) => {
@@ -83,11 +83,7 @@ export function VariantGenerator({ onGenerate, productName }: VariantGeneratorPr
                       type="button"
                       variant={isSelected ? "default" : "outline"}
                       size="sm"
-                      className={`h-8 text-xs transition-all ${
-                        isSelected 
-                          ? "bg-slate-900 text-white border-slate-900" 
-                          : "bg-white text-slate-600 hover:bg-slate-100 border-slate-200"
-                      }`}
+                      className="h-8 text-xs transition-all"
                       onClick={() => toggleValue(attr.name, v.value)}
                     >
                       {v.value}
@@ -99,8 +95,8 @@ export function VariantGenerator({ onGenerate, productName }: VariantGeneratorPr
           ))}
 
           {attributeList.length === 0 && (
-            <div className="py-10 text-center border rounded-xl bg-white/50 border-slate-100">
-              <p className="text-xs text-slate-400 font-medium">No attributes found. Please add RAM, ROM, or Color in settings.</p>
+            <div className="py-10 text-center border rounded-xl bg-card/50 border-border">
+              <p className="text-xs text-muted-foreground font-medium">No attributes found. Please add RAM, ROM, or Color in settings.</p>
             </div>
           )}
         </div>

@@ -112,7 +112,7 @@ export function ModelForm({
               name="isActive"
               label="Active for Inventory"
               description="If disabled, this model won't appear in new entries."
-              className="rounded-xl border border-slate-100 p-4 bg-slate-50/50"
+              className="rounded-xl border border-border p-4 bg-muted/50"
               disabled={isViewMode}
             />
           </div>
@@ -125,7 +125,6 @@ export function ModelForm({
           onCancel={() => onSuccess?.(initialData!)}
           onEdit={() => setMode("edit")}
           saveLabel={isEditMode ? "Save Changes" : "Create Model"}
-          className="border-slate-100"
         />
       </form>
     </Form>

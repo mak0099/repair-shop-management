@@ -89,7 +89,7 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-4 p-1">
-        <Card className="border-slate-200 shadow-sm overflow-hidden">
+        <Card className="border-border shadow-sm overflow-hidden">
           <CardContent className="space-y-4 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <TextField
@@ -144,7 +144,7 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
                   label="Active Supplier" 
                   description="Visible in purchasing modules if active"
                   disabled={isViewMode} 
-                  className="rounded-xl border border-slate-100 p-4 bg-slate-50/50" 
+                  className="rounded-xl border border-border p-4 bg-muted/50" 
                 />
               </div>
             </div>
@@ -166,7 +166,6 @@ export function SupplierForm({ initialData, onSuccess, isViewMode: initialIsView
           onEdit={() => setMode("edit")}
           onReset={() => form.reset()}
           saveLabel={isEditMode ? "Save Changes" : "Create Supplier"}
-          className="pt-4 border-t border-slate-100"
         />
       </form>
     </Form>

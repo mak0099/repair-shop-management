@@ -74,9 +74,9 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
     <Form {...form}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
-        <Card className="shadow-sm border-slate-200">
-          <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-lg font-semibold text-slate-800">Business Information</CardTitle>
+        <Card className="shadow-sm border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-foreground">Business Information</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-6">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -100,9 +100,9 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm border-slate-200">
-          <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-lg font-semibold text-slate-800">Financial & Invoice Settings</CardTitle>
+        <Card className="shadow-sm border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-foreground">Financial & Invoice Settings</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-6">
             <SelectField
@@ -155,9 +155,9 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm border-slate-200">
-          <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-lg font-semibold text-slate-800">Policies & Terms</CardTitle>
+        <Card className="shadow-sm border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-foreground">Policies & Terms</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-5 pt-6">
              <TextareaField 
@@ -185,7 +185,6 @@ export function ShopProfileForm({ initialData, onCancel, onSuccess }: ShopProfil
           onCancel={onCancel}
           onReset={() => form.reset()}
           saveLabel={isEditMode ? "Save Changes" : "Create Profile"}
-          className="border-t pt-6"
         />
       </form>
     </Form>

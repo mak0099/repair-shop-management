@@ -26,8 +26,8 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px]">
         <div className="text-center">
-          <div className="h-8 w-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm font-medium text-slate-500">Loading invoice...</p>
+          <div className="h-8 w-8 border-4 border-border border-t-primary rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">Loading invoice...</p>
         </div>
       </div>
     )
@@ -59,14 +59,14 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-background">
       {/* Header for Web - Hidden on Print */}
-      <div className="flex justify-between items-center p-4 border-b print:hidden bg-slate-50 pr-12">
+      <div className="flex justify-between items-center p-4 border-b print:hidden bg-muted/50 pr-12">
         <div className="flex items-center gap-2">
-          <Receipt className="h-4 w-4 text-blue-600" />
+          <Receipt className="h-4 w-4 text-primary" />
           <span className="text-sm font-black uppercase tracking-widest">Invoice Details</span>
         </div>
-        <Button onClick={handlePrint} size="sm" className="bg-slate-900 gap-2 h-8 text-[11px] font-bold">
+        <Button onClick={handlePrint} size="sm" className="gap-2 h-8 text-[11px] font-bold">
           <Printer className="h-3.5 w-3.5" /> PRINT INVOICE
         </Button>
       </div>
@@ -84,56 +84,56 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
                     <Image src={shopProfile.logoUrl} alt="Logo" fill className="object-contain" />
                   </div>
                 ) : (
-                  <div className="h-10 w-32 bg-slate-100 rounded flex items-center justify-center text-[10px] text-slate-400 font-bold mb-2">
+                  <div className="h-10 w-32 bg-muted rounded flex items-center justify-center text-[10px] text-muted-foreground font-bold mb-2">
                     SHOP LOGO
                   </div>
                 )
               )}
               <div>
-                <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">{invoiceSetup?.shopName || shopProfile?.name || "NOME OFFICINA"}</h1>
-                <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopAddress || shopProfile?.address || "Indirizzo, Città, CAP"}</p>
-                <p className="text-xs text-slate-500 font-medium">{invoiceSetup?.shopContact || [shopProfile?.phone, shopProfile?.email].filter(Boolean).join(" • ") || "Contatto (Tel/Email)"}</p>
+                <h1 className="text-2xl font-black tracking-tighter text-foreground uppercase">{invoiceSetup?.shopName || shopProfile?.name || "NOME OFFICINA"}</h1>
+                <p className="text-xs text-muted-foreground font-medium">{invoiceSetup?.shopAddress || shopProfile?.address || "Indirizzo, Città, CAP"}</p>
+                <p className="text-xs text-muted-foreground font-medium">{invoiceSetup?.shopContact || [shopProfile?.phone, shopProfile?.email].filter(Boolean).join(" • ") || "Contatto (Tel/Email)"}</p>
               </div>
             </div>
             <div className="text-right">
-              <h2 className="text-lg font-black text-slate-400 uppercase tracking-widest">{invoiceSetup?.invoiceTitle || "RICEVUTA"}</h2>
-              <p className="text-xs font-bold text-slate-700 mt-1">{invoiceSetup?.invoiceNumberLabel || "Fattura N"}: {sale.invoiceNumber}</p>
-              <p className="text-[10px] text-slate-400">{invoiceSetup?.dateLabel || "Data"}: {formatDate(new Date(sale.createdAt))}</p>
+              <h2 className="text-lg font-black text-muted-foreground uppercase tracking-widest">{invoiceSetup?.invoiceTitle || "RICEVUTA"}</h2>
+              <p className="text-xs font-bold text-foreground mt-1">{invoiceSetup?.invoiceNumberLabel || "Fattura N"}: {sale.invoiceNumber}</p>
+              <p className="text-[10px] text-muted-foreground">{invoiceSetup?.dateLabel || "Data"}: {formatDate(new Date(sale.createdAt))}</p>
             </div>
           </div>
 
           {/* Customer Info */}
           <div className="grid grid-cols-2 gap-4 py-4 text-xs">
             <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">{invoiceSetup?.customerInfoLabel || "Dati Cliente"}</p>
-              <p className="font-black text-slate-800">{sale.customerName || "Walk-in Customer"}</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{invoiceSetup?.customerInfoLabel || "Dati Cliente"}</p>
+              <p className="font-black text-foreground">{sale.customerName || "Walk-in Customer"}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">{invoiceSetup?.paymentMethodLabel || "Metodo di Pagamento"}</p>
-              <p className="font-black text-slate-800 uppercase">{sale.paymentMethod}</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{invoiceSetup?.paymentMethodLabel || "Metodo di Pagamento"}</p>
+              <p className="font-black text-foreground uppercase">{sale.paymentMethod}</p>
             </div>
           </div>
 
           {/* Items Table */}
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b-2 border-slate-900">
+              <tr className="border-b-2 border-foreground">
                 <th className="py-2 font-black uppercase">{invoiceSetup?.itemColumnLabel || "Descrizione"}</th>
                 <th className="py-2 font-black uppercase text-center">{invoiceSetup?.quantityColumnLabel || "Qtà"}</th>
                 <th className="py-2 font-black uppercase text-right">{invoiceSetup?.priceColumnLabel || "Prezzo"}</th>
                 <th className="py-2 font-black uppercase text-right">{invoiceSetup?.totalColumnLabel || "Totale"}</th>
               </tr>
             </thead>
-            <tbody className="divide-y border-b border-slate-200">
+            <tbody className="divide-y border-b border-border">
               {sale.items.map((item, idx) => (
                 <tr key={idx}>
-                  <td className="py-3 font-medium text-slate-700">
+                  <td className="py-3 font-medium text-foreground">
                     <span className="font-bold block">{item.name}</span>
-                    <span className="text-[9px] text-slate-400 uppercase">{item.type}</span>
+                    <span className="text-[9px] text-muted-foreground uppercase">{item.type}</span>
                   </td>
-                  <td className="py-3 text-center font-bold text-slate-600">{item.quantity}</td>
-                  <td className="py-3 text-right text-slate-600">{formatCurrency(item.price)}</td>
-                  <td className="py-3 text-right font-black text-slate-900">{formatCurrency(item.subtotal)}</td>
+                  <td className="py-3 text-center font-bold text-muted-foreground">{item.quantity}</td>
+                  <td className="py-3 text-right text-muted-foreground">{formatCurrency(item.price)}</td>
+                  <td className="py-3 text-right font-black text-foreground">{formatCurrency(item.subtotal)}</td>
                 </tr>
               ))}
             </tbody>
@@ -142,25 +142,25 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
           {/* Summary */}
           <div className="flex justify-end pt-4">
             <div className="w-64 space-y-2 text-xs">
-              <div className="flex justify-between text-slate-500">
+              <div className="flex justify-between text-muted-foreground">
                 <span>{invoiceSetup?.subtotalLabel || "Subtotale"}</span>
                 <span className="font-bold">{formatCurrency(sale.subtotal)}</span>
               </div>
-              <div className="flex justify-between text-slate-500">
+              <div className="flex justify-between text-muted-foreground">
                 <span>{invoiceSetup?.taxLabel || "IVA"}</span>
                 <span className="font-bold">{formatCurrency(sale.totalTax)}</span>
               </div>
               {sale.totalDiscount > 0 && (
-                <div className="flex justify-between text-red-500">
+                <div className="flex justify-between text-destructive">
                   <span>{invoiceSetup?.discountLabel || "Sconto"}</span>
                   <span className="font-bold">-{formatCurrency(sale.totalDiscount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-lg font-black text-slate-900 border-t-2 border-slate-900 pt-2">
+              <div className="flex justify-between text-lg font-black text-foreground border-t-2 border-foreground pt-2">
                 <span>{invoiceSetup?.grandTotalLabel || "Totale Generale"}</span>
                 <span>{formatCurrency(sale.grandTotal)}</span>
               </div>
-              <div className="flex justify-between text-emerald-600 pt-1 font-bold">
+              <div className="flex justify-between text-emerald-600 dark:text-emerald-500 pt-1 font-bold">
                 <span>{invoiceSetup?.amountPaidLabel || "Importo Pagato"}</span>
                 <span>{formatCurrency(sale.amountReceived)}</span>
               </div>
@@ -170,15 +170,15 @@ export function InvoiceView({ sale }: InvoiceViewProps) {
           {/* Footer */}
           <div className="pt-12 space-y-8">
             <div className="text-left border-t border-dashed pt-4 space-y-1">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{invoiceSetup?.thankYouMessage || "Grazie per averci scelto!"}</p>
-              <p className="text-[9px] text-slate-400 whitespace-pre-wrap">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{invoiceSetup?.thankYouMessage || "Grazie per averci scelto!"}</p>
+              <p className="text-[9px] text-muted-foreground whitespace-pre-wrap">
                 {invoiceSetup?.termsAndConditions || "La merce venduta non si cambia."}
               </p>
             </div>
 
             {invoiceSetup?.showSignature && (
               <div className="flex justify-end pt-8">
-                <div className="border-t border-slate-400 w-40 text-center pt-1 text-[10px] font-bold text-slate-600">
+                <div className="border-t border-muted-foreground w-40 text-center pt-1 text-[10px] font-bold text-muted-foreground">
                   {invoiceSetup?.signatureLabel || "Firma Autorizzata"}
                 </div>
               </div>

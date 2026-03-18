@@ -96,15 +96,15 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
       <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-6 p-1">
 
         {/* Mode Indicator Header */}
-        <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-4">
-          <div className="flex items-center gap-3 text-blue-700 font-semibold text-sm">
+        <div className="flex items-center justify-between bg-primary/10 p-4 rounded-xl border border-primary/20 mb-4">
+          <div className="flex items-center gap-3 text-primary font-semibold text-sm">
             <Package className="h-5 w-5" />
             <span className="uppercase tracking-wider">
               {isViewMode ? "View Details" : isEditMode ? "Edit Box" : "Create New Box"}
             </span>
           </div>
           {isViewMode && (
-            <Button size="sm" variant="outline" onClick={() => setMode("edit")} className="bg-white hover:bg-blue-50">
+            <Button size="sm" variant="outline" onClick={() => setMode("edit")} className="bg-card hover:bg-muted">
               <Edit3 className="mr-2 h-4 w-4" /> Edit Configuration
             </Button>
           )}
@@ -143,7 +143,7 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
         />
 
         {/* Status Toggle */}
-        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full md:w-fit min-w-[200px]">
+        <div className="bg-muted/50 p-4 rounded-lg border border-border w-full md:w-fit min-w-[200px]">
           <CheckboxField
             control={form.control}
             name="isActive"
@@ -163,7 +163,6 @@ export function BoxNumberForm({ initialData, onSuccess, isViewMode: initialIsVie
           onEdit={() => setMode("edit")}
           onReset={() => form.reset()}
           saveLabel={isEditMode ? "Update Changes" : "Save Box Number"}
-          className="pt-6 border-t mt-6"
         />
       </form>
     </Form>

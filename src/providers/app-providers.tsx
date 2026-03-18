@@ -27,6 +27,7 @@ import { RegisterModalProvider } from "@/features/register/register-modal-contex
 import { PurchaseModalProvider } from "@/features/purchases/purchase-modal-context"
 import { KhataModalProvider } from "@/features/khata/khata-modal-context"
 import { LoadingProvider } from "@/components/shared/loading-context"
+import { ThemeProvider } from "./theme-provider"
 
 // Add all new global providers to this array.
 // The order matters if one provider depends on another.
@@ -36,6 +37,7 @@ const providers = [
   MSWProvider,
   SessionProvider,
   QueryProvider,
+  ThemeProvider,
   GlobalModalProvider,
   AcceptanceModalProvider,
   AttributeModalProvider,
@@ -57,7 +59,7 @@ const providers = [
   ReturnModalProvider,
   RegisterModalProvider,
   PurchaseModalProvider,
-  KhataModalProvider
+  KhataModalProvider,
 ]
 
 export function AppProviders({ children }: { children: React.ReactNode }) {

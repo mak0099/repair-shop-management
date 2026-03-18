@@ -34,11 +34,11 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-1">
           <CardContent className="pt-6 flex flex-col items-center text-center">
-            <div className="relative w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 mb-4 overflow-hidden">
+            <div className="relative w-32 h-32 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-border mb-4 overflow-hidden">
               {profile.logoUrl ? (
                 <Image src={profile.logoUrl} alt="Logo" fill className="object-cover" />
               ) : (
-                <Building2 className="h-12 w-12 text-slate-400" />
+                <Building2 className="h-12 w-12 text-muted-foreground" />
               )}
             </div>
             <h3 className="text-xl font-bold">{profile.name}</h3>
@@ -87,7 +87,7 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Globe className="h-3 w-3" /> Website
                 </p>
-                <p className="text-sm font-medium text-blue-600">{profile.website}</p>
+                <p className="text-sm font-medium text-primary">{profile.website}</p>
               </div>
             )}
           </CardContent>
@@ -110,23 +110,23 @@ export function ShopProfileView({ onEdit }: ShopProfileViewProps) {
               </div>
               <div>
                  <p className="text-xs text-muted-foreground mb-1">Bank Details:</p>
-                 <p className="text-sm whitespace-pre-wrap text-slate-700">{profile.bankAccountInfo || "Not Set"}</p>
+                 <p className="text-sm whitespace-pre-wrap text-foreground">{profile.bankAccountInfo || "Not Set"}</p>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Policies</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground">Policies</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                <div>
                  <p className="text-xs text-muted-foreground mb-1">Invoice Footer:</p>
-                 <p className="text-sm italic text-slate-600">{profile.invoiceFooterMessage || "Not Set"}</p>
+                 <p className="text-sm italic text-muted-foreground">{profile.invoiceFooterMessage || "Not Set"}</p>
                </div>
                <div>
                  <p className="text-xs text-muted-foreground mb-1">Return Policy:</p>
-                 <p className="text-xs text-slate-600 line-clamp-3">{profile.returnPolicy || "Not Set"}</p>
+                 <p className="text-xs text-muted-foreground line-clamp-3">{profile.returnPolicy || "Not Set"}</p>
                </div>
             </CardContent>
           </Card>

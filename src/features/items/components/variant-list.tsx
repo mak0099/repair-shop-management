@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Item } from "../item.schema"
+import { cn } from "@/lib/utils"
 
 interface VariantListProps {
   /**
@@ -21,57 +22,57 @@ interface VariantListProps {
 
 export function VariantList({ variants }: VariantListProps) {
   return (
-    <div className="rounded-xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+    <div className="rounded-xl border border-border overflow-hidden bg-card shadow-sm">
       <Table>
-        <TableHeader className="bg-slate-50/50">
+        <TableHeader className="bg-muted/50">
           <TableRow>
-            <TableHead className="w-[120px] font-bold text-slate-600">SKU</TableHead>
-            <TableHead className="font-bold text-slate-600">Specifications</TableHead>
-            <TableHead className="text-right font-bold text-slate-600">Sale Price</TableHead>
-            <TableHead className="text-right font-bold text-slate-600">Initial Stock</TableHead>
-            <TableHead className="text-center font-bold text-slate-600">Status</TableHead>
+            <TableHead className="w-[120px] font-bold text-muted-foreground">SKU</TableHead>
+            <TableHead className="font-bold text-muted-foreground">Specifications</TableHead>
+            <TableHead className="text-right font-bold text-muted-foreground">Sale Price</TableHead>
+            <TableHead className="text-right font-bold text-muted-foreground">Initial Stock</TableHead>
+            <TableHead className="text-center font-bold text-muted-foreground">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {variants.map((item, index) => (
-            <TableRow key={item.id || index} className="hover:bg-slate-50/50 transition-colors">
-              <TableCell className="font-mono text-[11px] text-slate-500 uppercase">
+            <TableRow key={item.id || index} className="hover:bg-muted/50 transition-colors">
+              <TableCell className="font-mono text-[11px] text-muted-foreground uppercase">
                 {item.sku || "AUTO-GEN"}
               </TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1.5">
                   {item.ram && (
-                    <Badge variant="outline" className="text-[10px] font-medium bg-blue-50/50 text-blue-700 border-blue-100">
+                    <Badge variant="outline" className="text-[10px] font-medium bg-primary/10 text-primary border-primary/20">
                       RAM: {item.ram}
                     </Badge>
                   )}
                   {item.rom && (
-                    <Badge variant="outline" className="text-[10px] font-medium bg-indigo-50/50 text-indigo-700 border-indigo-100">
+                    <Badge variant="outline" className="text-[10px] font-medium bg-indigo-500/10 text-indigo-500 border-indigo-500/20">
                       ROM: {item.rom}
                     </Badge>
                   )}
                   {item.color && (
-                    <Badge variant="outline" className="text-[10px] font-medium bg-slate-50 text-slate-600 border-slate-200">
+                    <Badge variant="secondary" className="text-[10px] font-medium">
                       Color: {item.color}
                     </Badge>
                   )}
                   {!item.ram && !item.rom && !item.color && (
-                    <span className="text-xs text-slate-400 italic">No specific attributes</span>
+                    <span className="text-xs text-muted-foreground italic">No specific attributes</span>
                   )}
                 </div>
               </TableCell>
-              <TableCell className="text-right font-semibold text-slate-900">
+              <TableCell className="text-right font-semibold text-foreground">
                 ৳{(item.salePrice || 0).toLocaleString()}
               </TableCell>
               <TableCell className="text-right">
-                <span className="px-2 py-1 rounded-md bg-slate-100 font-bold text-slate-700 text-xs">
+                <span className="px-2 py-1 rounded-md bg-muted font-bold text-foreground text-xs">
                   {item.initialStock || 0}
                 </span>
               </TableCell>
               <TableCell className="text-center">
                 <Badge 
                   variant={item.isActive ? "default" : "secondary"}
-                  className={`text-[10px] uppercase font-bold ${item.isActive ? "bg-emerald-500 hover:bg-emerald-600" : ""}`}
+                  className={cn("text-[10px] uppercase font-bold", item.isActive && "bg-emerald-500 hover:bg-emerald-600")}
                 >
                   {item.isActive ? "Active" : "Inactive"}
                 </Badge>
@@ -81,7 +82,7 @@ export function VariantList({ variants }: VariantListProps) {
 
           {variants.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center text-slate-400 text-sm italic">
+              <TableCell colSpan={5} className="h-24 text-center text-muted-foreground text-sm italic">
                 No variants generated yet. Use the generator above to start.
               </TableCell>
             </TableRow>

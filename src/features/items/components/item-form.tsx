@@ -166,12 +166,12 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
     <FormProvider {...form}>
       <Form {...form}>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col h-full bg-slate-50/30">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col h-full bg-muted/30">
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Section 1: Basic Information & Pricing */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit relative">
+              <div className="bg-card p-6 rounded-xl shadow-sm border border-border h-fit relative">
                 {isViewMode && (
                   <div className="absolute top-4 right-4 z-10">
                     <Button size="sm" variant="outline" type="button" onClick={() => setMode("edit")}>
@@ -179,9 +179,9 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                     </Button>
                   </div>
                 )}
-                <div className="flex items-center gap-2 mb-6 border-b pb-4">
-                  <LayoutGrid className="h-4 w-4 text-blue-600" />
-                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Basic Information & Pricing</h3>
+                <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
+                  <LayoutGrid className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Basic Information & Pricing</h3>
                 </div>
                 <div className="space-y-5">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -201,7 +201,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                     <ModelSelectField control={control as any} name="modelId" label="Model" required brandId={brandId} disabled={!brandId || isViewMode} readOnly={isViewMode} />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-50">
+                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border pb-2">
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <TextField control={control as any} name="purchasePrice" label="Purchase Price" type="number" required readOnly={isViewMode} />
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -212,16 +212,16 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <MasterSettingSelectField type="DEVICE_TYPE" control={control as any} name="deviceType" label="Device Type" readOnly={isViewMode} />
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    <TextField control={control as any} name="sku" label="System SKU" readOnly inputClassName="bg-slate-50 text-slate-400 border-dashed font-mono text-[10px]" />
+                    <TextField control={control as any} name="sku" label="System SKU" readOnly inputClassName="bg-muted/50 text-muted-foreground border-dashed font-mono text-[10px]" />
                   </div>
                 </div>
               </div>
 
               {/* Section 2: Technical Specifications */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
-                <div className="flex items-center gap-2 mb-6 border-b pb-4">
-                  <Settings2 className="h-4 w-4 text-indigo-600" />
-                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Technical Specs</h3>
+              <div className="bg-card p-6 rounded-xl shadow-sm border border-border h-fit">
+                <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
+                  <Settings2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Technical Specs</h3>
                 </div>
 
                 <div className="space-y-5">
@@ -260,15 +260,15 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
             </div>
 
             {/* Section 3: Inventory & Fulfillment */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-              <div className="flex items-center gap-2 mb-6 border-b pb-4">
-                <Package className="h-4 w-4 text-emerald-600" />
-                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Inventory & Fulfillment</h3>
+            <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
+              <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
+                <Package className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
+                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Inventory & Fulfillment</h3>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left Side: Inventory Controls */}
-                <div className="lg:col-span-6 space-y-6 p-5 bg-slate-50/50 rounded-2xl border border-slate-100 h-fit">
+                <div className="lg:col-span-6 space-y-6 p-5 bg-muted/50 rounded-2xl border border-border h-fit">
                   <div className="grid grid-cols-2 gap-6">
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <RadioGroupField layout="partial-horizontal" control={control as any} name="condition" label="Item Condition" options={[{ label: "Used", value: "Used" }, { label: "New", value: "New" }]} readOnly={isViewMode} />
@@ -276,7 +276,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                     <RadioGroupField layout="partial-horizontal" control={control as any} name="addToKhata" label="Add to Khata?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} readOnly={isViewMode} />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-200/60">
+                  <div className="grid grid-cols-2 gap-6 pt-4 border-t border-border/60">
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <RadioGroupField layout="partial-horizontal" control={control as any} name="isBoxIncluded" label="Box?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} readOnly={isViewMode} />
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -284,7 +284,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200/60">
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */} {/* border-t border-slate-200/60 */}
                     <BoxNumberSelectField control={control as any} name="boxNumberId" label="Storage Box" readOnly={isViewMode} />
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <TextField control={control as any} name="storageNote" label="Storage Note" placeholder="Top shelf..." readOnly={isViewMode} />
@@ -302,7 +302,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
 
                 {/* Right Side: Serial Manager */}
                 <div className="lg:col-span-6 h-[350px]">
-                  <div className="flex flex-col h-full bg-blue-50/30 rounded-2xl border border-blue-100 border-dashed p-6">
+                  <div className="flex flex-col h-full bg-primary/10 rounded-2xl border border-primary/20 border-dashed p-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-start">
                       <RadioGroupField
                         layout="partial-horizontal"
@@ -321,19 +321,19 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                         name="initialStock" 
                         label="Opening Qty" 
                         type="number" 
-                        readOnly={isViewMode || isSerialized} 
-                        inputClassName={cn(isSerialized && "bg-blue-100 font-bold text-blue-700")} 
+                        readOnly={isViewMode || isSerialized}
+                        inputClassName={cn(isSerialized && "bg-primary/10 font-bold text-primary")}
                       />
                     </div>
 
                     {isSerialized ? (
                       <div className="flex flex-col flex-1 overflow-hidden">
                         <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-2">
-                            <Smartphone className="h-4 w-4 text-blue-600" />
-                            <span className="text-[11px] font-black text-blue-900 uppercase tracking-widest">Serial Number List</span>
+                          <div className="flex items-center gap-2 text-primary">
+                            <Smartphone className="h-4 w-4" />
+                            <span className="text-[11px] font-black uppercase tracking-widest">Serial Number List</span>
                           </div>
-                          <Badge className="bg-blue-600 text-white border-none font-black px-2 py-0.5 text-[9px]">
+                          <Badge className="bg-primary text-primary-foreground border-none font-black px-2 py-0.5 text-[9px]">
                             TOTAL: {serialList.length}
                           </Badge>
                         </div>
@@ -346,27 +346,27 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                               onChange={(e) => setCurrentSerial(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSerial())}
                               placeholder="Type IMEI and press Enter..."
-                              className="flex-1 h-10 px-4 bg-white border border-blue-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500/20"
+                              className="flex-1 h-10 px-4 bg-background border border-border rounded-xl text-xs outline-none focus:ring-2 focus:ring-primary/20"
                             />
-                            <Button type="button" onClick={addSerial} className="bg-blue-600 hover:bg-blue-700 h-10 px-4 rounded-xl shadow-lg">
+                            <Button type="button" onClick={addSerial} className="bg-primary hover:bg-primary/90 h-10 px-4 rounded-xl shadow-lg">
                               <Plus className="h-4 w-4" />
                             </Button>
                           </div>
                         )}
 
-                        <div className="flex-1 overflow-y-auto bg-white/60 rounded-2xl p-4 border border-blue-100/50">
+                        <div className="flex-1 overflow-y-auto bg-background/60 rounded-2xl p-4 border border-border/50">
                           {serialList.length === 0 ? (
-                            <div className="h-full flex flex-col items-center justify-center text-slate-300 opacity-60">
+                            <div className="h-full flex flex-col items-center justify-center text-muted-foreground/60">
                               <Info className="h-5 w-5 mb-2" />
                               <p className="text-[10px] font-black uppercase tracking-widest text-center">Add serials to sync quantity</p>
                             </div>
                           ) : (
                             <div className="flex flex-wrap gap-2">
                               {serialList.map((sn, idx) => (
-                                <Badge key={idx} variant="outline" className="pl-3 pr-1 py-1.5 bg-white border-blue-100 text-blue-800 font-bold text-[10px] rounded-lg flex items-center gap-2">
+                                <Badge key={idx} variant="outline" className="pl-3 pr-1 py-1.5 bg-background border-primary/20 text-primary font-bold text-[10px] rounded-lg flex items-center gap-2">
                                   {sn}
                                   {!isViewMode && (
-                                    <button type="button" onClick={() => removeSerial(idx)} className="p-0.5 hover:text-red-500 transition-colors">
+                                    <button type="button" onClick={() => removeSerial(idx)} className="p-0.5 hover:text-destructive transition-colors">
                                       <X className="h-3 w-3" />
                                     </button>
                                   )}
@@ -377,10 +377,10 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                         </div>
                       </div>
                     ) : (
-                      <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 border border-dashed rounded-2xl p-10 text-center border-slate-200/60">
-                        <Package className="h-10 w-10 text-slate-200 mb-3" />
-                        <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Bulk Inventory Mode</h4>
-                        <p className="text-[10px] text-slate-300 mt-2 italic">Individual serial tracking is disabled.</p>
+                      <div className="flex-1 flex flex-col items-center justify-center bg-muted border border-dashed rounded-2xl p-10 text-center border-border/60">
+                        <Package className="h-10 w-10 text-muted-foreground/50 mb-3" />
+                        <h4 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Bulk Inventory Mode</h4>
+                        <p className="text-[10px] text-muted-foreground/80 mt-2 italic">Individual serial tracking is disabled.</p>
                       </div>
                     )}
                   </div>
@@ -389,7 +389,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
             </div>
 
             {/* Section 4: Public Description */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
               <div className="grid grid-cols-1">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <TextareaField control={control as any} name="description" label="Marketing Description" rows={3} placeholder="Public details for invoices..." readOnly={isViewMode} />
@@ -406,7 +406,6 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
             onEdit={() => setMode("edit")}
             onReset={() => form.reset()}
             saveLabel={initialData ? "Update Product" : "Confirm & Save"}
-            className="p-6 bg-white shadow-lg border-t"
           />
         </form>
       </Form>

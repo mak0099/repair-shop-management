@@ -32,16 +32,16 @@ export function POSCartPanel() {
   }, [selectedCustomerId, reset])
 
   return (
-    <div className="flex flex-col h-full bg-white relative">
+    <div className="flex flex-col h-full bg-card relative">
       {/* Invoice Header - Compact */}
-      <div className="flex-none p-4 border-b bg-slate-50 space-y-3 z-10 relative">
+      <div className="flex-none p-4 border-b bg-muted/50 space-y-3 z-10 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-4 w-1 bg-blue-600 rounded-full" />
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Current Order</h2>
+            <div className="h-4 w-1 bg-primary rounded-full" />
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current Order</h2>
           </div>
           {cart.length > 0 && (
-             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] font-bold text-red-500 hover:bg-red-50 hover:text-red-600" onClick={clearCart}>
+             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] font-bold text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={clearCart}>
                <Trash2 className="h-3 w-3 mr-1" /> CLEAR
              </Button>
           )}
@@ -58,12 +58,12 @@ export function POSCartPanel() {
 
       {/* Cart List */}
       {cart.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center bg-white text-slate-300">
+        <div className="flex-1 flex flex-col items-center justify-center bg-card text-muted-foreground/50">
           <Receipt className="h-10 w-10 mb-2 opacity-20" />
           <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Empty Cart</p>
         </div>
       ) : (
-        <ScrollArea className="flex-1 h-0 bg-white">
+        <ScrollArea className="flex-1 h-0 bg-card">
           <div className="p-2 space-y-2">
             {cart.map((item) => {
               const serials = (item.availableSerials && item.availableSerials.length > 0) 
@@ -72,22 +72,22 @@ export function POSCartPanel() {
                   : ((item as any).serialList || []);
 
               return (
-              <div key={item.cartId} className="group relative p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-blue-200 hover:shadow-md transition-all">
+              <div key={item.cartId} className="group relative p-3 bg-background border border-border rounded-xl shadow-sm hover:border-primary/50 hover:shadow-md transition-all">
                 
                 {/* Remove Button - Absolute top right */}
                 <button 
                     onClick={() => removeItem(item.cartId)} 
-                    className="absolute top-2 right-2 p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100"
+                    className="absolute top-2 right-2 p-1 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors opacity-0 group-hover:opacity-100"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
 
                 {/* Item Info */}
                 <div className="pr-6 mb-2">
-                    <h4 className="text-xs font-bold text-slate-800 leading-tight line-clamp-1">{item.name}</h4>
+                    <h4 className="text-xs font-bold text-foreground leading-tight line-clamp-1">{item.name}</h4>
                     <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[9px] font-mono font-medium text-slate-400">{item.sku || 'NO-SKU'}</span>
-                        {item.isSerialized && <span className="text-[8px] px-1 py-0.5 bg-blue-50 text-blue-600 rounded font-bold uppercase">SN</span>}
+                        <span className="text-[9px] font-mono font-medium text-muted-foreground">{item.sku || 'NO-SKU'}</span>
+                        {item.isSerialized && <span className="text-[8px] px-1 py-0.5 bg-primary/10 text-primary rounded font-bold uppercase">SN</span>}
                     </div>
                 </div>
 
@@ -102,7 +102,7 @@ export function POSCartPanel() {
                                 value={item.selectedIMEI || ""} 
                                 onValueChange={(val) => updateItemIMEI(item.cartId, val)}
                               >
-                                <SelectTrigger className="h-7 text-[10px] font-bold bg-slate-50 border-slate-200 focus:ring-0 px-2">
+                                <SelectTrigger className="h-7 text-[10px] font-bold bg-muted/50 border-border focus:ring-0 px-2">
                                   <SelectValue placeholder="Select Serial / IMEI" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
@@ -110,29 +110,29 @@ export function POSCartPanel() {
                                     serials.map((sn: string) => (
                                       <SelectItem key={sn} value={sn} className="text-[10px] font-medium">
                                           <div className="flex items-center gap-2">
-                                              <Smartphone className="h-3 w-3 text-slate-400" />
+                                              <Smartphone className="h-3 w-3 text-muted-foreground" />
                                               <span>{sn}</span>
                                           </div>
                                       </SelectItem>
                                     ))
                                   ) : (
-                                    <div className="p-2 text-[10px] text-slate-400 text-center font-medium">No serials found</div>
+                                    <div className="p-2 text-[10px] text-muted-foreground text-center font-medium">No serials found</div>
                                   )}
                                 </SelectContent>
                               </Select>
                         </div>
                   ) : (
-                        <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg w-fit h-7">
+                        <div className="flex items-center bg-muted/50 border border-border rounded-lg w-fit h-7">
                             <button 
                                 onClick={() => updateQuantity(item.cartId, Math.max(1, item.quantity - 1))} 
-                                className="h-full px-2 hover:bg-white hover:text-blue-600 rounded-l-lg transition-colors"
+                                className="h-full px-2 hover:bg-background hover:text-primary rounded-l-lg transition-colors"
                             >
                                 <Minus className="h-3 w-3" />
                             </button>
-                            <span className="w-8 text-center text-xs font-bold text-slate-700">{item.quantity}</span>
+                            <span className="w-8 text-center text-xs font-bold text-foreground">{item.quantity}</span>
                             <button 
                                 onClick={() => updateQuantity(item.cartId, item.quantity + 1)} 
-                                className="h-full px-2 hover:bg-white hover:text-blue-600 rounded-r-lg transition-colors"
+                                className="h-full px-2 hover:bg-background hover:text-primary rounded-r-lg transition-colors"
                             >
                                 <Plus className="h-3 w-3" />
                             </button>
@@ -143,16 +143,16 @@ export function POSCartPanel() {
                   {/* Price */}
                   <div className="text-right flex flex-col items-end gap-1">
                     <div className="flex items-center gap-1">
-                        <span className="text-[10px] text-slate-400 font-bold">@</span>
+                        <span className="text-[10px] text-muted-foreground font-bold">@</span>
                         <Input 
                             type="number" 
-                            className="h-6 w-20 text-right text-[11px] font-bold px-1 py-0 bg-slate-50 border-slate-200 focus:bg-white focus:ring-1 focus:ring-blue-500"
+                            className="h-6 w-20 text-right text-[11px] font-bold px-1 py-0 bg-muted/50 border-border focus:bg-background focus:ring-1 focus:ring-primary"
                             value={item.price}
                             onChange={(e) => updatePrice(item.cartId, parseFloat(e.target.value) || 0)}
                             onFocus={(e) => e.target.select()}
                         />
                     </div>
-                    <div className="text-xs font-black text-slate-900">
+                    <div className="text-xs font-black text-foreground">
                         Total: <CurrencyText amount={item.price * item.quantity} />
                     </div>
                   </div>
@@ -165,19 +165,19 @@ export function POSCartPanel() {
       )}
 
       {/* Checkout Footer - Compact */}
-      <div className="flex-none p-4 bg-slate-50 border-t space-y-3 z-10 relative">
+      <div className="flex-none p-4 bg-muted/50 border-t space-y-3 z-10 relative">
         <div className="space-y-1">
-          <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
+          <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground">
             <span>Subtotal</span>
             <span><CurrencyText amount={totals.subtotal} /></span>
           </div>
-          <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
+          <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground">
             <span>Tax (VAT)</span>
             <span><CurrencyText amount={totals.tax} /></span>
           </div>
-          <div className="flex justify-between items-center pt-2 border-t border-slate-200 mt-2">
-            <span className="text-xs font-black text-slate-700 uppercase">Total Payable</span>
-            <span className="text-xl font-black text-blue-600"><CurrencyText amount={totals.grandTotal} /></span>
+          <div className="flex justify-between items-center pt-2 border-t border-border mt-2">
+            <span className="text-xs font-black text-foreground uppercase">Total Payable</span>
+            <span className="text-xl font-black text-primary"><CurrencyText amount={totals.grandTotal} /></span>
           </div>
         </div>
         

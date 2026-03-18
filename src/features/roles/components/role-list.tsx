@@ -24,13 +24,13 @@ export function RoleList() {
             header: ({ column }) => <DataTableColumnHeader column={column} title="Role Name" />,
             cell: ({ row }) => (
                 <div
-                    className="flex items-center gap-2 font-bold cursor-pointer hover:underline text-slate-800"
+                    className="flex items-center gap-2 font-bold cursor-pointer hover:underline text-foreground"
                     onClick={() => openModal({ initialData: row.original, isViewMode: true })}
                 >
                     {row.original.isSystem ? (
-                        <ShieldCheck className="h-4 w-4 text-amber-500" />
+                        <ShieldCheck className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                     ) : (
-                        <ShieldAlert className="h-4 w-4 text-blue-500" />
+                        <ShieldAlert className="h-4 w-4 text-primary" />
                     )}
                     {row.original.name}
                 </div>
@@ -39,13 +39,13 @@ export function RoleList() {
         {
             accessorKey: "slug",
             header: "Identifier",
-            cell: ({ row }) => <code className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded font-mono">{row.getValue("slug")}</code>,
+            cell: ({ row }) => <code className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-mono">{row.getValue("slug")}</code>,
         },
         {
             accessorKey: "permissions",
             header: "Capabilities",
             cell: ({ row }) => (
-                <Badge variant="outline" className="font-medium text-blue-600 border-blue-100 bg-blue-50/30">
+                <Badge variant="outline" className="font-medium text-primary border-primary/20 bg-primary/10">
                     {row.original.permissions?.length || 0} Permissions
                 </Badge>
             ),

@@ -85,14 +85,14 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
     <FormProvider {...form}>
       <Form {...form}>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col h-full bg-white">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col h-full bg-background">
 
           {/* ১. Top Header with View Invoice Button */}
           {isViewMode && initialData && (
-            <div className="flex items-center justify-between px-6 py-3 bg-slate-50 border-b">
+            <div className="flex items-center justify-between px-6 py-3 bg-muted/50 border-b border-border">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Transaction Mode</span>
-                <span className="bg-green-100 text-green-700 text-[9px] font-bold px-2 py-0.5 rounded">READ ONLY</span>
+                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Transaction Mode</span>
+                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[9px] font-bold px-2 py-0.5 rounded">READ ONLY</span>
               </div>
 
               {/* সরাসরি এই ডায়ালগটি ব্যবহার করুন */}
@@ -116,7 +116,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
             </div>
 
             {!isViewMode && (
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-end gap-4">
+              <div className="bg-muted/50 p-4 rounded-xl border border-border flex items-end gap-4">
                 <div className="flex-1">
                   <ItemSelectField
                     name="tempItemId"
@@ -129,7 +129,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                   type="button"
                   onClick={handleAddItem}
                   disabled={!watch("tempItemId") || isFetchingItem}
-                  className="bg-blue-600 hover:bg-blue-700 h-10 px-6 font-bold text-xs"
+                  className="bg-primary hover:bg-primary/90 h-10 px-6 font-bold text-xs"
                 >
                   {isFetchingItem ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
                   ADD ITEM
@@ -137,22 +137,22 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
               </div>
             )}
 
-            <div className="border rounded-xl overflow-hidden shadow-sm">
-              <div className="bg-slate-100 p-3 border-b text-slate-700 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                <ShoppingBag className="h-3.5 w-3.5 text-slate-500" /> Voucher Items
+            <div className="border border-border rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-muted p-3 border-b border-border text-foreground text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" /> Voucher Items
               </div>
-              <div className="divide-y">
+              <div className="divide-y divide-border">
                 {fields.map((field, index) => (
-                  <div key={field.id} className="p-4 bg-white hover:bg-slate-50/50 transition-colors">
+                  <div key={field.id} className="p-4 bg-card hover:bg-muted/50 transition-colors">
                     <div className="grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-5">
                         <div className="flex items-center gap-2">
-                          <p className="text-xs font-bold text-slate-800">{field.name}</p>
+                          <p className="text-xs font-bold text-foreground">{field.name}</p>
                           {field.isSerialized && (
-                            <span className="bg-blue-100 text-blue-700 text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Serialized</span>
+                            <span className="bg-primary/10 text-primary text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Serialized</span>
                           )}
                         </div>
-                        <p className="text-[9px] text-slate-400">SKU: {field.productId}</p>
+                        <p className="text-[9px] text-muted-foreground">SKU: {field.productId}</p>
                       </div>
                       <div className="col-span-3">
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -166,16 +166,16 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                           label="Qty"
                           type="number"
                           disabled={isViewMode || field.isSerialized}
-                          className={field.isSerialized ? "bg-slate-50 opacity-60 font-bold" : ""}
+                          className={field.isSerialized ? "bg-muted opacity-60 font-bold" : ""}
                         />
                       </div>
                       <div className="col-span-2 flex items-center justify-end gap-3 text-right">
                         <div>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase block">Total</span>
-                          <span className="text-xs font-black">€{(watch(`items.${index}.costPrice`) * watch(`items.${index}.quantity`)).toLocaleString()}</span>
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase block">Total</span>
+                          <span className="text-xs font-black text-foreground">€{(watch(`items.${index}.costPrice`) * watch(`items.${index}.quantity`)).toLocaleString()}</span>
                         </div>
                         {!isViewMode && (
-                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-red-500" onClick={() => remove(index)}>
+                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => remove(index)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
@@ -183,11 +183,11 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                     </div>
 
                     {field.isSerialized && (
-                      <div className="mt-4 pt-4 border-t border-dashed border-slate-200">
+                      <div className="mt-4 pt-4 border-t border-dashed border-border">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <Hash className="h-3 w-3 text-slate-400" />
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">
+                            <Hash className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter">
                               {isViewMode ? "IMEI / SN" : "Enter IMEI / SN"}
                             </span>
                           </div>
@@ -196,7 +196,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                             <Button
                               type="button"
                               variant="outline"
-                              className="h-6 px-2 text-[9px] font-bold text-blue-600 border-blue-200 hover:bg-blue-50"
+                              className="h-6 px-2 text-[9px] font-bold text-primary border-primary/20 hover:bg-primary/10"
                               onClick={() => {
                                 const currentSerials = watch(`items.${index}.serialList`) || [];
                                 const updatedSerials = [...currentSerials, ""];
@@ -213,7 +213,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                             <div key={sIndex} className="relative group">
                               <Input
                                 placeholder={`IMEI/SN ${sIndex + 1}`}
-                                className="h-8 text-[10px] pr-7 bg-white"
+                                className="h-8 text-[10px] pr-7 bg-background"
                                 readOnly={isViewMode}
                                 // ৩. Focus fix: tabIndex={-1} prevents focus on view mode
                                 tabIndex={isViewMode ? -1 : 0}
@@ -228,7 +228,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                                     setValue(`items.${index}.serialList`, currentSerials);
                                     setValue(`items.${index}.quantity`, currentSerials.length);
                                   }}
-                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-300 hover:text-red-500"
+                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive"
                                 >
                                   <X className="h-3 w-3" />
                                 </button>
@@ -243,17 +243,17 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
               </div>
             </div>
 
-            <div className="flex justify-end pt-4 border-t">
-              <div className="w-full md:w-1/2 space-y-4 bg-slate-50 p-6 rounded-2xl border">
-                <div className="flex justify-between items-center text-slate-600 font-bold uppercase text-[11px]">
+            <div className="flex justify-end pt-4 border-t border-border">
+              <div className="w-full md:w-1/2 space-y-4 bg-muted/50 p-6 rounded-2xl border border-border">
+                <div className="flex justify-between items-center text-muted-foreground font-bold uppercase text-[11px]">
                   <span>Grand Total</span>
-                  <span className="text-xl font-black text-slate-900">€{watch("totalAmount").toLocaleString()}</span>
+                  <span className="text-xl font-black text-foreground">€{watch("totalAmount").toLocaleString()}</span>
                 </div>
-                <div className="pt-4 border-t">
+                <div className="pt-4 border-t border-border">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   <TextField name="paidAmount" control={control as any} label="Amount Paid (€)" type="number" disabled={isViewMode} />
                 </div>
-                <div className="flex justify-between items-center pt-2 text-red-600 font-black">
+                <div className="flex justify-between items-center pt-2 text-destructive font-black">
                   <span className="text-[10px] uppercase tracking-widest">Balance Due</span>
                   <span className="text-lg">€{watch("dueAmount").toLocaleString()}</span>
                 </div>
@@ -262,7 +262,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
           </div>
 
           {!isViewMode && (
-            <FormFooter isPending={isPending} onCancel={onSuccess} saveLabel="Complete Purchase" className="p-6 bg-slate-50 border-t" />
+            <FormFooter isPending={isPending} onCancel={onSuccess} saveLabel="Complete Purchase" />
           )}
         </form>
       </Form>

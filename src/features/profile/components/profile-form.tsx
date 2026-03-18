@@ -75,16 +75,16 @@ export function ProfileForm({ user }: { user: UserType }) {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Header with User Quick Info */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card p-8 rounded-3xl border shadow-sm">
         <div className="flex items-center gap-5">
-          <div className="h-20 w-20 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 text-3xl font-black">
+          <div className="h-20 w-20 rounded-2xl bg-muted border flex items-center justify-center text-muted-foreground text-3xl font-black">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">{user?.name}</h1>
+            <h1 className="text-2xl font-black text-foreground tracking-tight">{user?.name}</h1>
             <div className="flex flex-wrap gap-2 mt-2">
               {user?.roles?.map((role) => (
-                <Badge key={role.id} variant="secondary" className="bg-slate-100 text-slate-500 border-none font-bold text-[10px] uppercase px-2">
+                <Badge key={role.id} variant="secondary" className="border-none font-bold text-[10px] uppercase px-2">
                   <BadgeCheck className="mr-1 h-3 w-3" /> {role.name}
                 </Badge>
               ))}
@@ -94,12 +94,12 @@ export function ProfileForm({ user }: { user: UserType }) {
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl mb-8 inline-flex border border-slate-200/50">
-          <TabsTrigger value="general" className="flex items-center gap-2 px-8 py-2.5 rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md transition-all">
+        <TabsList className="bg-muted/50 p-1.5 rounded-2xl mb-8 inline-flex border">
+          <TabsTrigger value="general" className="flex items-center gap-2 px-8 py-2.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-md transition-all">
             <User className="h-4 w-4" /> 
             <span className="text-[11px] font-black uppercase tracking-widest">General Info</span>
           </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2 px-8 py-2.5 rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md transition-all">
+          <TabsTrigger value="security" className="flex items-center gap-2 px-8 py-2.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-md transition-all">
             <Lock className="h-4 w-4" /> 
             <span className="text-[11px] font-black uppercase tracking-widest">Security</span>
           </TabsTrigger>
@@ -107,10 +107,10 @@ export function ProfileForm({ user }: { user: UserType }) {
 
         {/* --- General Tab --- */}
         <TabsContent value="general" className="focus-visible:outline-none">
-          <div className="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm">
-            <div className="flex items-center gap-2 mb-8 pb-4 border-b border-slate-50">
-              <ShieldCheck className="h-4 w-4 text-slate-900" />
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Personal Details</h3>
+          <div className="bg-card p-8 rounded-3xl border shadow-sm">
+            <div className="flex items-center gap-2 mb-8 pb-4 border-b">
+              <ShieldCheck className="h-4 w-4 text-foreground" />
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Personal Details</h3>
             </div>
             
             <Form {...profileForm}>
@@ -121,25 +121,25 @@ export function ProfileForm({ user }: { user: UserType }) {
                     name="name" 
                     label="Full Name" 
                     placeholder="Enter your name"
-                    icon={<User className="h-4 w-4 text-slate-400" />} 
+                    icon={<User className="h-4 w-4 text-muted-foreground" />} 
                   />
                   <TextField 
                     control={profileForm.control} 
                     name="email" 
                     label="Email Address" 
                     placeholder="name@company.com"
-                    icon={<Mail className="h-4 w-4 text-slate-400" />} 
+                    icon={<Mail className="h-4 w-4 text-muted-foreground" />} 
                   />
                   <TextField 
                     control={profileForm.control} 
                     name="phone" 
                     label="Phone Number" 
                     placeholder="+39 XXX XXX XXXX"
-                    icon={<Phone className="h-4 w-4 text-slate-400" />} 
+                    icon={<Phone className="h-4 w-4 text-muted-foreground" />} 
                   />
                 </div>
                 <div className="flex justify-end pt-4">
-                  <Button type="submit" disabled={isUpdatingProfile} className="bg-slate-900 hover:bg-slate-800 h-11 px-10 rounded-xl font-bold transition-all shadow-lg shadow-slate-200/50">
+                  <Button type="submit" disabled={isUpdatingProfile} className="h-11 px-10 rounded-xl font-bold transition-all shadow-lg dark:shadow-slate-800/50">
                     {isUpdatingProfile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Save Profile Changes
                   </Button>
@@ -151,10 +151,10 @@ export function ProfileForm({ user }: { user: UserType }) {
 
         {/* --- Security Tab --- */}
         <TabsContent value="security" className="focus-visible:outline-none">
-          <div className="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm max-w-2xl">
-            <div className="flex items-center gap-2 mb-8 pb-4 border-b border-slate-50">
-              <KeyRound className="h-4 w-4 text-rose-500" />
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Update Credentials</h3>
+          <div className="bg-card p-8 rounded-3xl border shadow-sm max-w-2xl">
+            <div className="flex items-center gap-2 mb-8 pb-4 border-b border-border">
+              <KeyRound className="h-4 w-4 text-destructive" />
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Update Credentials</h3>
             </div>
             
             <Form {...passwordForm}>
@@ -183,7 +183,7 @@ export function ProfileForm({ user }: { user: UserType }) {
                   />
                 </div>
                 <div className="pt-4">
-                  <Button type="submit" disabled={isUpdatingPassword} className="w-full md:w-auto bg-slate-900 hover:bg-black h-11 px-10 rounded-xl font-bold transition-all">
+                  <Button type="submit" disabled={isUpdatingPassword} className="w-full md:w-auto h-11 px-10 rounded-xl font-bold transition-all">
                     {isUpdatingPassword ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Update Password"}
                   </Button>
                 </div>

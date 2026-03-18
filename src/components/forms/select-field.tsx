@@ -100,13 +100,13 @@ export function SelectField<TFieldValues extends FieldValues>({
           {readOnly ? (
             <FormControl>
               <div className={cn(
-                "min-h-[2.25rem] py-2 px-3 w-full rounded-md border border-slate-200 bg-slate-50/50 text-sm cursor-default",
+                "min-h-[2.25rem] py-2 px-3 w-full rounded-md border border-input bg-muted/50 text-sm cursor-default",
                 !field.value && "text-muted-foreground"
               )}>
                 {isMulti && Array.isArray(field.value) && field.value.length > 0 ? (
                   <div className="flex flex-wrap gap-1">
                     {field.value.map((val: string) => (
-                      <Badge key={val} variant="outline" className="font-normal bg-white border-slate-300 text-slate-700">
+                      <Badge key={val} variant="secondary" className="font-normal">
                         {getSelectedLabel(val) || val}
                       </Badge>
                     ))}
@@ -127,7 +127,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                       aria-expanded={open}
                       disabled={isLoading || disabled}
                       className={cn(
-                        "flex flex-1 justify-between min-h-[2.25rem] h-auto px-3 py-2 font-normal border-slate-200 shadow-sm transition-all hover:bg-slate-50 min-w-0",
+                        "flex flex-1 justify-between min-h-[2.25rem] h-auto px-3 py-2 font-normal shadow-sm transition-all min-w-0",
                         onAdd && "rounded-r-none border-r-0",
                         (!field.value || (Array.isArray(field.value) && field.value.length === 0)) && "text-muted-foreground"
                       )}
@@ -136,10 +136,10 @@ export function SelectField<TFieldValues extends FieldValues>({
                         {isMulti && Array.isArray(field.value) && field.value.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
                             {field.value.map((val: string) => (
-                              <Badge key={val} variant="secondary" className="rounded-sm px-1 font-normal bg-slate-100 text-slate-900 hover:bg-slate-200 border border-slate-200">
+                              <Badge key={val} variant="secondary" className="rounded-sm px-1 font-normal">
                                 {getSelectedLabel(val)}
                                 <span
-                                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer hover:bg-slate-300 p-0.5"
+                                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer hover:bg-muted p-0.5"
                                   onMouseDown={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
@@ -164,7 +164,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent 
-                  className="p-0 border-slate-200 shadow-xl min-w-[200px]" 
+                  className="p-0 shadow-xl min-w-[200px]" 
                   align="start"
                   style={{ width: "var(--radix-popover-trigger-width)" }}
                 >
@@ -174,7 +174,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                       className="h-9 text-sm"
                     />
                     <CommandList className="max-h-[200px] overflow-y-auto">
-                      <CommandEmpty className="py-4 text-center text-xs text-slate-500">
+                      <CommandEmpty className="py-4 text-center text-xs text-muted-foreground">
                         {noResultsMessage}
                       </CommandEmpty>
                       <CommandGroup>
@@ -208,13 +208,13 @@ export function SelectField<TFieldValues extends FieldValues>({
                   variant="outline"
                   size="icon"
                   disabled={isLoading || disabled}
-                  className="h-9 w-9 rounded-l-none border-slate-200 bg-slate-50 hover:bg-slate-100 shadow-sm shrink-0"
+                  className="h-9 w-9 rounded-l-none bg-muted/50 hover:bg-muted shadow-sm shrink-0"
                   onClick={(e) => {
                     e.preventDefault();
                     onAdd();
                   }}
                 >
-                  <Plus className="h-4 w-4 text-slate-600" />
+                  <Plus className="h-4 w-4 text-muted-foreground" />
                 </Button>
               )}
             </div>

@@ -20,7 +20,7 @@ export function StatusCell({ isActive }: StatusCellProps) {
       {isActive ? (
         <CheckCircle className="h-4 w-4 text-emerald-500" />
       ) : (
-        <XCircle className="h-4 w-4 text-slate-300" />
+        <XCircle className="h-4 w-4 text-slate-300 dark:text-slate-600" />
       )}
     </div>
   )
@@ -85,7 +85,7 @@ export function ImageCell({
   className,
 }: ImageCellProps) {
   const containerClasses = cn(
-    "relative flex shrink-0 items-center justify-center overflow-hidden bg-slate-100 border border-slate-200 shadow-sm",
+    "relative flex shrink-0 items-center justify-center overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm",
     {
       "rounded-full": shape === "circle",
       "rounded-md": shape === "rounded",
@@ -129,9 +129,9 @@ function InternalImageContent({
   const [hasError, setHasError] = useState(false)
 
   if (!src || hasError) {
-    return <ImageIcon className="h-1/2 w-1/2 text-slate-300" />
+    return <ImageIcon className="h-1/2 w-1/2 text-slate-300 dark:text-slate-600" />
   }
-
+  
   return (
     <Image
       src={src}
@@ -162,7 +162,7 @@ export function TitleCell({ value, subtitle, isActive = true, onClick, avatar, f
       {(avatar || fallback) && (
         <Avatar className="h-8 w-8 border">
           <AvatarImage src={avatar} alt={typeof value === 'string' ? value : ""} />
-          <AvatarFallback className="bg-blue-50 text-blue-700 font-bold text-[10px]">
+          <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">
             {fallback || fallbackInitials}
           </AvatarFallback>
         </Avatar>
@@ -171,7 +171,7 @@ export function TitleCell({ value, subtitle, isActive = true, onClick, avatar, f
         <div
           className={cn(
             "font-medium text-sm cursor-pointer hover:underline",
-            isActive ? "text-slate-800" : "text-muted-foreground"
+            isActive ? "text-foreground" : "text-muted-foreground"
           )}
           onClick={onClick}
         >{value}</div>

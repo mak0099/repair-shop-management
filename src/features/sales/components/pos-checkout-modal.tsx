@@ -172,30 +172,30 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button 
-          className="w-full bg-primary hover:bg-blue-700 font-bold h-12 text-base shadow-md shadow-blue-200 transition-all active:scale-[0.98]" 
+          className="w-full bg-primary hover:bg-primary/90 font-bold h-12 text-base shadow-md shadow-primary/20 transition-all active:scale-[0.98]" 
           disabled={disabled}
         >
           PROCEED TO PAYMENT
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className={cn("p-0 gap-0 bg-white transition-all duration-300 flex flex-col", completedSale ? "sm:max-w-[900px] h-[90vh]" : "sm:max-w-[600px]")}>
+      <DialogContent className={cn("p-0 gap-0 bg-background transition-all duration-300 flex flex-col", completedSale ? "sm:max-w-[900px] h-[90vh]" : "sm:max-w-[600px]")}>
         {completedSale ? (
           <>
             <div className="flex-1 overflow-y-auto">
               <InvoiceView sale={completedSale} />
             </div>
-            <div className="flex-shrink-0 p-4 border-t bg-slate-50 flex justify-end">
-              <Button onClick={() => handleOpenChange(false)} className="bg-slate-900 text-white hover:bg-slate-800 font-bold">
+            <div className="flex-shrink-0 p-4 border-t bg-muted/50 flex justify-end">
+              <Button onClick={() => handleOpenChange(false)} className="font-bold">
                 Close & Start New Sale
               </Button>
             </div>
           </>
         ) : (
         <>
-        <DialogHeader className="p-4 bg-white border-b sticky top-0 z-10">
-          <DialogTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-tight text-slate-800">
-            <Calculator className="h-5 w-5 text-blue-600" />
+        <DialogHeader className="p-4 bg-background border-b sticky top-0 z-10">
+          <DialogTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-tight text-foreground">
+            <Calculator className="h-5 w-5 text-primary" />
             Checkout & Payment
           </DialogTitle>
         </DialogHeader>
@@ -206,9 +206,9 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
             <div className="p-4 space-y-5 overflow-y-auto max-h-[70vh]">
               
               {/* Total Banner */}
-              <div className="flex flex-col items-center justify-center py-4 bg-slate-900 rounded-xl shadow-lg text-white relative overflow-hidden">
+              <div className="flex flex-col items-center justify-center py-4 bg-foreground rounded-xl shadow-lg text-background relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1">Total Payable Amount</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">Total Payable Amount</span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-black tracking-tighter"><CurrencyText amount={totals.grandTotal} /></span>
                 </div>
@@ -216,7 +216,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
 
               {/* Payment Method Selection */}
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Payment Method</Label>
+                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Payment Method</Label>
                 <FormField
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   control={control as any}
@@ -229,8 +229,8 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                           className={cn(
                             "cursor-pointer relative flex-1 flex items-center justify-center gap-2 p-2 rounded-lg border transition-all duration-200",
                             field.value === method.value
-                              ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-600"
-                              : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                              ? "border-primary bg-primary/10 text-primary shadow-sm ring-1 ring-primary"
+                              : "border-border bg-card text-card-foreground hover:border-border/80 hover:bg-muted/50"
                           )}
                         >
                           <input
@@ -244,8 +244,8 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                           {getPaymentIcon(method.value)}
                           <span className="text-[10px] font-bold uppercase tracking-wide">{method.label}</span>
                           {field.value === method.value && (
-                            <div className="absolute top-1 right-1 h-3 w-3 bg-blue-600 rounded-full flex items-center justify-center">
-                              <Check className="h-2 w-2 text-white" strokeWidth={3} />
+                            <div className="absolute top-1 right-1 h-3 w-3 bg-primary rounded-full flex items-center justify-center">
+                              <Check className="h-2 w-2 text-primary-foreground" strokeWidth={3} />
                             </div>
                           )}
                         </label>
@@ -256,17 +256,17 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
               </div>
 
               {/* Discount & Final Price Adjustment */}
-              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-muted/50 rounded-lg border border-border/50">
                  <TextField
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     control={control as any}
                     name="totalDiscount"
                     label="Discount"
-                    labelClassName="text-[10px] font-bold text-slate-500 uppercase"
+                    labelClassName="text-[10px] font-bold text-muted-foreground uppercase"
                     className="space-y-1"
                     type="number"
-                    icon={<Euro className="h-4 w-4 text-slate-400" />}
-                    inputClassName="h-10 bg-white font-bold border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                    icon={<Euro className="h-4 w-4 text-muted-foreground" />}
+                    inputClassName="h-10 bg-background font-bold border-border focus:border-primary focus:ring-primary/20"
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => handleDiscountChange(e.target.value)}
                  />
@@ -275,18 +275,18 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                     control={control as any}
                     name="grandTotal"
                     label="Total Selling Price"
-                    labelClassName="text-[10px] font-bold text-slate-500 uppercase"
+                    labelClassName="text-[10px] font-bold text-muted-foreground uppercase"
                     className="space-y-1"
                     type="number"
-                    icon={<Euro className="h-4 w-4 text-slate-400" />}
-                    inputClassName="h-10 bg-white font-bold border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                    icon={<Euro className="h-4 w-4 text-muted-foreground" />}
+                    inputClassName="h-10 bg-background font-bold border-border focus:border-primary focus:ring-primary/20"
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => handleTotalChange(e.target.value)}
                  />
               </div>
 
               {/* Amount & Change Calculation */}
-              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-muted/50 rounded-lg border border-border/50">
                 <div className="space-y-2">
                   <TextField
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -294,8 +294,8 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                     name="amountReceived"
                     label="Receive Amount"
                     type="number"
-                    icon={<Euro className="h-4 w-4 text-slate-400" />}
-                    inputClassName="h-10 bg-white font-bold border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                    icon={<Euro className="h-4 w-4 text-muted-foreground" />}
+                    inputClassName="h-10 bg-background font-bold border-border focus:border-primary focus:ring-primary/20"
                     placeholder="0.00"
                     onFocus={(e) => e.target.select()}
                   />
@@ -307,7 +307,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                         type="button" 
                         variant="outline" 
                         size="sm" 
-                        className="h-6 text-[10px] font-bold bg-white px-2"
+                        className="h-6 text-[10px] font-bold bg-background px-2"
                         onClick={() => handleQuickAmount(grandTotal)}
                       >
                         Exact
@@ -319,7 +319,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                             type="button" 
                             variant="outline" 
                             size="sm" 
-                            className="h-6 text-[10px] font-medium bg-white text-slate-600 px-2"
+                            className="h-6 text-[10px] font-medium bg-background text-foreground px-2"
                             onClick={() => handleQuickAmount(amt)}
                           >
                             <CurrencyText amount={amt} minimumFractionDigits={0} maximumFractionDigits={0} />
@@ -331,16 +331,16 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     {dueAmount > 0 ? "Due Amount" : "Change Return"}
                   </Label>
                   <div className={cn(
                     "h-10 flex items-center px-3 rounded-lg border-2 font-mono text-lg font-bold transition-colors",
                     dueAmount > 0 
-                      ? "bg-red-50 border-red-100 text-red-600"
+                      ? "bg-destructive/10 border-destructive/20 text-destructive"
                       : changeAmount > 0 
-                      ? "bg-emerald-50 border-emerald-100 text-emerald-600" 
-                      : "bg-slate-100 border-slate-200 text-slate-400"
+                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-500" 
+                      : "bg-muted border-border text-muted-foreground"
                   )}>
                     <CurrencyText amount={dueAmount > 0 ? dueAmount : changeAmount} />  
                   </div>
@@ -350,7 +350,7 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
               <Separator />
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Transaction Notes</Label>
+                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Transaction Notes</Label>
                 <FormField
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   control={control as any}
@@ -359,25 +359,25 @@ export function POSCheckoutModal({ disabled }: { disabled: boolean }) {
                     <Textarea 
                       {...field} 
                       placeholder="Optional notes about this sale..." 
-                      className="min-h-[60px] bg-white border-slate-200 resize-none text-xs"
+                      className="min-h-[60px] bg-background border-border resize-none text-xs"
                     />
                   )}
                 />
               </div>
             </div>
 
-            <div className="p-4 bg-white border-t mt-auto">
+            <div className="p-4 bg-background border-t mt-auto">
               <Button 
                 type="submit" 
                 className={cn(
                   "w-full h-12 text-base font-black uppercase tracking-widest rounded-xl shadow-xl transition-all",
-                  "bg-primary hover:bg-blue-700 text-white hover:shadow-blue-200 hover:-translate-y-0.5"
+                  "bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/20 hover:-translate-y-0.5"
                 )}
                 disabled={isPending}
               >
                 {isPending ? (
                   <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                     Processing...
                   </span>
                 ) : (

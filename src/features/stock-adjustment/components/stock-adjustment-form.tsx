@@ -92,8 +92,8 @@ export function StockAdjustmentForm({
     <FormProvider {...form}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Card className="border-slate-200 shadow-sm">
-            <CardContent className="space-y-6">
+          <Card className="border-border shadow-sm">
+            <CardContent className="space-y-6 pt-6">
               <div className="grid grid-cols-1 gap-6">
                 <StockSelectField
                   control={form.control}
@@ -142,9 +142,9 @@ export function StockAdjustmentForm({
           </Card>
 
           {!isViewMode && (
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex gap-3 items-start">
-              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
-              <div className="text-xs text-amber-900 leading-relaxed">
+            <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl flex gap-3 items-start">
+              <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5" />
+              <div className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
                 <p className="font-bold mb-1 uppercase tracking-wider">Stock Impact Warning</p>
                 Confirming this will immediately update your inventory levels. 
               </div>
@@ -159,7 +159,6 @@ export function StockAdjustmentForm({
             onEdit={() => setMode("edit")}
             onReset={() => form.reset()}
             saveLabel="Confirm Adjustment"
-            className="pt-4 border-t border-slate-100"
           />
         </form>
       </Form>

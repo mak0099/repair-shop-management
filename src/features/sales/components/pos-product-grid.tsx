@@ -26,50 +26,49 @@ export function POSProductGrid() {
 
   // Client-side filtering fallback (in case API ignores params)
   const filteredProducts = useMemo(() => {
-    const productList = Array.isArray(products) ? products : (products as any)?.data || []
+    const productList = Array.isArray(products) ? products : (products as unknown as { data?: Item[] })?.data || []
     if (!Array.isArray(productList)) return []
-    return productList.filter((product: Item) => {
+    return productList.filter((product: Item & { imei?: string }) => {
       const matchesCategory = categoryId ? product.categoryId === categoryId : true
       const matchesSearch = search 
         ? (product.name?.toLowerCase().includes(search.toLowerCase()) || 
            product.sku?.toLowerCase().includes(search.toLowerCase()) ||
-           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-           ((product as any).imei && (product as any).imei.toLowerCase().includes(search.toLowerCase())))
+           (product.imei && product.imei.toLowerCase().includes(search.toLowerCase())))
         : true
       return matchesCategory && matchesSearch
     })
   }, [products, categoryId, search])
 
   return (
-    <div className="flex flex-col h-full bg-slate-50/30">
+    <div className="flex flex-col h-full bg-muted/30">
       {/* Header & Filters */}
-      <div className="flex-none p-4 bg-white border-b space-y-4 shadow-sm z-10">
+      <div className="flex-none p-4 bg-card border-b space-y-4 shadow-sm z-10">
         <div className="flex items-center gap-3">
           <div className="relative flex-1 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input 
               placeholder="Search by name, IMEI or SKU..." 
-              className="pl-10 pr-8 h-11 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="pl-10 pr-8 h-11 bg-muted/50 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             {search && (
               <button 
                 onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors"
               >
                 <X className="h-3 w-3" />
               </button>
             )}
           </div>
           
-          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div className="flex bg-muted p-1 rounded-xl border border-border">
             <Button 
               variant={viewType === "grid" ? "secondary" : "ghost"} 
               size="icon" 
               className={cn(
                 "h-9 w-9 rounded-lg transition-all",
-                viewType === "grid" && "shadow-sm text-blue-600 ring-1 ring-black/5 bg-white"
+                viewType === "grid" && "shadow-sm text-primary ring-1 ring-black/5 bg-background"
               )}
               onClick={() => setViewType("grid")}
             >
@@ -80,7 +79,7 @@ export function POSProductGrid() {
               size="icon" 
               className={cn(
                 "h-9 w-9 rounded-lg transition-all",
-                viewType === "list" && "shadow-sm text-blue-600 ring-1 ring-black/5 bg-white"
+                viewType === "list" && "shadow-sm text-primary ring-1 ring-black/5 bg-background"
               )}
               onClick={() => setViewType("list")}
             >
@@ -98,8 +97,8 @@ export function POSProductGrid() {
               className={cn(
                 "rounded-full px-5 h-8 text-[11px] font-bold uppercase tracking-widest transition-all",
                 categoryId === "" 
-                  ? "bg-slate-900 hover:bg-slate-800 text-white shadow-md" 
-                  : "bg-white hover:bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900"
+                  ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md" 
+                  : "bg-card hover:bg-muted border-border text-card-foreground hover:text-foreground"
               )}
             >
               All Items
@@ -108,7 +107,7 @@ export function POSProductGrid() {
             {isCategoriesLoading ? (
               <div className="flex gap-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-8 w-24 bg-slate-100 rounded-full animate-pulse" />
+                  <div key={i} className="h-8 w-24 bg-muted rounded-full animate-pulse" />
                 ))}
               </div>
             ) : (
@@ -121,8 +120,8 @@ export function POSProductGrid() {
                   className={cn(
                     "rounded-full px-5 h-8 text-[11px] font-bold uppercase tracking-widest transition-all",
                     categoryId === cat.id 
-                      ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200" 
-                      : "bg-white hover:bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900"
+                      ? "bg-primary/90 hover:bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+                      : "bg-card hover:bg-muted border-border text-card-foreground hover:text-foreground"
                   )}
                 >
                   {cat.name}
@@ -138,16 +137,16 @@ export function POSProductGrid() {
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
         {isProductsLoading ? (
           <div className="h-full flex flex-col items-center justify-center opacity-60">
-            <Loader2 className="h-8 w-8 animate-spin mb-3 text-blue-500" />
-            <span className="text-xs font-black uppercase tracking-widest text-slate-500">Loading Catalog...</span>
+            <Loader2 className="h-8 w-8 animate-spin mb-3 text-primary" />
+            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Loading Catalog...</span>
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-slate-300">
-            <div className="bg-slate-50 p-6 rounded-full mb-4">
-              <Package className="h-10 w-10 text-slate-300" />
+          <div className="h-full flex flex-col items-center justify-center text-muted-foreground/50">
+            <div className="bg-muted p-6 rounded-full mb-4">
+              <Package className="h-10 w-10 text-muted-foreground/50" />
             </div>
-            <p className="text-sm font-bold text-slate-500">No products found</p>
-            <p className="text-xs text-slate-400 mt-1">Try adjusting your search or category</p>
+            <p className="text-sm font-bold text-muted-foreground">No products found</p>
+            <p className="text-xs text-muted-foreground/80 mt-1">Try adjusting your search or category</p>
           </div>
         ) : (
           <div className={cn(
@@ -161,10 +160,10 @@ export function POSProductGrid() {
                 key={product.id}
                 onClick={() => addItem(product)}
                 className={cn(
-                  "group relative bg-white border border-slate-200 transition-all duration-200 active:scale-[0.97] text-left overflow-hidden",
+                  "group relative bg-card border border-border transition-all duration-200 active:scale-[0.97] text-left overflow-hidden",
                   viewType === "grid" 
-                    ? "flex flex-col p-4 rounded-2xl hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5" 
-                    : "flex items-center justify-between p-3 rounded-xl hover:border-blue-300 hover:bg-blue-50/30"
+                    ? "flex flex-col p-4 rounded-2xl hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5" 
+                    : "flex items-center justify-between p-3 rounded-xl hover:border-primary/50 hover:bg-primary/10"
                 )}
               >
                 <div className={cn("flex items-center gap-3", viewType === "grid" ? "mb-3" : "flex-1")}>
@@ -172,16 +171,16 @@ export function POSProductGrid() {
                     "flex items-center justify-center rounded-xl transition-colors shrink-0",
                     viewType === "grid" ? "h-10 w-10" : "h-10 w-10",
                     product.isSerialized 
-                      ? "bg-blue-50 text-blue-600 group-hover:bg-blue-100" 
-                      : "bg-slate-50 text-slate-500 group-hover:bg-slate-100"
+                      ? "bg-primary/10 text-primary group-hover:bg-primary/20" 
+                      : "bg-muted text-muted-foreground group-hover:bg-muted/80"
                   )}>
                     {product.isSerialized ? <Smartphone className="h-5 w-5" /> : <Package className="h-5 w-5" />}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-xs font-bold text-slate-700 leading-tight truncate group-hover:text-blue-700 transition-colors">
+                    <h3 className="text-xs font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mt-1">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono mt-1">
                       {product.sku || 'NO SKU'}
                     </p>
                   </div>
@@ -189,19 +188,19 @@ export function POSProductGrid() {
 
                 <div className={cn(
                   "flex items-center",
-                  viewType === "grid" ? "justify-between mt-auto pt-3 border-t border-slate-50" : "gap-6 pl-4"
+                  viewType === "grid" ? "justify-between mt-auto pt-3 border-t border-border" : "gap-6 pl-4"
                 )}>
-                  <span className="text-sm font-black text-slate-900">
+                  <span className="text-sm font-black text-foreground">
                     <CurrencyText amount={product.salePrice} />
                   </span>
                   
                   <Badge 
                     variant="outline" 
                     className={cn(
-                      "text-[9px] font-bold px-1.5 h-5 border-slate-200",
+                      "text-[9px] font-bold px-1.5 h-5 border-border",
                       product.initialStock > 0 
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
-                        : "bg-red-50 text-red-700 border-red-100"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20" 
+                        : "bg-destructive/10 text-destructive border-destructive/20"
                     )}
                   >
                     {product.initialStock > 0 ? `${product.initialStock} IN` : 'OUT'}

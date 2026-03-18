@@ -107,64 +107,64 @@ export function ResourceActions<T extends { id: string }>({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-slate-100 transition-colors text-slate-500">
+          <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted transition-colors text-muted-foreground dark:hover:text-foreground">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuPortal>
-          <DropdownMenuContent align="end" className="w-48 p-1 shadow-xl border-slate-200">
+          <DropdownMenuContent align="end" className="w-48 p-1 shadow-xl border-border bg-popover">
             <DropdownMenuItem
-              className="cursor-pointer focus:bg-slate-50"
+              className="cursor-pointer focus:bg-muted"
               onClick={() => {
                 navigator.clipboard.writeText(resource.id)
                 toast.info("ID copied to clipboard")
               }}
             >
-              <Copy className="mr-2 h-4 w-4 text-slate-400" />
-              <span className="text-slate-600 font-medium">Copy ID</span>
+              <Copy className="mr-2 h-4 w-4 text-muted-foreground" />
+              <span className="text-foreground font-medium">Copy ID</span>
             </DropdownMenuItem>
             
             {canView && (
-              <DropdownMenuItem className="cursor-pointer focus:bg-slate-50" onClick={() => onView(resource)}>
-                <Eye className="mr-2 h-4 w-4 text-slate-400" /> 
-                <span className="text-slate-600 font-medium">View Details</span>
+              <DropdownMenuItem className="cursor-pointer focus:bg-muted" onClick={() => onView(resource)}>
+                <Eye className="mr-2 h-4 w-4 text-muted-foreground" /> 
+                <span className="text-foreground font-medium">View Details</span>
               </DropdownMenuItem>
             )}
 
-            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuSeparator className="bg-muted" />
 
             {canUpdateStatus && (
-              <DropdownMenuItem onClick={() => setStatusChangeOpen(true)} className="group cursor-pointer focus:bg-slate-50">
+              <DropdownMenuItem onClick={() => setStatusChangeOpen(true)} className="group cursor-pointer focus:bg-muted">
                 {newStatus ? (
-                  <CheckCircle className="mr-2 h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+                  <CheckCircle className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-emerald-600 transition-colors" />
                 ) : (
-                  <XCircle className="mr-2 h-4 w-4 text-slate-400 group-hover:text-amber-600 transition-colors" />
+                  <XCircle className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-amber-600 transition-colors" />
                 )}
-                <span className="text-slate-600 font-medium">{newStatus ? "Set Active" : "Set Inactive"}</span>
+                <span className="text-foreground font-medium">{newStatus ? "Set Active" : "Set Inactive"}</span>
               </DropdownMenuItem>
             )}
 
             {canEdit &&
               (onEdit ? (
-                <DropdownMenuItem className="cursor-pointer focus:bg-slate-50" onClick={() => onEdit(resource)}>
-                  <Pencil className="mr-2 h-4 w-4 text-slate-400" /> 
-                  <span className="text-slate-600 font-medium">Edit Record</span>
+                <DropdownMenuItem className="cursor-pointer focus:bg-muted" onClick={() => onEdit(resource)}>
+                  <Pencil className="mr-2 h-4 w-4 text-muted-foreground" /> 
+                  <span className="text-foreground font-medium">Edit Record</span>
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-50">
+                <DropdownMenuItem asChild className="cursor-pointer focus:bg-muted">
                   <Link href={`${baseEditHref!}/${resource.id}/edit`} className="flex w-full items-center">
-                    <Pencil className="mr-2 h-4 w-4 text-slate-400" /> 
-                    <span className="text-slate-600 font-medium">Edit Record</span>
+                    <Pencil className="mr-2 h-4 w-4 text-muted-foreground" /> 
+                    <span className="text-foreground font-medium">Edit Record</span>
                   </Link>
                 </DropdownMenuItem>
               ))}
 
-            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuSeparator className="bg-muted" />
             
             {canDelete && (
               <DropdownMenuItem 
                 onClick={() => setDeleteOpen(true)} 
-                className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50"
+                className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
               >
                 <Trash className="mr-2 h-4 w-4 opacity-70" />
                 <span className="font-semibold">Delete</span>

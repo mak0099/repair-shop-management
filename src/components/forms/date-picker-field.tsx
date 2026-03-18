@@ -102,16 +102,16 @@ export function DatePickerField<TFieldValues extends FieldValues>({
                                     classNames={{
                                         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                                         month: "space-y-4",
-                                        caption: "flex justify-center pt-1 relative items-center h-9",
+                                        month_caption: "flex justify-center pt-1 relative items-center h-9",
                                         caption_label: "text-sm font-medium",
                                         nav: "flex items-center",
                                         button_previous: cn(
                                             buttonVariants({ variant: "outline" }),
-                                            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-2 z-10"
+                                            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1 z-10"
                                         ),
                                         button_next: cn(
                                             buttonVariants({ variant: "outline" }),
-                                            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-2 z-10"
+                                            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1 z-10"
                                         ),
                                         month_grid: "w-full border-collapse space-y-1",
                                         weekdays: "flex justify-between",
@@ -120,7 +120,7 @@ export function DatePickerField<TFieldValues extends FieldValues>({
                                         day: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
                                         day_button: cn(
                                             buttonVariants({ variant: "ghost" }),
-                                            "h-9 w-9 p-0 font-normal aria-selected:opacity-100 transition-all hover:bg-accent"
+                                            "h-9 w-9 p-0 font-normal transition-all hover:bg-accent hover:text-accent-foreground aria-selected:opacity-100"
                                         ),
                                         selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-md",
                                         today: "bg-accent text-accent-foreground",

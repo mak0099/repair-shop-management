@@ -19,6 +19,10 @@ export const acceptanceHandlers = [
     const pageSize = Number(url.searchParams.get("pageSize") || "10");
     const search = url.searchParams.get("search")?.toLowerCase() || "";
     const status = url.searchParams.get("currentStatus");
+    const customerId = url.searchParams.get("customerId");
+    const brandId = url.searchParams.get("brandId");
+    const modelId = url.searchParams.get("modelId");
+    const acceptanceDate = url.searchParams.get("acceptanceDate");
 
     // Populate related data for display in the list
     const populatedAcceptances = acceptances.map(acceptance => {
@@ -40,9 +44,23 @@ export const acceptanceHandlers = [
               (acceptance.imei || "").toLowerCase().includes(search)
             : true;
 
-        const statusMatch = !status || status === 'all' || acceptance.currentStatus === status;
+        const statusMatch = !status || status === 'all' || String(acceptance.currentStatus).toLowerCase() === String(status).toLowerCase();
+        const customerMatch = !customerId || customerId === 'all' || String(acceptance.customerId) === String(customerId);
+        const brandMatch = !brandId || brandId === 'all' || String(acceptance.brandId) === String(brandId);
+        const modelMatch = !modelId || modelId === 'all' || String(acceptance.modelId) === String(modelId);
 
-        return searchMatch && statusMatch;
+        let dateMatch = true;
+        if (acceptanceDate && acceptanceDate !== "undefined" && acceptanceDate !== "null") {
+            const [fromStr, toStr] = acceptanceDate.split(",");
+            if (fromStr && toStr) {
+                const fromDate = new Date(`${fromStr}T00:00:00`).getTime();
+                const toDate = new Date(`${toStr}T23:59:59.999`).getTime();
+                const currentAccDate = new Date(acceptance.acceptanceDate).getTime();
+                dateMatch = currentAccDate >= fromDate && currentAccDate <= toDate;
+            }
+        }
+
+        return searchMatch && statusMatch && customerMatch && brandMatch && modelMatch && dateMatch;
     });
 
     const total = filteredData.length;

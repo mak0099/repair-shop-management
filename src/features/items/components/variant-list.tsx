@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Item } from "../item.schema"
+import { cn } from "@/lib/utils"
 
 interface VariantListProps {
   /**

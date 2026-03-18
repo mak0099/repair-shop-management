@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  Plus, Smartphone, Receipt, Wrench,
+  Smartphone, Receipt, Wrench,
   Clock, CheckCircle2, AlertTriangle, Wallet,
   Search, ArrowRight, Zap, Target
 } from "lucide-react"
@@ -88,10 +88,10 @@ export function FrontdeskView() {
       {/* Quick Action Grid - বড় গর্জিয়াস বাটন */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: Wrench, label: "New Repair Intake", action: openAcceptanceModal, type: 'gradient', color: '' },
+          { icon: Wrench, label: "New Repair Intake", action: () => openAcceptanceModal(), type: 'gradient', color: '' },
           { icon: Smartphone, label: "Sell Accessories", action: () => router.push(SALES_POS_HREF), type: 'outline', color: 'text-cyan-500' },
-          { icon: Receipt, label: "Create Quotation", action: openQuotationModal, type: 'outline', color: 'text-pink-500' },
-          { icon: Wallet, label: "Quick Expense", action: openExpenseModal, type: 'outline', color: 'text-amber-500' },
+          { icon: Receipt, label: "Create Quotation", action: () => openQuotationModal(), type: 'outline', color: 'text-pink-500' },
+          { icon: Wallet, label: "Quick Expense", action: () => openExpenseModal(), type: 'outline', color: 'text-amber-500' },
         ].map((btn, i) => {
           const isGradient = btn.type === 'gradient';
           return (

@@ -5,6 +5,7 @@ import { useDashboardStats, useRevenueChart, useStatusDistribution } from "../da
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, Legend } from "recharts"
 import { TrendingUp, CreditCard, ShoppingBag, Package } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
 export function Overview() {
   const { data: stats } = useDashboardStats()

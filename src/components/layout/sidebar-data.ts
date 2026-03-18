@@ -51,8 +51,6 @@ import {
   ADMIN_ROLES_HREF,
   DASHBOARD_OVERVIEW_HREF,
 } from "@/config/paths";
-import Link from "next/link";
-import { useTheme } from "next-themes";
 
 export const data = {
   user: {

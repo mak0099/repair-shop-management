@@ -26,6 +26,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         '--primary-foreground': 'var(--sb-primary-foreground, var(--primary-foreground))',
         '--primary-gradient': 'var(--sb-primary-gradient, var(--primary-gradient))',
         '--button-glow': 'var(--sb-button-glow, var(--button-glow))',
+        /* Hover এবং Parent Active স্টেটের টেক্সট/ব্যাকগ্রাউন্ড ফিক্স করার জন্য */
+        '--foreground': 'var(--sb-foreground, var(--sidebar-foreground))',
+        '--muted-foreground': 'var(--sb-muted-foreground, var(--sidebar-foreground))',
+        '--accent': 'var(--sb-accent, var(--sidebar-accent))',
+        '--accent-foreground': 'var(--sb-accent-foreground, var(--sidebar-accent-foreground))',
       } as React.CSSProperties}
     >
       {/* হেডার সেকশনকে আরও একটু স্বচ্ছ করা হয়েছে */}

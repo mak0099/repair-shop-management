@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -8,7 +8,20 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
-export function NavMain({ items }: { items: any[] }) {
+interface NavSubItem {
+  title: string
+  url?: string
+  items?: NavSubItem[]
+}
+
+interface NavItem {
+  title: string
+  url?: string
+  icon?: LucideIcon
+  items?: NavSubItem[]
+}
+
+export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname()
   const { state } = useSidebar()
   
@@ -24,7 +37,7 @@ export function NavMain({ items }: { items: any[] }) {
       <SidebarMenu className="gap-2 px-1 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
         {items.map((item) => {
           // ১. চেক করছি এই সেকশনটি কি কোনোভাবে অ্যাক্টিভ কি না
-          const sectionActive = isUrlActive(item.url) || item.items?.some((s: any) => isUrlActive(s.url))
+          const sectionActive = isUrlActive(item.url) || item.items?.some((s: NavSubItem) => isUrlActive(s.url))
           
           // ২. চেক করছি এটা কি সরাসরি অ্যাক্টিভ (Direct Active) নাকি প্যারেন্ট হিসেবে অ্যাক্টিভ
           const isDirectActive = pathname === item.url
@@ -85,7 +98,7 @@ export function NavMain({ items }: { items: any[] }) {
                   </DropdownMenuTrigger>
                 <DropdownMenuContent side="right" align="start" sideOffset={16} className="w-56 bg-sidebar/95 text-sidebar-foreground backdrop-blur-xl border-sidebar-border shadow-xl rounded-2xl p-2">
                     <div className="p-2 font-black text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{item.title}</div>
-                    {item.items.map((subItem: any) => {
+                    {item.items?.map((subItem: NavSubItem) => {
                       const subActive = isUrlActive(subItem.url)
                       return subItem.items ? (
                         <DropdownMenuSub key={subItem.title}>
@@ -93,7 +106,7 @@ export function NavMain({ items }: { items: any[] }) {
                             <span>{subItem.title}</span>
                           </DropdownMenuSubTrigger>
                         <DropdownMenuSubContent className="bg-sidebar/95 text-sidebar-foreground backdrop-blur-xl border-sidebar-border shadow-xl rounded-2xl p-2 w-48">
-                            {subItem.items.map((nestedItem: any) => {
+                            {subItem.items?.map((nestedItem: NavSubItem) => {
                               const nestedActive = isUrlActive(nestedItem.url)
                               return (
                               <DropdownMenuItem key={nestedItem.title} asChild className={cn("rounded-md text-[11px] cursor-pointer transition-all mb-0.5", nestedActive ? "font-bold shadow-md" : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent")}>
@@ -130,7 +143,7 @@ export function NavMain({ items }: { items: any[] }) {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub className="ml-4 mt-1 border-l-2 border-sidebar-border gap-1 py-1">
-                      {item.items.map((subItem: any) => {
+                      {item.items?.map((subItem: NavSubItem) => {
                         const subActive = isUrlActive(subItem.url)
                         return (
                           <SidebarMenuSubItem key={subItem.title}>

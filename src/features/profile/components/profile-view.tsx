@@ -4,7 +4,6 @@ import { Loader2, Settings, AlertCircle } from "lucide-react"
 import { ProfileForm } from "./profile-form"
 import { Separator } from "@/components/ui/separator"
 import { useGetProfile } from "../profile.api"
-import { ThemeSwitcher } from "@/components/shared/theme-switcher"
 
 export function ProfileView() {
   // ১. সার্ভার থেকে লেটেস্ট প্রোফাইল ডাটা আনা

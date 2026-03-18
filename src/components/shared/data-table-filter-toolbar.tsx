@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { format } from "date-fns"
 import { Search, X, Filter, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FilterCombobox, FilterOption } from "@/components/ui/filter-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { DayPicker } from "react-day-picker"
+import { DayPicker, type DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
 
 export interface FilterConfig {
@@ -62,7 +62,7 @@ const DAY_PICKER_CLASSNAMES = {
 }
 
 const DAY_PICKER_COMPONENTS = {
-  Chevron: (props: any) => {
+  Chevron: (props: { orientation?: string }) => {
     if (props.orientation === 'left') return <ChevronLeft className="h-4 w-4" />;
     return <ChevronRight className="h-4 w-4" />;
   }
@@ -74,21 +74,22 @@ function DateRangeFilter({ filter }: { filter: FilterConfig }) {
   const [from, to] = filter.value ? filter.value.split(",") : ["", ""]
   
   // Maintain local state so the calendar stays open during selection
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date } | undefined>(() => {
+  const [prevValue, setPrevValue] = useState(filter.value)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     const fromDate = from ? new Date(`${from}T00:00:00`) : undefined
     const toDate = to ? new Date(`${to}T00:00:00`) : undefined
-    return { from: fromDate, to: toDate }
+    return fromDate ? { from: fromDate, to: toDate } : undefined
   })
   
   const [month, setMonth] = useState<Date>(() => dateRange?.from || new Date())
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null)
 
-  // Sync external filter changes to local state
-  useEffect(() => {
+  if (filter.value !== prevValue) {
+    setPrevValue(filter.value)
     const fromDate = from ? new Date(`${from}T00:00:00`) : undefined
     const toDate = to ? new Date(`${to}T00:00:00`) : undefined
-    setDateRange({ from: fromDate, to: toDate })
-  }, [from, to])
+    setDateRange(fromDate ? { from: fromDate, to: toDate } : undefined)
+  }
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open)

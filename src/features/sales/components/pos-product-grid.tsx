@@ -26,15 +26,14 @@ export function POSProductGrid() {
 
   // Client-side filtering fallback (in case API ignores params)
   const filteredProducts = useMemo(() => {
-    const productList = Array.isArray(products) ? products : (products as any)?.data || []
+    const productList = Array.isArray(products) ? products : (products as unknown as { data?: Item[] })?.data || []
     if (!Array.isArray(productList)) return []
-    return productList.filter((product: Item) => {
+    return productList.filter((product: Item & { imei?: string }) => {
       const matchesCategory = categoryId ? product.categoryId === categoryId : true
       const matchesSearch = search 
         ? (product.name?.toLowerCase().includes(search.toLowerCase()) || 
            product.sku?.toLowerCase().includes(search.toLowerCase()) ||
-           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-           ((product as any).imei && (product as any).imei.toLowerCase().includes(search.toLowerCase())))
+           (product.imei && product.imei.toLowerCase().includes(search.toLowerCase())))
         : true
       return matchesCategory && matchesSearch
     })

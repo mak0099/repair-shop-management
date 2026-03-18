@@ -76,6 +76,12 @@ export function AppTopNav() {
         '--primary-foreground': 'var(--tn-primary-foreground)',
         '--primary-gradient': 'var(--tn-primary-gradient)',
         '--button-glow': 'var(--tn-button-glow)',
+        /* Hover, Dropdown Menu এবং Card এর জন্য কালার ফিক্স */
+        '--accent': 'var(--tn-accent, var(--accent))',
+        '--accent-foreground': 'var(--tn-accent-foreground, var(--accent-foreground))',
+        '--card': 'var(--tn-card, var(--card))',
+        '--card-foreground': 'var(--tn-card-foreground, var(--card-foreground))',
+        '--border': 'var(--tn-border, var(--border))',
       } as React.CSSProperties}
     >
       <div className="container flex h-20 items-center justify-between px-6 mx-auto">

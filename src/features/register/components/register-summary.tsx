@@ -1,6 +1,6 @@
 "use client"
 
-import { Banknote, CreditCard, Landmark, Wallet, ArrowUpCircle, ArrowDownCircle, Info, CheckCircle } from "lucide-react"
+import { Banknote, CreditCard, Landmark, Wallet, ArrowUpCircle, ArrowDownCircle, Info } from "lucide-react"
 import { RegisterLog } from "../register.schema"
 import { cn } from "@/lib/utils"
 

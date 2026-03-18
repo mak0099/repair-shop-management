@@ -1,10 +1,11 @@
 export const THEME_NAMES = [
+  "midnightOcean",
   "vibrantBlue",
-  "modernPurple",
-  "deepOcean",
-  "emeraldGreen",
   "classicZinc",
   "gorgeousNeon",
+  // "modernPurple",
+  // "deepOcean",
+  // "emeraldGreen",
 ] as const;
 export type ThemeName = (typeof THEME_NAMES)[number];
 
@@ -99,9 +100,9 @@ export const THEMES: Record<
       primaryForeground: "#0f172a",
       secondary: "#1e293b",
       secondaryForeground: "#f8fafc",
-      muted: "#1e293b",
+      muted: "#334155",
       mutedForeground: "#94a3b8",
-      accent: "#1e293b",
+      accent: "#334155",
       accentForeground: "#f8fafc",
       destructive: "#ef4444",
       border: "#334155",
@@ -470,6 +471,86 @@ export const THEMES: Record<
       buttonGlow: "none",
       cardShadow: "none",
       animationSpeed: "200ms",
+    },
+  },
+  midnightOcean: {
+    label: "Midnight Ocean (Hybrid)",
+    light: {
+      /* --- [Light Mode এ যখন Dark Sidebar OFF থাকবে] --- */
+      background: "#f8fafc", // একদম সাদা নয়, হালকা ফ্রেশ আকাশী আভা
+      foreground: "#0f172a",
+      card: "#ffffff",
+      cardForeground: "#0f172a",
+      popover: "#ffffff",
+      popoverForeground: "#0f172a",
+      primary: "#184e6c", // বাটন এবং আইকনে ছবির সেই মেইন নীল রঙ
+      primaryForeground: "#ffffff",
+      secondary: "#e0f2fe",
+      secondaryForeground: "#184e6c",
+      muted: "#f1f5f9",
+      mutedForeground: "#64748b",
+      accent: "#e0f2fe",
+      accentForeground: "#184e6c",
+      destructive: "#ef4444",
+      border: "#e2e8f0",
+      input: "#e2e8f0",
+      ring: "#184e6c",
+      radius: "0.75rem",
+
+      /* এখানে বারগুলো সাদা রাখা হয়েছে যাতে Switch OFF করলে লাইট মোড দেখায় */
+      sidebar: "#ffffff",
+      sidebarForeground: "#0f172a",
+      sidebarBorder: "#e2e8f0",
+      sidebarAccent: "#f1f5f9",
+      sidebarAccentForeground: "#184e6c",
+
+      topNav: "#ffffff",
+      topNavForeground: "#0f172a",
+      topNavBorder: "#e2e8f0",
+
+      /* আপনার সিগনেচার পার্পল-পিঙ্ক গ্রেডিয়েন্ট */
+      primaryGradient: "linear-gradient(to right, #3b82f6, #a855f7, #ec4899)",
+      buttonGlow: "0 0 15px rgba(168, 85, 247, 0.2)",
+      cardShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
+      animationSpeed: "400ms",
+    },
+    dark: {
+      /* --- [Dark Mode এ অথবা Always Dark Sidebar ON থাকলে] --- */
+      background: "#020617", // ডিপ ব্ল্যাক নেভি
+      foreground: "#f8fafc",
+      card: "#0f172a",
+      cardForeground: "#f8fafc",
+      popover: "#0f172a",
+      popoverForeground: "#f8fafc",
+      primary: "#387ea2",
+      primaryForeground: "#ffffff",
+      secondary: "#1e293b",
+      secondaryForeground: "#f8fafc",
+      muted: "#1e293b",
+      mutedForeground: "#94a3b8",
+      accent: "#1e293b",
+      accentForeground: "#f8fafc",
+      destructive: "#7f1d1d",
+      border: "#1e293b",
+      input: "#1e293b",
+      ring: "#387ea2",
+      radius: "0.75rem",
+
+      /* এখানে ছবির সেই গভীর টিল/নীল রঙ ব্যবহার করা হয়েছে */
+      sidebar: "#184e6c",
+      sidebarForeground: "#f8fafc",
+      sidebarBorder: "rgba(255,255,255,0.1)",
+      sidebarAccent: "rgba(255,255,255,0.1)",
+      sidebarAccentForeground: "#ffffff",
+
+      topNav: "#184e6c",
+      topNavForeground: "#f8fafc",
+      topNavBorder: "rgba(255,255,255,0.1)",
+
+      primaryGradient: "linear-gradient(to right, #3b82f6, #a855f7, #ec4899)",
+      buttonGlow: "0 0 30px rgba(168, 85, 247, 0.4)",
+      cardShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)",
+      animationSpeed: "400ms",
     },
   },
 } as const;

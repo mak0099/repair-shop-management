@@ -92,7 +92,7 @@ export function AppTopNav() {
                 "relative flex flex-col items-center justify-center h-18 w-20 lg:w-24 rounded-2xl px-1 py-1 transition-all duration-300 group overflow-hidden border",
                 isActive 
                   ? "shadow-lg" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 hover:-translate-y-0.5 hover:shadow-md"
               );
 
               const itemDynamicStyle = {
@@ -114,8 +114,7 @@ export function AppTopNav() {
                     {item.title}
                   </span>
                   {!isActive && (
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                         style={{ boxShadow: 'inset 0 0 10px var(--button-glow)' }} />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none bg-gradient-to-t from-primary/10 to-transparent translate-y-full group-hover:translate-y-0" />
                   )}
                 </>
               );

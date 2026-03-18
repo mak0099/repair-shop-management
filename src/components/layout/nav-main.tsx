@@ -33,11 +33,11 @@ export function NavMain({ items }: { items: any[] }) {
           const hasChildren = item.items && item.items.length > 0
 
           const menuButtonClasses = cn(
-            "h-10 rounded-xl px-2.5 transition-all ease-in-out relative overflow-hidden group/item border",
+            "h-10 rounded-xl px-2.5 transition-all duration-300 relative overflow-hidden group/item border",
             "group-data-[collapsible=icon]:!px-0 group-data-[collapsible=icon]:justify-center",
             isDirectActive ? "shadow-xl border-transparent" : 
             isParentActive ? "border-sidebar-border bg-sidebar-accent/50" : 
-            "border-transparent text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+            "border-transparent text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/80 hover:translate-x-1"
           );
 
           const menuButtonStyle = {
@@ -50,17 +50,20 @@ export function NavMain({ items }: { items: any[] }) {
 
           const renderContent = () => (
             <>
+              {!isDirectActive && !isParentActive && (
+                <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-primary scale-y-0 group-hover/item:scale-y-100 transition-transform duration-300 rounded-r-full opacity-70" />
+              )}
               {item.icon && (
                 <item.icon className={cn(
-                  "size-4 shrink-0 transition-transform duration-300", 
-                  sectionActive ? "scale-110" : "group-hover/item:scale-110"
+                  "size-4 shrink-0 transition-transform duration-300 relative z-10", 
+                  sectionActive ? "scale-110" : "group-hover/item:scale-110 group-hover/item:text-primary"
                 )} />
               )}
-              <span className={cn("text-[11px] tracking-wider ml-2 group-data-[collapsible=icon]:hidden", sectionActive ? "font-black" : "font-bold")}>
+              <span className={cn("text-[11px] tracking-wider ml-2 group-data-[collapsible=icon]:hidden relative z-10 transition-colors duration-300", sectionActive ? "font-black" : "font-bold group-hover/item:text-foreground")}>
                 {item.title}
               </span>
               {hasChildren && (
-                <ChevronRight className="ml-auto size-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90 opacity-40 group-data-[collapsible=icon]:hidden" />
+                <ChevronRight className="ml-auto size-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90 opacity-40 group-data-[collapsible=icon]:hidden relative z-10" />
               )}
             </>
           );

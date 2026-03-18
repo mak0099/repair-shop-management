@@ -4,7 +4,7 @@ import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { THEME_NAMES, type ThemeName, THEMES } from "@/config/themes"
 
-const DEFAULT_THEME_NAME = (process.env.NEXT_PUBLIC_DEFAULT_THEME as ThemeName) || "vibrantBlue";
+const DEFAULT_THEME_NAME = (process.env.NEXT_PUBLIC_DEFAULT_THEME as ThemeName) || "midnightOcean";
 
 // এখান থেকে আপনি সাইডবার এবং টপ-ন্যাভ এর ডিফল্ট ডার্ক মোড অন/অফ করতে পারবেন
 const DEFAULT_ALWAYS_DARK_SIDEBAR = true; 

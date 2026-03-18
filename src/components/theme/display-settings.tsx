@@ -26,10 +26,11 @@ export function DisplaySettings({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </SheetHeader>
-        
-        {/* মেইন ইঞ্জিন রেন্ডার হচ্ছে */}
-        <ThemeSwitcher /> 
-        
+
+        <div className="p-2">
+          <ThemeSwitcher />
+        </div>
+
       </SheetContent>
     </Sheet>
   )

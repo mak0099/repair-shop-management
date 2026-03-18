@@ -37,7 +37,7 @@ export function SalesList() {
           onClick={() => openInvoice(row.original)}
           subtitle={
             <div className="flex gap-2 items-center">
-              <span className="font-bold text-slate-500 uppercase tracking-tighter">
+              <span className="font-bold text-muted-foreground uppercase tracking-tighter">
                 {row.original.customerId ? `Customer ID: ${row.original.customerId}` : "WALK-IN CUSTOMER"}
               </span>
             </div>
@@ -52,7 +52,7 @@ export function SalesList() {
         const method = row.original.paymentMethod;
         return (
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] font-black border-slate-200 bg-slate-50">
+            <Badge variant="outline" className="text-[10px] font-black border-border bg-muted">
               {method}
             </Badge>
           </div>
@@ -75,13 +75,13 @@ export function SalesList() {
       cell: ({ row }) => {
         const status = row.original.status;
         const colorMap: Record<string, string> = {
-          COMPLETED: "bg-emerald-100 text-emerald-700 border-emerald-200",
-          PENDING: "bg-amber-100 text-amber-700 border-amber-200",
-          CANCELED: "bg-red-100 text-red-700 border-red-200",
+          COMPLETED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20",
+          PENDING: "bg-amber-500/10 text-amber-600 dark:text-amber-500 border-amber-500/20",
+          CANCELED: "bg-destructive/10 text-destructive border-destructive/20",
         };
 
         return (
-          <Badge className={`text-[9px] uppercase font-black px-2 py-0 border ${colorMap[status] || "bg-slate-100"}`}>
+          <Badge className={`text-[9px] uppercase font-black px-2 py-0 border ${colorMap[status] || "bg-muted"}`}>
             {status}
           </Badge>
         )

@@ -48,8 +48,8 @@ export function BarcodeGenerator() {
             
             <div className="lg:col-span-1 space-y-4">
               <Card>
-                <CardHeader className="bg-slate-50 border-b">
-                  <CardTitle className="text-sm font-bold uppercase text-slate-500">
+                <CardHeader className="bg-muted/50 border-b-border">
+                  <CardTitle className="text-sm font-bold uppercase text-muted-foreground">
                     Configuration
                   </CardTitle>
                 </CardHeader>
@@ -81,7 +81,7 @@ export function BarcodeGenerator() {
                     <CheckboxField control={control} name="includePrice" label="Show Price" />
                   </div>
 
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-10">
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 h-10">
                     <RefreshCw className="mr-2 h-4 w-4" /> Generate Preview
                   </Button>
                 </CardContent>
@@ -90,8 +90,8 @@ export function BarcodeGenerator() {
 
             <div className="lg:col-span-2">
               <Card className="min-h-[500px]">
-                <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50">
-                  <CardTitle className="text-sm font-bold uppercase text-slate-500">
+                <CardHeader className="flex flex-row items-center justify-between border-b-border bg-muted/50">
+                  <CardTitle className="text-sm font-bold uppercase text-muted-foreground">
                     Print Preview
                   </CardTitle>
                   {previewData && (
@@ -100,7 +100,7 @@ export function BarcodeGenerator() {
                     </Button>
                   )}
                 </CardHeader>
-                <CardContent className="p-8 flex justify-center bg-white">
+                <CardContent className="p-8 flex justify-center bg-background">
                   {previewData ? (
                     <BarcodePrintLayout data={previewData} />
                   ) : (

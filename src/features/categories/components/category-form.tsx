@@ -125,7 +125,7 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
               control={control}
               name="isActive"
               label="Mark as Active"
-              className="rounded-lg border p-4 bg-slate-50/50"
+              className="rounded-lg border border-border p-4 bg-muted/50"
               disabled={isViewMode}
             />
           </div>
@@ -139,7 +139,6 @@ export function CategoryForm({ initialData, onSuccess, isViewMode: initialIsView
           onEdit={() => setMode("edit")}
           onReset={() => form.reset()}
           saveLabel={isEditMode ? "Save Changes" : "Save Category"}
-          className="mt-4"
         />
       </form>
     </Form>

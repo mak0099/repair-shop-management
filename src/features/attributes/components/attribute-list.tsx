@@ -64,7 +64,7 @@ export function AttributeList() {
                     Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-6 w-12 rounded-full" />)
                   ) : attributeData?.values && attributeData.values.length > 0 ? (
                     attributeData.values.slice(0, 12).map((opt, i) => (
-                      <Badge key={i} variant="outline" className="font-normal bg-slate-50">
+                      <Badge key={i} variant="outline" className="font-normal bg-muted">
                         {opt.value}
                       </Badge>
                     ))
@@ -72,7 +72,7 @@ export function AttributeList() {
                     <span className="text-sm text-muted-foreground italic">No options configured.</span>
                   )}
                   {attributeData?.values && attributeData.values.length > 12 && (
-                     <Badge variant="outline" className="font-normal bg-slate-50">+{attributeData.values.length - 12} more</Badge>
+                     <Badge variant="outline" className="font-normal bg-muted">+{attributeData.values.length - 12} more</Badge>
                   )}
                 </div>
                 

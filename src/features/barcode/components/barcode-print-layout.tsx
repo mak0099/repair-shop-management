@@ -46,13 +46,13 @@ export function BarcodePrintLayout({ data }: BarcodePrintLayoutProps) {
   }).format(item.salePrice || 0)
 
   return (
-    <div id="printable-barcode-area" className="bg-white p-6 shadow-sm border rounded-xl overflow-hidden">
+    <div id="printable-barcode-area" className="bg-background p-6 shadow-sm border-border rounded-xl overflow-hidden">
       {/* Grid Layout for Labels */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-2">
         {labels.map((_, index) => (
           <div 
             key={index} 
-            className="border border-gray-200 p-3 flex flex-col items-center justify-center text-center space-y-2 bg-white rounded shadow-sm hover:border-blue-400 transition-colors"
+            className="border border-border p-3 flex flex-col items-center justify-center text-center space-y-2 bg-card rounded shadow-sm hover:border-primary transition-colors"
             style={{ 
               width: data.labelSize === "38x25mm" ? "160px" : "220px",
               height: "auto",
@@ -60,19 +60,19 @@ export function BarcodePrintLayout({ data }: BarcodePrintLayoutProps) {
             }}
           >
             {data.includeName && (
-              <span className="text-[10px] font-bold leading-tight uppercase tracking-tight text-slate-800 line-clamp-2 w-full">
+              <span className="text-[10px] font-bold leading-tight uppercase tracking-tight text-foreground line-clamp-2 w-full">
                 {item.name}
               </span>
             )}
             
             {/* Visual Barcode Component Placeholder */}
-            <div className="w-full h-12 bg-slate-100 rounded flex items-center justify-center overflow-hidden border border-slate-200">
-                <div className="flex gap-[1.5px] h-10 bg-white w-[92%] items-center px-1">
+            <div className="w-full h-12 bg-muted rounded flex items-center justify-center overflow-hidden border border-border">
+                <div className="flex gap-[1.5px] h-10 bg-background w-[92%] items-center px-1">
                     {[...Array(25)].map((_, i) => (
                         <div 
                           key={i} 
                           className="bg-black flex-1 h-full" 
-                          style={{ width: `${(Math.random() * 2) + 0.5}px`, opacity: Math.random() > 0.1 ? 1 : 0.4 }} 
+                          style={{ width: `${(Math.random() * 2) + 0.5}px`, opacity: Math.random() > 0.1 ? 1 : 0.4, backgroundColor: 'hsl(var(--foreground))' }} 
                         />
                     ))}
                 </div>
@@ -84,7 +84,7 @@ export function BarcodePrintLayout({ data }: BarcodePrintLayoutProps) {
                 </span>
                 
                 {data.includePrice && (
-                <span className="text-[12px] font-black text-blue-700">
+                <span className="text-[12px] font-black text-primary">
                     {formattedPrice}
                 </span>
                 )}

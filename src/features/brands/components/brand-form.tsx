@@ -126,7 +126,7 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
                 label="Mark as Active"
                 description="Inactive brands won't show in product selection."
                 disabled={isViewMode}
-                className="border rounded-lg p-4 bg-slate-50/50"
+                className="border border-border rounded-lg p-4 bg-muted/50"
               />
             </div>
           </div>
@@ -140,7 +140,6 @@ export function BrandForm({ initialData, onSuccess, isViewMode: initialIsViewMod
           onEdit={() => setMode("edit")}
           onReset={() => form.reset()}
           saveLabel={isEditMode ? "Update Changes" : "Save Brand"}
-          className="pt-6 border-t mt-6"
         />
       </form>
     </Form>

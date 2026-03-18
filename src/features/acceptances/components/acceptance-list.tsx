@@ -22,6 +22,10 @@ import { Customer } from "@/features/customers"
 import { Brand } from "@/features/brands"
 import { Model } from "@/features/models"
 
+import { useCustomerOptions } from "@/features/customers/customer.api"
+import { useBrandOptions } from "@/features/brands/brand.api"
+import { useModelOptions } from "@/features/models/model.api"
+
 interface AcceptanceInList extends Acceptance {
   customer?: Pick<Customer, "id" | "name">
   brand?: Pick<Brand, "id" | "name">
@@ -33,6 +37,10 @@ export function AcceptanceList() {
   const bulkDeleteMutation = useDeleteManyAcceptances()
   const bulkStatusUpdateMutation = useUpdateManyAcceptances()
   const { openModal } = useAcceptanceModal()
+
+  const { data: customers } = useCustomerOptions()
+  const { data: brands } = useBrandOptions()
+  const { data: models } = useModelOptions()
 
   const columns: ColumnDef<AcceptanceInList>[] = useMemo(
     () => [
@@ -49,7 +57,7 @@ export function AcceptanceList() {
         ),
       },
       {
-        accessorKey: "customer",
+        accessorKey: "customerId",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Customer" />,
         cell: ({ row }) => row.original.customer?.name ?? "N/A",
       },
@@ -63,12 +71,12 @@ export function AcceptanceList() {
       //   header: "Device Type",
       // },
       {
-        accessorKey: "brand",
+        accessorKey: "brandId",
         header: "Brand",
         cell: ({ row }) => row.original.brand?.name ?? "N/A",
       },
       {
-        accessorKey: "model",
+        accessorKey: "modelId",
         header: "Model",
         cell: ({ row }) => row.original.model?.name ?? "N/A",
       },
@@ -116,6 +124,10 @@ export function AcceptanceList() {
       bulkStatusUpdateMutation={bulkStatusUpdateMutation}
       initialFilters={{
         currentStatus: "all",
+        customerId: "all",
+        brandId: "all",
+        modelId: "all",
+        acceptanceDate: undefined,
       }}
       searchPlaceholder="Filter by customer name..."
       filterDefinitions={[
@@ -123,6 +135,35 @@ export function AcceptanceList() {
           key: "currentStatus",
           title: "Repair Status",
           options: REPAIR_STATUS_OPTIONS,
+        },
+        {
+          key: "customerId",
+          title: "Customer",
+          options: [
+            { label: "All Customers", value: "all" },
+            ...(customers?.map((c: { id: string; name: string }) => ({ label: c.name, value: c.id })) || []),
+          ],
+        },
+        {
+          key: "brandId",
+          title: "Brand",
+          options: [
+            { label: "All Brands", value: "all" },
+            ...(brands?.map((b: { id: string; name: string }) => ({ label: b.name, value: b.id })) || []),
+          ],
+        },
+        {
+          key: "modelId",
+          title: "Model",
+          options: [
+            { label: "All Models", value: "all" },
+            ...(models?.map((m: { id: string; name: string }) => ({ label: m.name, value: m.id })) || []),
+          ],
+        },
+        {
+          key: "acceptanceDate",
+          title: "Acceptance Date Range",
+          type: "date-range", 
         },
       ]}
     />

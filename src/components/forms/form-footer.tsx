@@ -30,7 +30,7 @@ export function FormFooter({
   const defaultSaveLabel = isEditMode ? "Save Changes" : "Save"
 
   return (
-    <div className={cn("flex items-center justify-end gap-3 pt-6 border-t mt-auto", className)}>
+    <div className={cn("flex items-center justify-end gap-3 mt-auto border-t bg-card p-4", className)}>
       {isViewMode ? (
         <>
           {onCancel && (

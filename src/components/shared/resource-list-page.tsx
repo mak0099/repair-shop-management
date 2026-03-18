@@ -27,8 +27,9 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog"
 export interface FilterDefinition {
   key: string
   title: string
-  options: FilterOption[]
+  options?: FilterOption[]
   icon?: React.ElementType
+  type?: "select" | "date-range" | "date"
 }
 
 export interface ResourceListConfig {

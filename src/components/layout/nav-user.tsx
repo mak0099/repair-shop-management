@@ -4,7 +4,6 @@ import {
   ChevronsUpDown,
   LogOut,
 } from "lucide-react"
-import { useRouter } from "next/navigation"
 
 import {
   Avatar,
@@ -16,7 +15,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -27,6 +25,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { signOut, useSession } from "next-auth/react"
+import Link from "next/link"
+import { USER_PROFILE_BASE_HREF } from "@/config/paths"
 
 export function NavUser({
   user: initialUser,
@@ -47,13 +47,13 @@ export function NavUser({
   } : initialUser
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className="group-data-[collapsible=icon]:items-center">
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
@@ -89,29 +89,24 @@ export function NavUserMenuContent({
     avatar: string
   }
 }) {
-  const router = useRouter()
-
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/login" })
   }
 
   return (
     <>
-      <DropdownMenuLabel className="p-0 font-normal">
-        <div 
-          className="flex items-center gap-2 px-1 py-1.5 text-left text-sm cursor-pointer hover:bg-slate-100 rounded-md transition-colors"
-          onClick={() => router.push("/dashboard/settings/profile")}
-        >
+      <DropdownMenuItem asChild className="p-0 cursor-pointer">
+        <Link href={USER_PROFILE_BASE_HREF} className="flex items-center gap-2 w-full px-2 py-1.5">
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src={user.avatar} alt={user.name} />
             <AvatarFallback className="rounded-lg">AU</AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{user.name}</span>
-            <span className="truncate text-xs">{user.email}</span>
+            <span className="truncate font-semibold text-foreground">{user.name}</span>
+            <span className="truncate text-xs text-muted-foreground">{user.email}</span>
           </div>
-        </div>
-      </DropdownMenuLabel>
+        </Link>
+      </DropdownMenuItem>
       {/* <DropdownMenuGroup>
         <DropdownMenuItem>
           <Sparkles />
@@ -134,7 +129,7 @@ export function NavUserMenuContent({
         </DropdownMenuItem> */}
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={handleLogout}>
+      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
         <LogOut />
         Log out
       </DropdownMenuItem>

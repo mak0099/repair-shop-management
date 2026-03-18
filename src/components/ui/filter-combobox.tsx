@@ -48,24 +48,24 @@ export function FilterCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full sm:w-[180px] justify-between"
+          className="w-full sm:w-[180px] justify-between h-8 border-dashed bg-background px-2.5 text-xs shadow-sm"
         >
-          <div className="flex items-center gap-2">
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-            <span className={cn("truncate", !value && "text-muted-foreground")}>
+          <div className="flex items-center gap-1.5">
+            {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+            <span className={cn("truncate font-medium", !value && "text-muted-foreground")}>
               {value
                 ? options.find((option) => option.value === value)?.label
                 : placeholder}
             </span>
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[180px] p-0" align="start">
         <Command>
           <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty className="py-4 text-center text-xs">No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
@@ -75,10 +75,11 @@ export function FilterCombobox({
                     onChange(option.value)
                     setOpen(false)
                   }}
+                  className="text-xs"
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "mr-2 h-3.5 w-3.5",
                       value === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />

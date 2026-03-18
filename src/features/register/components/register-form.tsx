@@ -71,28 +71,28 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
     <FormProvider {...form}>
       <Form {...form}>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        <form onSubmit={form.handleSubmit(onSubmit as any)} className="flex flex-col h-full bg-white">
+        <form onSubmit={form.handleSubmit(onSubmit as any)} className="flex flex-col h-full bg-background">
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             
             {/* Summary Cards during Close/View */}
             {(isClosing || isViewMode) && (
               <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <div className="flex items-center gap-2 text-emerald-600 mb-1">
+                <div className="bg-muted/50 p-4 rounded-xl border border-border">
+                  <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500 mb-1">
                     <Banknote className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Cash Sales</span>
                   </div>
-                  <p className="text-xl font-black text-slate-900">৳{totalCashSales.toLocaleString()}</p>
+                  <p className="text-xl font-black text-foreground">৳{totalCashSales.toLocaleString()}</p>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <div className="flex items-center gap-2 text-blue-600 mb-1">
+                <div className="bg-muted/50 p-4 rounded-xl border border-border">
+                  <div className="flex items-center gap-2 text-primary mb-1">
                     <CreditCard className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Card/Digital</span>
                   </div>
-                  <p className="text-xl font-black text-slate-900">৳{(totalCardSales + totalDigitalSales).toLocaleString()}</p>
+                  <p className="text-xl font-black text-foreground">৳{(totalCardSales + totalDigitalSales).toLocaleString()}</p>
                 </div>
-                <div className="bg-slate-900 p-4 rounded-xl text-white">
-                  <div className="flex items-center gap-2 text-slate-400 mb-1">
+                <div className="bg-foreground p-4 rounded-xl text-background">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Wallet className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Expected Total</span>
                   </div>
@@ -133,9 +133,9 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
             </div>
 
             {!initialData && (
-              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5" />
-                <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+              <div className="bg-primary/10 p-4 rounded-xl border border-primary/20 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
+                <p className="text-[11px] text-primary font-medium leading-relaxed">
                   Opening the register will allow you to start processing sales in the POS Terminal. Ensure the starting cash matches the physical drawer.
                 </p>
               </div>
@@ -148,7 +148,6 @@ export function RegisterForm({ initialData, onSuccess, isViewMode }: RegisterFor
               isEditMode={!!initialData} 
               saveLabel={isClosing ? "Close Register & Reconcile" : "Open Register"}
               onCancel={onSuccess} 
-              className="p-6 bg-slate-50 border-t"
             />
           )}
         </form>

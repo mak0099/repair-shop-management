@@ -31,7 +31,7 @@ export function UserList() {
   const filterDefinitions = [
     {
       key: "roleId",
-      title: "Role",
+          title: "Access Role",
       options: [
         { label: "All Roles", value: "all" },
         ...(roleOptions?.map(r => ({ label: r.name, value: r.id })) || [])

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { FormProvider, useForm, Resolver, useWatch } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 
@@ -29,14 +29,11 @@ interface AcceptanceFormProps {
   isViewMode?: boolean
 }
 
-export function AcceptanceForm({
-  initialData,
+export function AcceptanceForm({ initialData,
   onSuccess,
   isViewMode: initialIsViewMode = false,
 }: AcceptanceFormProps) {
 
-  console.log("initialData", initialData);
-  console.log("initialIsViewMode", initialIsViewMode)
   const queryClient = useQueryClient()
   const { mutate: createAcceptance, isPending: isCreating } = useCreateAcceptance()
   const { mutate: updateAcceptance, isPending: isUpdating } = useUpdateAcceptance()
@@ -48,9 +45,9 @@ export function AcceptanceForm({
   const isPending = isCreating || isUpdating
   const isEditMode = !!initialData && mode !== "create"
 
-  // FIX 1: Fixed acceptance_date mapping to avoid "undefined" error
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema) as unknown as Resolver<FormData>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<any>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       customerId: initialData?.customerId || "",
       acceptanceDate: initialData?.acceptanceDate ? new Date(initialData.acceptanceDate) : new Date(),
@@ -91,7 +88,8 @@ export function AcceptanceForm({
     }
   }, [brandId, setValue, formState.dirtyFields.brandId])
 
-  function onSubmit(data: FormData) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function onSubmit(data: any) {
     const callbacks = {
       onSuccess: (res: Acceptance) => {
         toast.success(`Acceptance ${isEditMode ? "updated" : "created"} successfully`)
@@ -109,141 +107,137 @@ export function AcceptanceForm({
   }
 
   return (
-    <FormProvider {...form}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Column 1: Customer & Device */}
-              <div className="md:col-span-1 space-y-4">
-                <div className="bg-white p-4 rounded-md shadow border space-y-3">
-                  {/* FIX 2: Added 'as any' to control for variance issues */}
-                  <CustomerSelectField name="customerId" control={control} required readOnly={isViewMode} />
-                  <TextField control={control} name="estimatedPrice" label="Estimated Price" type="number" readOnly={isViewMode} />
-                  <BrandSelectField name="brandId" control={control} required readOnly={isViewMode} />
-                  <ModelSelectField
-                    name="modelId"
-                    control={control}
-                    brandId={brandId}
-                    required
-                    readOnly={isViewMode || !brandId}
-                  />
-                  <MasterSettingSelectField control={control} name="color" type="COLOR" label="Color" readOnly={isViewMode} />
-                  <MasterSettingSelectField control={control} name="accessories" type="ACCESSORY" label="Accessories" readOnly={isViewMode} />
-                  <MasterSettingSelectField control={control} name="deviceType" type="DEVICE_TYPE" label="Device Type" required readOnly={isViewMode} />
-                  <MasterSettingSelectField control={control} name="currentStatus" type="REPAIR_STATUS" label="Status" required readOnly={isViewMode} />
-                  <TextareaField control={control} name="defectDescription" label="Defect" readOnly={isViewMode} />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Column 1: Customer & Device */}
+            <div className="md:col-span-1 space-y-4">
+              <div className="bg-card p-4 rounded-md shadow border space-y-3">
+                <CustomerSelectField name="customerId" control={control} required readOnly={isViewMode} />
+                <TextField control={control} name="estimatedPrice" label="Estimated Price" type="number" readOnly={isViewMode} />
+                <BrandSelectField name="brandId" control={control} required readOnly={isViewMode} />
+                <ModelSelectField
+                  name="modelId"
+                  control={control}
+                  brandId={brandId}
+                  required
+                  readOnly={isViewMode || !brandId}
+                />
+                <MasterSettingSelectField control={control} name="color" type="COLOR" label="Color" readOnly={isViewMode} />
+                <MasterSettingSelectField control={control} name="accessories" type="ACCESSORY" label="Accessories" readOnly={isViewMode} />
+                <MasterSettingSelectField control={control} name="deviceType" type="DEVICE_TYPE" label="Device Type" required readOnly={isViewMode} />
+                <MasterSettingSelectField control={control} name="currentStatus" type="REPAIR_STATUS" label="Status" required readOnly={isViewMode} />
+                <TextareaField control={control} name="defectDescription" label="Defect" readOnly={isViewMode} />
+              </div>
+            </div>
+
+            {/* Column 2: Tech & Info */}
+            <div className="md:col-span-1 space-y-4">
+              <div className="bg-card p-4 rounded-md shadow border space-y-3">
+                <DatePickerField
+                  control={control}
+                  name="acceptanceDate"
+                  label="Acceptance Date"
+                  required
+                  readOnly={isViewMode}
+                />
+                <TextField control={control} name="imei" label="IMEI/Serial" required readOnly={isViewMode} />
+                <TextField control={control} name="secondaryImei" label="Secondary IMEI" readOnly={isViewMode} />
+                <UserSelectField variant="technician" control={control} name="technicianId" label="Technician" required readOnly={isViewMode} />
+                <MasterSettingSelectField control={control} name="warranty" type="WARRANTY" label="Warranty" readOnly={isViewMode} />
+                <ItemSelectField control={control} name="replacementDeviceId" label="Replacement" readOnly={isViewMode} />
+                <TextField control={control} name="dealer" label="Dealer" readOnly={isViewMode} />
+                <TextField control={control} name="priceOffered" label="Price Offered" type="number" readOnly={isViewMode} />
+                <TextareaField control={control} name="reservedNotes" label="Reserved Notes" readOnly={isViewMode} />
+              </div>
+            </div>
+
+            {/* Column 3: Flags & Photos */}
+            <div className="md:col-span-1 space-y-4">
+              <div className="text-center space-y-2 p-2 bg-muted rounded border">
+                <div className="text-xs text-muted-foreground uppercase font-semibold">Acceptance ID</div>
+                <div className="text-xl font-bold text-primary tracking-wider">
+                  {initialData?.acceptanceNumber || "NEW-DRAFT"}
                 </div>
               </div>
 
-              {/* Column 2: Tech & Info */}
-              <div className="md:col-span-1 space-y-4">
-                <div className="bg-white p-4 rounded-md shadow border space-y-3">
+              <div className="bg-card p-4 rounded-md shadow border space-y-4">
+                <RadioGroupField 
+                  control={control} 
+                  required 
+                  name="importantInformation" 
+                  label="Important?" 
+                  readOnly={isViewMode}
+                  options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                />
+                <RadioGroupField 
+                  control={control} 
+                  required 
+                  name="pinUnlock" 
+                  label="Pin Unlock?" 
+                  readOnly={isViewMode}
+                  options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                />
+                {pinUnlock === "true" && (
+                  <TextField control={control} name="pinUnlockNumber" label="PIN Code" required readOnly={isViewMode} />
+                )}
+                <RadioGroupField 
+                  control={control} 
+                  required 
+                  name="urgent" 
+                  label="Urgent?" 
+                  readOnly={isViewMode}
+                  options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                />
+                {urgent === "true" && (
                   <DatePickerField
                     control={control}
-                    name="acceptanceDate"
-                    label="Acceptance Date"
+                    name="urgentDate"
+                    label="Deadline"
                     required
                     readOnly={isViewMode}
                   />
-                  <TextField control={control} name="imei" label="IMEI/Serial" required readOnly={isViewMode} />
-                  <TextField control={control} name="secondaryImei" label="Secondary IMEI" readOnly={isViewMode} />
-                  <UserSelectField variant="technician" control={control} name="technicianId" label="Technician" required readOnly={isViewMode} />
-                  <MasterSettingSelectField control={control} name="warranty" type="WARRANTY" label="Warranty" readOnly={isViewMode} />
-                  <ItemSelectField control={control} name="replacementDeviceId" label="Replacement" readOnly={isViewMode} />
-                  <TextField control={control} name="dealer" label="Dealer" readOnly={isViewMode} />
-                  <TextField control={control} name="priceOffered" label="Price Offered" type="number" readOnly={isViewMode} />
-                  <TextareaField control={control} name="reservedNotes" label="Reserved Notes" readOnly={isViewMode} />
-                </div>
+                )}
+                <RadioGroupField 
+                  control={control} 
+                  required 
+                  name="quote" 
+                  label="Quote Needed?" 
+                  readOnly={isViewMode}
+                  options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
+                />
               </div>
 
-              {/* Column 3: Flags & Photos */}
-              <div className="md:col-span-1 space-y-4">
-                <div className="text-center space-y-2 p-2 bg-slate-50 rounded border">
-                  <div className="text-xs text-gray-500 uppercase font-semibold">Acceptance ID</div>
-                  <div className="text-xl font-bold text-blue-600 tracking-wider">
-                    {initialData?.acceptanceNumber || "NEW-DRAFT"}
-                  </div>
-                </div>
-
-                <div className="bg-white p-4 rounded-md shadow border space-y-4">
-                  <RadioGroupField 
-                    control={control} 
-                    required 
-                    name="importantInformation" 
-                    label="Important?" 
-                    readOnly={isViewMode}
-                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
-                  />
-                  <RadioGroupField 
-                    control={control} 
-                    required 
-                    name="pinUnlock" 
-                    label="Pin Unlock?" 
-                    readOnly={isViewMode}
-                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
-                  />
-                  {pinUnlock === "true" && (
-                    <TextField control={control} name="pinUnlockNumber" label="PIN Code" required readOnly={isViewMode} />
-                  )}
-                  <RadioGroupField 
-                    control={control} 
-                    required 
-                    name="urgent" 
-                    label="Urgent?" 
-                    readOnly={isViewMode}
-                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
-                  />
-                  {urgent === "true" && (
-                    <DatePickerField
+              <div className="bg-card p-4 rounded-md shadow border grid grid-cols-2 gap-3">
+                {[1, 2, 3, 4, 5].map((num) => {
+                  return (
+                    <ImageUploadField
+                      key={num}
                       control={control}
-                      name="urgentDate"
-                      label="Deadline"
-                      required
-                      readOnly={isViewMode}
+                      name={`photo${num}` as keyof FormData}
+                      label={`Photo ${num}`}
+                      initialImage={initialData ? (initialData[(`photo${num}` as keyof Acceptance)] as string) : null}
+                      layout="compact"
+                      isViewMode={isViewMode}
                     />
-                  )}
-                  <RadioGroupField 
-                    control={control} 
-                    required 
-                    name="quote" 
-                    label="Quote Needed?" 
-                    readOnly={isViewMode}
-                    options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} 
-                  />
-                </div>
-
-                <div className="bg-white p-4 rounded-md shadow border grid grid-cols-2 gap-3">
-                  {[1, 2, 3, 4, 5].map((num) => {
-                    return (
-                      <ImageUploadField
-                        key={num}
-                        control={control}
-                        name={`photo${num}` as keyof FormData}
-                        label={`Photo ${num}`}
-                        initialImage={initialData ? (initialData[(`photo${num}` as keyof Acceptance)] as string) : null}
-                        layout="compact"
-                        isViewMode={isViewMode}
-                      />
-                    )
-                  })}
-                </div>
+                  )
+                })}
               </div>
             </div>
           </div>
+        </div>
 
-          <FormFooter
-            isViewMode={isViewMode}
-            isEditMode={isEditMode}
-            isPending={isPending}
-            onCancel={() => onSuccess?.(initialData!)}
-            onEdit={() => setMode("edit")}
-            onReset={() => form.reset()}
-            saveLabel={isEditMode ? "Update Changes" : "Save Record"}
-            className="p-6 bg-slate-50"
-          />
-        </form>
-      </Form>
-    </FormProvider>
+        <FormFooter
+          isViewMode={isViewMode}
+          isEditMode={isEditMode}
+          isPending={isPending}
+          onCancel={() => onSuccess?.(initialData!)}
+          onEdit={() => setMode("edit")}
+          onReset={() => form.reset()}
+          saveLabel={isEditMode ? "Update Changes" : "Save Record"}
+        />
+      </form>
+    </Form>
   )
 }

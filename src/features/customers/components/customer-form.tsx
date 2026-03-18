@@ -73,7 +73,7 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Card className="relative shadow-none border-muted-foreground/20 overflow-hidden">
+        <Card className="relative shadow-none border-border overflow-hidden">
           {isViewMode && (
             <div className="absolute top-4 right-4 z-10">
               <Button size="sm" type="button" variant="outline" className="shadow-sm" onClick={() => setMode("edit")}>
@@ -106,21 +106,21 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
               <TextField control={form.control} name="postalCode" label="CAP" readOnly={isViewMode} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50/20 rounded-lg border border-blue-100/50">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
               <TextField control={form.control} name="fiscalCode" label="Codice Fiscale" readOnly={isViewMode} inputClassName="uppercase font-mono tracking-wider" />
               <TextField control={form.control} name="vat" label="VAT Number (P.IVA)" readOnly={isViewMode} />
               <TextField control={form.control} name="phone" label="Landline" readOnly={isViewMode} />
             </div>
 
             {isDealer && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-amber-50/20 rounded-lg border border-amber-100/50 animate-in fade-in zoom-in-95">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 animate-in fade-in zoom-in-95">
                 <TextField control={form.control} name="sdiCode" label="SDI Code" readOnly={isViewMode} inputClassName="uppercase" />
                 <TextField control={form.control} name="pecEmail" label="PEC Email" readOnly={isViewMode} className="md:col-span-2" />
               </div>
             )}
 
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 pt-4 border-t">
-              <div className="flex gap-4 border-r pr-6 border-slate-200">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 pt-4 border-t border-border">
+              <div className="flex gap-4 md:border-r md:pr-6 border-border">
                 <CheckboxField control={form.control} name="isDealer" label="Dealer" disabled={isViewMode} />
                 <CheckboxField control={form.control} name="isActive" label="Active" disabled={isViewMode} />
               </div>
@@ -136,7 +136,6 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
             onEdit={() => setMode("edit")}
             onReset={() => form.reset()}
             saveLabel={isEditMode ? "Update Customer" : "Create Customer"}
-            className="bg-slate-50/50 p-4 border-t"
           />
         </Card>
       </form>

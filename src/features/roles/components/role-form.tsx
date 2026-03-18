@@ -93,26 +93,26 @@ export function RoleForm({ initialData, onSuccess, isViewMode = false }: RoleFor
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-1 shadow-sm border-slate-200 h-fit">
-            <CardHeader className="bg-slate-50/50 border-b py-4 px-5">
-              <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2 text-slate-500">
-                <ShieldCheck className="h-4 w-4 text-blue-600" /> Identity
+          <Card className="lg:col-span-1 shadow-sm border-border h-fit">
+            <CardHeader className="bg-muted/50 border-b py-4 px-5">
+              <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground">
+                <ShieldCheck className="h-4 w-4 text-primary" /> Identity
               </CardTitle>
             </CardHeader>
             <CardContent className="p-5 space-y-4">
               <TextField control={control} name="name" label="Role Name" required readOnly={isReadOnly} />
               <TextField control={control} name="slug" label="System Slug" required readOnly={isReadOnly} disabled={isEditMode && initialData?.isSystem} />
               <TextField control={control} name="description" label="Short Description" readOnly={isReadOnly} />
-              <CheckboxField control={control} name="isActive" label="Active Role" disabled={isReadOnly} className="border rounded-lg p-3 bg-slate-50/50" />
+              <CheckboxField control={control} name="isActive" label="Active Role" disabled={isReadOnly} className="border border-border rounded-lg p-3 bg-muted/50" />
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-2 shadow-sm border-slate-200">
-            <CardHeader className="bg-slate-50/50 border-b py-4 px-5 flex flex-row items-center justify-between">
-              <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2 text-slate-500">
-                <Shield className="h-4 w-4 text-emerald-600" /> Capabilities
+          <Card className="lg:col-span-2 shadow-sm border-border">
+            <CardHeader className="bg-muted/50 border-b py-4 px-5 flex flex-row items-center justify-between">
+              <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground">
+                <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-500" /> Capabilities
               </CardTitle>
-              <Badge variant="outline" className="bg-white">{selectedPermissions.length} Enabled</Badge>
+              <Badge variant="outline" className="bg-background">{selectedPermissions.length} Enabled</Badge>
             </CardHeader>
             <CardContent className="p-0">
               <PermissionsMatrix 
@@ -132,7 +132,7 @@ export function RoleForm({ initialData, onSuccess, isViewMode = false }: RoleFor
           onEdit={() => setMode("edit")}
           onReset={() => reset()}
           saveLabel={isEditMode ? "Update Role" : "Create Role"}
-          className="bg-white p-4 rounded-xl border shadow-sm"
+          className="bg-card p-4 rounded-xl border-border shadow-sm"
         />
       </form>
     </Form>

@@ -75,7 +75,7 @@ export function AttributeForm({ initialData, onSuccess }: AttributeFormProps) {
             <Button 
                 type="button" 
                 variant="outline" 
-                size="sm"
+                size="sm" 
                 className="h-8"
                 onClick={() => append({ value: "", isActive: true })}
             >
@@ -108,7 +108,7 @@ export function AttributeForm({ initialData, onSuccess }: AttributeFormProps) {
           ))}
           
           {fields.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-lg bg-slate-50/50">
+            <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-lg bg-muted/50">
               <p className="text-sm text-muted-foreground mb-2">No options defined yet.</p>
               <Button 
                 type="button" 
@@ -128,7 +128,6 @@ export function AttributeForm({ initialData, onSuccess }: AttributeFormProps) {
           onCancel={() => onSuccess(initialData!)}
           onReset={() => form.reset()}
           saveLabel="Save Changes"
-          className="mt-auto"
         />
       </form>
     </Form>

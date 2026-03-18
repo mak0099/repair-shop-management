@@ -75,14 +75,14 @@ export function ImageUploadField<TFieldValues extends FieldValues>({
         <FieldLabel label={label} className="text-[10px]" />
         <div
           className={cn(
-            "relative h-20 w-full border rounded bg-slate-50 overflow-hidden group flex items-center justify-center",
+            "relative h-20 w-full border rounded bg-muted/50 overflow-hidden group flex items-center justify-center",
             { "border-destructive": !!error }
           )}
         >
           {showFallback ? (
             !isViewMode ? (
-              <label className="flex items-center justify-center h-full w-full cursor-pointer hover:bg-slate-100 transition-colors">
-                <Upload className="h-5 w-5 text-slate-300" />
+              <label className="flex items-center justify-center h-full w-full cursor-pointer hover:bg-muted transition-colors">
+                <Upload className="h-5 w-5 text-muted-foreground/50" />
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -92,7 +92,7 @@ export function ImageUploadField<TFieldValues extends FieldValues>({
                 />
               </label>
             ) : (
-              <ImageIcon className="h-8 w-8 text-slate-300" />
+              <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
             )
           ) : (
             <>
@@ -111,7 +111,7 @@ export function ImageUploadField<TFieldValues extends FieldValues>({
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="h-3 w-3" />
                 </button>

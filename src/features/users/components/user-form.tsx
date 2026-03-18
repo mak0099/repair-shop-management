@@ -102,9 +102,9 @@ export function UserForm({ initialData, onSuccess, isViewMode = false }: UserFor
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-5xl mx-auto pb-10">
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="shadow-sm border-slate-200">
-            <CardHeader className="py-4 px-5 border-b bg-slate-50/50">
-              <CardTitle className="text-[10px] uppercase font-black flex items-center gap-2 text-slate-500 tracking-widest">
+          <Card className="shadow-sm border-border">
+            <CardHeader className="py-4 px-5 border-b border-border bg-muted/50">
+              <CardTitle className="text-[10px] uppercase font-black flex items-center gap-2 text-muted-foreground tracking-widest">
                 <UserIcon className="h-4 w-4 text-blue-500" /> Identity Details
               </CardTitle>
             </CardHeader>
@@ -120,9 +120,9 @@ export function UserForm({ initialData, onSuccess, isViewMode = false }: UserFor
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm border-slate-200">
-            <CardHeader className="py-4 px-5 border-b bg-slate-50/50">
-              <CardTitle className="text-[10px] uppercase font-black flex items-center gap-2 text-slate-500 tracking-widest">
+          <Card className="shadow-sm border-border">
+            <CardHeader className="py-4 px-5 border-b border-border bg-muted/50">
+              <CardTitle className="text-[10px] uppercase font-black flex items-center gap-2 text-muted-foreground tracking-widest">
                 <Shield className="h-4 w-4 text-emerald-500" /> Access Control
               </CardTitle>
             </CardHeader>
@@ -131,11 +131,11 @@ export function UserForm({ initialData, onSuccess, isViewMode = false }: UserFor
               
               <div className={cn(
                 "flex items-center justify-between p-4 rounded-lg border transition-all",
-                isReadOnly ? "bg-slate-50 border-slate-100" : "bg-white border-slate-200 shadow-sm"
+                isReadOnly ? "bg-muted/50 border-border/50" : "bg-background border-border shadow-sm"
               )}>
                 <div className="space-y-1">
-                  <span className="text-sm font-bold text-slate-700 block">Login Access</span>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-sm font-bold text-foreground block">Login Access</span>
+                  <span className="text-[10px] text-muted-foreground">
                     {isActive ? "Authorized for system login" : "Account access suspended"}
                   </span>
                 </div>
@@ -145,20 +145,20 @@ export function UserForm({ initialData, onSuccess, isViewMode = false }: UserFor
           </Card>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-          <div className="flex items-center justify-between p-4 bg-slate-50/40 border-b border-slate-100">
+        <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+          <div className="flex items-center justify-between p-4 bg-muted/50 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className={cn("p-2 rounded-lg", showExtra ? "bg-amber-100 text-amber-600" : "bg-slate-100 text-slate-500")}>
+              <div className={cn("p-2 rounded-lg", showExtra ? "bg-amber-100 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400" : "bg-muted text-muted-foreground")}>
                 <Fingerprint className="h-5 w-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-800">Special Extra Permissions</h4>
-                <p className="text-[10px] text-slate-500">Override role-based capabilities</p>
+                <h4 className="text-sm font-bold text-foreground">Special Extra Permissions</h4>
+                <p className="text-[10px] text-muted-foreground">Override role-based capabilities</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
                {extraPermissions.length > 0 && showExtra && (
-                  <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200 text-[9px] font-bold">
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-500/30 text-[9px] font-bold">
                     {extraPermissions.length} OVERRIDES
                   </Badge>
                )}
@@ -167,7 +167,7 @@ export function UserForm({ initialData, onSuccess, isViewMode = false }: UserFor
           </div>
 
           {showExtra && (
-            <div className="bg-white">
+            <div className="bg-card">
               <PermissionsMatrix 
                 value={extraPermissions} 
                 onChange={(val) => setValue("extraPermissions", val, { shouldDirty: true })} 

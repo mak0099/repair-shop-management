@@ -34,7 +34,7 @@ export const formSchema = z.object({
   pinUnlock: booleanString,
   pinUnlockNumber: z.string().optional(),
   urgent: booleanString,
-  urgentDate: z.date().optional(),
+  urgentDateTime: z.date().optional(),
   quote: booleanString,
   photo1: z.any().optional(),
   photo2: z.any().optional(),
@@ -51,12 +51,12 @@ export const formSchema = z.object({
   path: ["pinUnlockNumber"],
 }).refine((data) => {
   if (data.urgent === true) {
-    return !!data.urgentDate;
+    return !!data.urgentDateTime;
   }
   return true;
 }, {
   message: "Urgent date is required",
-  path: ["urgentDate"],
+  path: ["urgentDateTime"],
 });
 
 /**

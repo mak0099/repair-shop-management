@@ -72,7 +72,7 @@ export function AcceptanceForm({ initialData,
       pinUnlock: initialData?.pinUnlock ? "true" : "false",
       pinUnlockNumber: initialData?.pinUnlockNumber || "",
       urgent: initialData?.urgent ? "true" : "false",
-      urgentDate: initialData?.urgentDate ? new Date(initialData.urgentDate) : undefined,
+      urgentDateTime: initialData?.urgentDateTime ? new Date(initialData.urgentDateTime) : undefined,
       quote: initialData?.quote ? "true" : "false",
     },
   })
@@ -193,10 +193,11 @@ export function AcceptanceForm({ initialData,
                 {urgent === "true" && (
                   <DatePickerField
                     control={control}
-                    name="urgentDate"
+                    name="urgentDateTime"
                     label="Deadline"
                     required
                     readOnly={isViewMode}
+                    showTime
                   />
                 )}
                 <RadioGroupField 

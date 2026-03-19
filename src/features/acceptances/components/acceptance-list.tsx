@@ -129,21 +129,21 @@ export function AcceptanceList() {
         modelId: "all",
         acceptanceDate: undefined,
       }}
-      searchPlaceholder="Filter by customer name..."
+      searchPlaceholder="Search by No, Customer, Phone"
       filterDefinitions={[
         {
           key: "currentStatus",
           title: "Repair Status",
           options: REPAIR_STATUS_OPTIONS,
         },
-        {
-          key: "customerId",
-          title: "Customer",
-          options: [
-            { label: "All Customers", value: "all" },
-            ...(customers?.map((c: { id: string; name: string }) => ({ label: c.name, value: c.id })) || []),
-          ],
-        },
+        // {
+        //   key: "customerId",
+        //   title: "Customer",
+        //   options: [
+        //     { label: "All Customers", value: "all" },
+        //     ...(customers?.map((c: { id: string; name: string }) => ({ label: c.name, value: c.id })) || []),
+        //   ],
+        // },
         {
           key: "brandId",
           title: "Brand",

@@ -31,7 +31,7 @@ export const acceptanceHandlers = [
         const model = mockModels.find(m => m.id === acceptance.modelId);
         return {
             ...acceptance,
-            customer: customer ? { id: customer.id, name: customer.name } : undefined,
+            customer: customer ? { id: customer.id, name: customer.name, mobile: customer.mobile, phone: customer.phone } : undefined,
             brand: brand ? { id: brand.id, name: brand.name } : undefined,
             model: model ? { id: model.id, name: model.name } : undefined,
         };
@@ -40,7 +40,9 @@ export const acceptanceHandlers = [
     const filteredData = populatedAcceptances.filter(acceptance => {
         const searchMatch = search 
             ? acceptance.acceptanceNumber.toLowerCase().includes(search) ||
-              acceptance.customer?.name.toLowerCase().includes(search) ||
+              (acceptance.customer?.name?.toLowerCase() || "").includes(search) ||
+              (acceptance.customer?.mobile || "").includes(search) ||
+              (acceptance.customer?.phone || "").includes(search) ||
               (acceptance.imei || "").toLowerCase().includes(search)
             : true;
 

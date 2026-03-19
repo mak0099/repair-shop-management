@@ -52,6 +52,7 @@ export function AcceptanceForm({ initialData,
       customerId: initialData?.customerId || "",
       acceptanceDate: initialData?.acceptanceDate ? new Date(initialData.acceptanceDate) : new Date(),
       estimatedPrice: initialData?.estimatedPrice,
+      advancePayment: initialData?.advancePayment,
       brandId: initialData?.brandId || "",
       modelId: initialData?.modelId || "",
       color: initialData?.color || "",
@@ -116,6 +117,7 @@ export function AcceptanceForm({ initialData,
               <div className="bg-card p-4 rounded-md shadow border space-y-3">
                 <CustomerSelectField name="customerId" control={control} required readOnly={isViewMode} />
                 <TextField control={control} name="estimatedPrice" label="Estimated Price" type="number" readOnly={isViewMode} />
+                <TextField control={control} name="advancePayment" label="Advance Payment" type="number" readOnly={isViewMode} />
                 <BrandSelectField name="brandId" control={control} required readOnly={isViewMode} />
                 <ModelSelectField
                   name="modelId"

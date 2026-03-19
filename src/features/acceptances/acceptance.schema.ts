@@ -12,6 +12,7 @@ const booleanString = z.enum(["true", "false"]).transform((value) => value === "
 export const formSchema = z.object({
   customerId: z.string().trim().min(1, "Customer selection is required"),
   estimatedPrice: z.number().optional(),
+  advancePayment: z.number().optional(),
   brandId: z.string().trim().min(1, "Brand is required"),
   modelId: z.string().trim().min(1, "Model is required"),
   color: z.string().optional(),

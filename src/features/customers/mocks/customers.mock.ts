@@ -16,6 +16,8 @@ const generateCustomers = (count: number): Customer[] => {
 
     customers.push({
       id: `cust-${100 + i}`,
+      firstName,
+      lastName,
       name: `${firstName} ${lastName}`,
       email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
       mobile: `+39333${String(Math.floor(1000 + Math.random() * 9000))}`,

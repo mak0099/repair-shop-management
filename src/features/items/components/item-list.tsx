@@ -34,13 +34,17 @@ export function ItemList() {
           isActive={row.original.isActive}
           onClick={() => openModal({ initialData: row.original, isViewMode: true })}
           subtitle={
-            <div className="flex gap-2 items-center">
-              <span className="font-bold uppercase tracking-widest">{row.original.brandId}</span>
-              {row.original.ram && (
-                <span className="text-blue-500 font-medium italic">
-                  ({row.original.ram}/{row.original.rom})
-                </span>
+            <div className="flex flex-col gap-0.5 mt-1">
+              <div className="flex gap-2 items-center">
+              {row.original.subtitle && (
+                <span className="text-[10px] text-muted-foreground">{row.original.subtitle}</span>
               )}
+                {row.original.ram && (
+                  <span className="text-blue-500 font-medium italic">
+                    ({row.original.ram}/{row.original.rom})
+                  </span>
+                )}
+              </div>
             </div>
           }
         />
@@ -51,7 +55,7 @@ export function ItemList() {
       header: "Condition",
       cell: ({ row }) => (
         <Badge
-          variant={row.original.condition === "New" ? "default" : "secondary"}
+          variant={row.original.condition === "NEW" ? "default" : "secondary"}
           className="text-[9px] uppercase font-bold px-1.5 py-0"
         >
           {row.original.condition}
@@ -66,18 +70,6 @@ export function ItemList() {
           amount={row.original.salePrice}
           subtitle={<>Cost: <CurrencyText amount={row.original.purchasePrice} /></>}
         />
-      )
-    },
-    {
-      accessorKey: "initialStock",
-      header: "Qty",
-      cell: ({ row }) => (
-        <div className="flex flex-col">
-          <span className={row.original.initialStock > 0 ? "font-black text-emerald-600" : "font-black text-destructive"}>
-            {row.original.initialStock}
-          </span>
-          <span className="text-[8px] text-slate-300 uppercase font-bold">In Stock</span>
-        </div>
       )
     },
     {
@@ -123,8 +115,9 @@ export function ItemList() {
           title: "Condition",
           options: [
             { label: "All Condition", value: "all" },
-            { label: "New", value: "New" },
-            { label: "Used", value: "Used" },
+            { label: "New", value: "NEW" },
+            { label: "Used", value: "USED" },
+            { label: "Refurbished", value: "REFURBISHED" },
           ],
         }
       ]}

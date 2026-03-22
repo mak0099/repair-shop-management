@@ -6,7 +6,7 @@ import { ProductPurchase } from "./purchases.schema"
 const { ModalProvider, useModal } = createModalContext<ProductPurchase>({
   featureName: "Product Purchase",
   formName: "purchaseForm",
-  modalClassName: "max-w-5xl max-h-[90vh] overflow-y-auto",
+  modalClassName: "max-w-7xl max-h-[90vh] overflow-y-auto",
   addDescription: "Create a new purchase voucher to restock inventory.",
   editDescription: "Update purchase details and payment info.",
   viewDescription: "Detailed view of the purchase voucher and items.",

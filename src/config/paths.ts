@@ -26,6 +26,7 @@ export const SALES_REGISTER_HREF = `${SALES_BASE_HREF}/register`
 
 export const FINANCE_BASE_HREF = `${DASHBOARD_BASE_HREF}/finance`
 export const FINANCE_PURCHASE_HREF = `${FINANCE_BASE_HREF}/purchase`
+export const FINANCE_BUYBACK_HREF = `${FINANCE_BASE_HREF}/buyback`
 export const FINANCE_EXPENSES_HREF = `${FINANCE_BASE_HREF}/expenses`
 export const FINANCE_KHATA_HREF = `${FINANCE_BASE_HREF}/khata`
 

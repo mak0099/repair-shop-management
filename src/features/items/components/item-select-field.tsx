@@ -1,10 +1,11 @@
 "use client"
 
 import { useMemo } from "react"
-import { Control, FieldValues, Path } from "react-hook-form"
+import { Control, FieldValues, Path, PathValue, useFormContext } from "react-hook-form"
 
 import { SelectField } from "@/components/forms/select-field"
 import { useItemOptions } from "../item.api"
+import { useItemModal } from "../item-modal-context"
 
 interface ItemSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>
@@ -14,6 +15,7 @@ interface ItemSelectFieldProps<TFieldValues extends FieldValues> {
   required?: boolean
   disabled?: boolean
   readOnly?: boolean
+  canAdd?: boolean
 }
 
 export function ItemSelectField<TFieldValues extends FieldValues>({
@@ -24,9 +26,10 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   readOnly = false,
+  canAdd = false,
 }: ItemSelectFieldProps<TFieldValues>) {
-  // const { setValue } = useFormContext<TFieldValues>()
-  // const { openModal } = useItemModal()
+  const { setValue } = useFormContext<TFieldValues>()
+  const { openModal } = useItemModal()
   const { data: itemOptionsData, isLoading } = useItemOptions()
 
   const itemOptions = useMemo(() => {
@@ -37,15 +40,15 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
     }))
   }, [itemOptionsData])
 
-  // const handleAddItem = () => {
-  //   openModal({
-  //     onSuccess: (newItem) => {
-  //       if (newItem?.id) {
-  //         setValue(name, newItem.id as PathValue<TFieldValues, Path<TFieldValues>>)
-  //       }
-  //     },
-  //   })
-  // }
+  const handleAddItem = () => {
+    openModal({
+      onSuccess: (newItem) => {
+        if (newItem?.id) {
+          setValue(name, newItem.id as PathValue<TFieldValues, Path<TFieldValues>>)
+        }
+      },
+    })
+  }
 
   return (
     <>
@@ -57,7 +60,7 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
         searchPlaceholder="Search items..."
         noResultsMessage="No item found."
         options={itemOptions}
-        // onAdd={handleAddItem}
+        onAdd={canAdd ? handleAddItem : undefined}
         required={required}
         isLoading={isLoading}
         disabled={disabled}

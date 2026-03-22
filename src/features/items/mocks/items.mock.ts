@@ -14,15 +14,11 @@ const generateItems = (count: number): Item[] => {
   for (let i = 0; i < count; i++) {
     const itemInfo = itemData[i % itemData.length];
     const category = mockCategories[i % mockCategories.length];
-    
-    // আইটেমটি সিরিয়ালাইজড হলে ডামি IMEI তৈরি করার লজিক
-    const mockSerials = itemInfo.serialized 
-      ? Array.from({ length: 5 }, (_, index) => `35874100${i}${index}99`) // ডামি ১৫ ডিজিট IMEI
-      : [];
 
     items.push({
       id: `item-${String(100 + i).padStart(3, '0')}`,
       name: i >= itemData.length ? `${itemInfo.name} ${Math.floor(i / itemData.length) + 1}` : itemInfo.name,
+      subtitle: i % 3 === 0 ? "Global Version" : "",
       sku: i >= itemData.length ? `${itemInfo.sku}-${i}` : itemInfo.sku,
       
       categoryId: category.id,
@@ -33,20 +29,14 @@ const generateItems = (count: number): Item[] => {
       
       purchasePrice: itemInfo.cost,
       salePrice: itemInfo.price,
-      initialStock: itemInfo.serialized ? mockSerials.length : 50,
       minStockLevel: 5,
       
-      // গুরুত্বপূর্ণ: সিরিয়ালাইজড ফ্ল্যাগ এবং লিস্ট
       isSerialized: itemInfo.serialized,
-      serialList: mockSerials, 
       
       isActive: true,
-      isBoxIncluded: true,
-      isChargerIncluded: true,
-      addToKhata: true,
       isTouchScreen: itemInfo.serialized,
       isSolidDevice: true,
-      condition: "New",
+      condition: i % 4 === 0 ? "USED" : "NEW",
       
       deviceType: "Smartphone",
       color: "Black",

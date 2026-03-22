@@ -1,20 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { Truck, Printer, FileText, Hash, CheckCircle2 } from "lucide-react"
+import { Printer, Hash, CheckCircle2, FileSignature } from "lucide-react"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CurrencyText } from "@/components/shared/data-table-cells"
-import { ProductPurchase } from "../purchases.schema"
+import { Buyback } from "../buyback.schema"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
-interface PurchaseInvoiceViewProps {
-  purchase: ProductPurchase
+interface BuybackInvoiceViewProps {
+  buyback: Buyback
   trigger?: React.ReactNode
 }
 
-export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewProps) {
+export function BuybackInvoiceView({ buyback, trigger }: BuybackInvoiceViewProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { data: shopProfile } = useShopProfile()
 
@@ -26,8 +26,8 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" size="sm" className="h-8 gap-2 text-[10px] font-bold border-slate-200 hover:bg-slate-50">
-            <FileText className="h-3.5 w-3.5 text-blue-600" /> VIEW INVOICE
+          <Button variant="outline" size="sm" className="h-8 gap-2 text-[10px] font-bold border-primary border-dashed text-primary hover:bg-primary/10">
+            <FileSignature className="h-3.5 w-3.5" /> PRINT AGREEMENT
           </Button>
         )}
       </DialogTrigger>
@@ -36,11 +36,11 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
         {/* --- Action Header (Screen Only) --- */}
         <div className="flex justify-between items-center p-4 border-b print:hidden bg-muted/80 backdrop-blur-sm">
           <div className="flex items-center gap-2 text-foreground font-black text-[10px] uppercase tracking-widest">
-            <Truck className="h-4 w-4 text-primary" /> Purchase Voucher
+            <FileSignature className="h-4 w-4 text-primary" /> Buyback Agreement
           </div>
           <div className="flex pr-6">
             <Button onClick={handlePrint} size="sm" className="bg-primary hover:bg-primary/90 gap-2 h-8 text-[11px] font-bold px-4">
-              <Printer className="h-3.5 w-3.5" /> PRINT VOUCHER
+              <Printer className="h-3.5 w-3.5" /> PRINT DOCUMENT
             </Button>
           </div>
         </div>
@@ -54,35 +54,40 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
               <div className="space-y-2">
                 <h1 className="text-3xl font-black text-foreground tracking-tighter uppercase">{shopProfile?.name || "ARIF REPAIR SHOP"}</h1>
                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">
-                  <CheckCircle2 className="h-3 w-3 text-emerald-500" /> {shopProfile?.address || "Official Inventory Record"}
+                  <CheckCircle2 className="h-3 w-3 text-emerald-500" /> {shopProfile?.address || "Official Trade-in Record"}
                 </div>
                 <div className="text-[10px] text-muted-foreground font-medium">
                   {shopProfile?.phone} {shopProfile?.email && `• ${shopProfile.email}`}
                 </div>
               </div>
               <div className="text-right space-y-2">
-                <Badge className={`${purchase.paymentStatus === 'PAID' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500' : 'bg-amber-500/10 text-amber-600 dark:text-amber-500'} border-none uppercase font-black text-[9px] px-3 py-1`}>
-                  {purchase.paymentStatus}
+                <Badge className={`bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-none uppercase font-black text-[9px] px-3 py-1`}>
+                  {buyback.status}
                 </Badge>
-                <p className="text-xs font-black text-foreground mt-2">#{purchase.purchaseNumber}</p>
+                <p className="text-xs font-black text-foreground mt-2">#{buyback.buybackNumber}</p>
               </div>
+            </div>
+
+            {/* Declaration Text */}
+            <div className="text-[11px] text-muted-foreground leading-relaxed text-justify bg-muted/30 p-4 rounded-xl border border-border/50">
+              <span className="font-bold text-foreground">Declaration of Legitimacy:</span> The undersigned seller declares under their own responsibility to be the legitimate owner of the devices listed below and that said devices are free from any legal constraints, are not of illicit origin, and can be freely sold. The buyer acquires the items in the condition they are in, as verified during the inspection.
             </div>
 
             {/* Meta Information */}
             <div className="grid grid-cols-2 gap-8 text-xs border-b border-border/50 pb-8">
               <div className="space-y-2">
-                <p className="font-black text-muted-foreground uppercase text-[9px] tracking-widest">Supplier Information</p>
+                <p className="font-black text-muted-foreground uppercase text-[9px] tracking-widest">Customer Information</p>
                 <div className="p-4 bg-muted/50 rounded-xl border border-border">
-                  <p className="font-bold text-foreground text-sm uppercase">{purchase.supplierId}</p>
-                  <p className="text-muted-foreground mt-1">Ref: {purchase.billNumber || 'N/A'}</p>
+                  <p className="font-bold text-foreground text-sm uppercase">{buyback.customerId}</p>
+                  <p className="text-muted-foreground mt-1">ID Ref: {buyback.customerId}</p>
                 </div>
               </div>
               <div className="text-right space-y-2">
-                <p className="font-black text-muted-foreground uppercase text-[9px] tracking-widest">Voucher Details</p>
+                <p className="font-black text-muted-foreground uppercase text-[9px] tracking-widest">Agreement Details</p>
                 <p className="font-bold text-foreground text-sm">
-                  Date: {new Date(purchase.purchaseDate).toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })}
+                  Date: {new Date(buyback.buybackDate).toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </p>
-                <p className="text-muted-foreground">Status: {purchase.status}</p>
+                <p className="text-muted-foreground">Payment Method: {buyback.paymentMethod}</p>
               </div>
             </div>
 
@@ -91,14 +96,14 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="bg-muted text-muted-foreground">
-                    <th className="py-3 px-4 font-bold uppercase text-left rounded-l-lg">Item Description & Serials</th>
+                    <th className="py-3 px-4 font-bold uppercase text-left rounded-l-lg">Device Description & Details</th>
                     <th className="py-3 px-2 text-center font-bold uppercase">Qty</th>
-                    <th className="py-3 px-2 text-right font-bold uppercase">Unit Cost</th>
+                    <th className="py-3 px-2 text-right font-bold uppercase">Agreed Price</th>
                     <th className="py-3 px-4 text-right font-bold uppercase rounded-r-lg">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {purchase.items.map((item, idx) => (
+                  {buyback.items?.map((item, idx) => (
                     <tr key={idx} className="align-top">
                       <td className="py-5 px-4">
                         <p className="font-black text-foreground uppercase text-sm mb-1">{item.name}</p>
@@ -117,7 +122,7 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
                         )}
                       </td>
                       <td className="py-5 px-2 text-center font-black text-foreground text-sm">{item.quantity}</td>
-                      <td className="py-5 px-2 text-right text-muted-foreground font-bold"><CurrencyText amount={item.costPrice} /></td>
+                      <td className="py-5 px-2 text-right text-muted-foreground font-bold"><CurrencyText amount={item.agreedPrice} /></td>
                       <td className="py-5 px-4 text-right font-black text-foreground text-sm"><CurrencyText amount={item.subtotal} /></td>
                     </tr>
                   ))}
@@ -130,16 +135,16 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
               <div className="w-72 space-y-4">
                 <div className="flex justify-between items-center text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                   <span>Subtotal</span>
-                  <span className="text-sm text-foreground"><CurrencyText amount={purchase.subtotal} /></span>
+                  <span className="text-sm text-foreground"><CurrencyText amount={buyback.subtotal} /></span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-black text-muted-foreground uppercase tracking-widest border-b pb-4">
-                  <span>Paid to Supplier</span>
-                  <span className="text-sm text-foreground"><CurrencyText amount={purchase.paidAmount} /></span>
+                  <span>Paid to Customer</span>
+                  <span className="text-sm text-foreground"><CurrencyText amount={buyback.paidAmount} /></span>
                 </div>
                 <div className="flex justify-between items-center pt-2">
-                  <span className="text-xs font-black uppercase text-foreground">Total Balance Due</span>
-                  <span className="text-2xl font-black text-destructive tracking-tighter">
-                    <CurrencyText amount={purchase.dueAmount} />
+                  <span className="text-xs font-black uppercase text-foreground">Total Payout</span>
+                  <span className="text-2xl font-black text-emerald-600 tracking-tighter">
+                    <CurrencyText amount={buyback.totalAmount} />
                   </span>
                 </div>
               </div>
@@ -148,10 +153,10 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
             {/* Footer / Signature */}
             <div className="pt-20 grid grid-cols-2 gap-20">
               <div className="border-t border-border pt-4 text-center">
-                <p className="text-[10px] font-black uppercase text-muted-foreground">Authorized Signature</p>
+                <p className="text-[10px] font-black uppercase text-muted-foreground">Seller Signature</p>
               </div>
               <div className="border-t border-border pt-4 text-center">
-                <p className="text-[10px] font-black uppercase text-muted-foreground">Supplier Stamp</p>
+                <p className="text-[10px] font-black uppercase text-muted-foreground">Shop Representative</p>
               </div>
             </div>
           </div>

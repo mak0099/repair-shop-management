@@ -76,7 +76,11 @@ export function SelectField<TFieldValues extends FieldValues>({
         : [...currentValues, optionValue]
       field.onChange(newValues)
     } else {
-      field.onChange(optionValue)
+      if (field.value === optionValue && !required) {
+        field.onChange("")
+      } else {
+        field.onChange(optionValue)
+      }
       setOpen(false)
     }
   }
@@ -155,11 +159,30 @@ export function SelectField<TFieldValues extends FieldValues>({
                           <span className="truncate block">{field.value ? getSelectedLabel(field.value) : placeholder}</span>
                         )}
                       </span>
-                      {isLoading ? (
-                        <Loader2 className="h-3 w-3 shrink-0 ml-2 animate-spin opacity-50" />
-                      ) : (
-                        <ChevronsUpDown className="h-3 w-3 shrink-0 ml-2 opacity-50" />
-                      )}
+                  <div className="flex items-center shrink-0 ml-2">
+                    {!isMulti && field.value && !required && (
+                      <div
+                        role="button"
+                        className="mr-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer hover:bg-muted p-0.5"
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          field.onChange("")
+                        }}
+                      >
+                        <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      </div>
+                    )}
+                    {isLoading ? (
+                      <Loader2 className="h-3 w-3 animate-spin opacity-50" />
+                    ) : (
+                      <ChevronsUpDown className="h-3 w-3 opacity-50" />
+                    )}
+                  </div>
                     </Button>
                   </FormControl>
                 </PopoverTrigger>

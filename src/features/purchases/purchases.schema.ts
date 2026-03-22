@@ -14,20 +14,29 @@ export const purchaseItemSchema = z.object({
   subtotal: z.coerce.number(),
   
   isSerialized: z.boolean().default(false),
-  serialList: z.array(z.string()).default([]),
+  serialList: z.array(z.object({
+    imei: z.string().trim().min(1, "IMEI/SN is required"),
+    batteryHealth: z.string().optional(),
+    condition: z.string().optional(),
+    isBoxIncluded: z.boolean().default(false),
+    isChargerIncluded: z.boolean().default(false),
+  })).optional()
 });
 
 /**
  * ২. মেইন পারচেজ স্কিমা
  */
 export const purchaseSchema = z.object({
-  supplierId: z.string().min(1, "Supplier is required"),
+  supplierId: z.string({ 
+    required_error: "Supplier is required",
+    invalid_type_error: "Supplier is required"
+  }).trim().min(1, "Supplier is required"),
   purchaseDate: z.date().or(z.string()),
   billNumber: z.string().optional().nullable(),
   
   tempItemId: z.string().optional(), 
 
-  items: z.array(purchaseItemSchema).min(1, "Add at least one item"),
+  items: z.array(purchaseItemSchema).min(1, "Please add at least one item to the voucher"),
   
   // এখানেও coerce মাস্ট, কারণ এগুলো ক্যালকুলেটেড স্ট্রিং হতে পারে
   subtotal: z.coerce.number(),
@@ -36,9 +45,14 @@ export const purchaseSchema = z.object({
   dueAmount: z.coerce.number().default(0),
   
   paymentStatus: z.string().default("PAID"),
-  status: z.string().default("RECEIVED"),
+  status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]).default("COMPLETED"),
+  paymentMethod: z.string({
+    required_error: "Payment method is required",
+    invalid_type_error: "Payment method is required"
+  }).min(1, "Payment method is required"),
   
   notes: z.string().optional().nullable(),
+  receiptImage: z.any().optional(),
   addToKhata: z.boolean().default(true),
 });
 

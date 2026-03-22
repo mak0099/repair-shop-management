@@ -19,6 +19,7 @@ import { ReturnForm } from "@/features/returns"
 import { RegisterForm } from "@/features/register"
 import { PurchaseForm } from "@/features/purchases"
 import { KhataForm } from "@/features/khata"
+import { BuybackForm } from "@/features/buybacks"
 
 // 1. Define a structure for each modal configuration
 interface ModalConfig {
@@ -104,6 +105,10 @@ const modalRegistry: readonly ModalConfig[] = [
   {
     type: "purchaseForm",
     contentComponent: PurchaseForm,
+  },
+  {
+    type: "buybackForm",
+    contentComponent: BuybackForm,
   },
   {
     type: "khataForm",

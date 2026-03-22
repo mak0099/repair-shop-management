@@ -11,16 +11,17 @@ export const itemSchema = z.object({
   id: z.string().optional(),
   sku: z.string().min(1, "SKU is required"), // মাস্টার ট্র্যাকিংয়ের জন্য SKU এখন মাস্ট
   name: z.string().min(1, "Product name is required"),
+  subtitle: z.string().optional().nullable(),
   
   categoryId: z.string().min(1, "Category is required"),
   brandId: z.string().min(1, "Brand is required"),
   modelId: z.string().min(1, "Model is required"),
+  condition: z.string().min(1, "Condition is required").default("NEW"),
   supplierId: z.string().optional().nullable(),
   boxNumberId: z.string().optional().nullable(),
   
   // --- MASTER INVENTORY FIELDS (New) ---
   isSerialized: booleanSchema.default(false),
-  serialList: z.array(z.string()).default([]),
   minStockLevel: z.coerce.number().min(0).default(2), 
   
   deviceType: z.string().optional().nullable(),
@@ -31,20 +32,13 @@ export const itemSchema = z.object({
   processor: z.string().optional().nullable(),
   camera: z.string().optional().nullable(),
   size: z.string().optional().nullable(),
-  batteryHealth: z.string().optional().nullable(),
-  grade: z.string().optional().nullable(),
 
   purchasePrice: z.coerce.number().min(0),
   salePrice: z.coerce.number().min(0),
-  initialStock: z.coerce.number().min(0).default(0),
   storageNote: z.string().optional().nullable(),
   
-  condition: z.enum(["Used", "New"]),
   
   // Boolean Flags using the safe booleanSchema
-  isBoxIncluded: booleanSchema,
-  isChargerIncluded: booleanSchema,
-  addToKhata: booleanSchema,
   isTouchScreen: booleanSchema.default(false),
   isSolidDevice: booleanSchema.default(true),
   isActive: booleanSchema.default(true),

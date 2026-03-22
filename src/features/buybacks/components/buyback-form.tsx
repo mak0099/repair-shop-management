@@ -3,47 +3,62 @@
 import { useState, useEffect } from "react"
 import { useForm, useFieldArray, FormProvider, FieldErrors } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, Trash2, ShoppingBag, Loader2, Hash, X } from "lucide-react"
 import { toast } from "sonner"
+import { Plus, Trash2, ShoppingBag, Loader2, Hash } from "lucide-react"
 
+import { Form } from "@/components/ui/form"
 import { TextField } from "@/components/forms/text-field"
-import { CheckboxField } from "@/components/forms/checkbox-field"
 import { DatePickerField } from "@/components/forms/date-picker-field"
 import { SelectField } from "@/components/forms/select-field"
+import { CheckboxField } from "@/components/forms/checkbox-field"
 import { TextareaField } from "@/components/forms/textarea-field"
 import { CurrencyText } from "@/components/shared/data-table-cells"
 import { ImageUploadField } from "@/components/forms/image-upload-field"
-import { FormFooter } from "@/components/forms/form-footer"
-import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { FormFooter } from "@/components/forms/form-footer"
+import { CustomerSelectField } from "@/features/customers"
 import { ItemSelectField } from "@/features/items"
-import { SupplierSelectField } from "@/features/suppliers"
 import { AttributeSelectField } from "@/features/attributes"
 import { MasterSettingSelectField } from "@/features/master-settings"
 
-import { purchaseSchema, PurchaseFormValues, ProductPurchase } from "../purchases.schema"
-import { useCreatePurchase, fetchItemDetailsForPurchase } from "../purchases.api"
-import { PurchaseInvoiceView } from "./purchase-invoice-view"
+import { buybackSchema, BuybackFormValues, Buyback } from "../buyback.schema"
+import { useCreateBuyback, useUpdateBuyback } from "../buyback.api"
+// Reusing fetch function from purchases
+import { fetchItemDetailsForPurchase } from "@/features/purchases/purchases.api"
+import { BuybackInvoiceView } from "./buyback-invoice-view"
 
-export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialData?: ProductPurchase | null, onSuccess: () => void, isViewMode?: boolean }) {
-  const { mutate: createPurchase, isPending } = useCreatePurchase()
+interface BuybackFormProps {
+  initialData?: Buyback | null
+  onSuccess: () => void
+  isViewMode?: boolean
+}
+
+export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewMode = false }: BuybackFormProps) {
+  const { mutate: createBuyback, isPending: isCreating } = useCreateBuyback()
+  const { mutate: updateBuyback, isPending: isUpdating } = useUpdateBuyback()
   const [isFetchingItem, setIsFetchingItem] = useState(false)
 
-  const form = useForm<PurchaseFormValues>({
+  const [mode, setMode] = useState<"view" | "edit" | "create">(
+    initialIsViewMode ? "view" : initialData ? "edit" : "create"
+  )
+  const isViewMode = mode === "view"
+  const isPending = isCreating || isUpdating
+  const isEditMode = !!initialData && mode !== "create"
+
+  const form = useForm<BuybackFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(purchaseSchema) as any,
-    defaultValues: {
-      supplierId: initialData?.supplierId || "",
-      purchaseDate: initialData?.purchaseDate ? new Date(initialData.purchaseDate) : new Date(),
-      items: initialData?.items || [],
-      subtotal: initialData?.subtotal || 0,
-      totalAmount: initialData?.totalAmount || 0,
-      paidAmount: initialData?.paidAmount || 0,
-      dueAmount: initialData?.dueAmount || 0,
+    resolver: zodResolver(buybackSchema) as any,
+    defaultValues: initialData || {
+      customerId: initialData?.customerId || "",
+      buybackDate: initialData?.buybackDate ? new Date(initialData.buybackDate) : new Date(),
+      items: [],
+      subtotal: 0,
+      totalAmount: 0,
+      paidAmount: 0,
+      dueAmount: 0,
       paymentMethod: initialData?.paymentMethod || "CASH",
-      status: initialData?.status || "COMPLETED",
       notes: initialData?.notes || "",
+      status: initialData?.status || "COMPLETED",
       tempItemId: ""
     }
   })
@@ -64,8 +79,8 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
         productId: productId,
         name: details.name,
         quantity: 1,
-        costPrice: details.purchasePrice || 0,
-        subtotal: details.purchasePrice,
+        agreedPrice: details.purchasePrice || 0,
+        subtotal: details.purchasePrice || 0,
         isSerialized: details.isSerialized,
         serialList: details.isSerialized ? [{ imei: "", batteryHealth: "", condition: "", isBoxIncluded: false, isChargerIncluded: false }] : []
       })
@@ -84,7 +99,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
 
   useEffect(() => {
     const subtotal = (watchedItems || []).reduce((acc, item) => {
-      const price = Number(item.costPrice) || 0;
+      const price = Number(item.agreedPrice) || 0;
       const qty = Number(item.quantity) || 0;
       return acc + (price * qty);
     }, 0);
@@ -94,11 +109,24 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemsStr, paidAmount, setValue])
 
-  const onSubmit = (data: PurchaseFormValues) => {
-    createPurchase(data, { onSuccess })
+  const onSubmit = (data: BuybackFormValues) => {
+    const callbacks = {
+      onSuccess: () => {
+        toast.success(`Buyback ${isEditMode ? "updated" : "created"} successfully`)
+        onSuccess()
+      },
+      onError: (err: Error) => toast.error(err.message)
+    }
+
+    if (isEditMode && initialData?.id) {
+      updateBuyback({ id: initialData.id, data: data as Partial<BuybackFormValues> }, callbacks)
+    } else {
+      createBuyback(data, callbacks)
+    }
   }
 
-  const onInvalid = (errors: FieldErrors<PurchaseFormValues>) => {
+  // Standard error handler for form validation failures
+  const onInvalid = (errors: FieldErrors<BuybackFormValues>) => {
     if (errors.items?.root?.message) {
       toast.error(errors.items.root.message)
     } else if (errors.items?.message) {
@@ -113,35 +141,26 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
       <Form {...form}>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <form onSubmit={handleSubmit(onSubmit as any, onInvalid as any)} className="flex flex-col h-full bg-background">
-
-          {/* ১. Top Header with View Invoice Button */}
+          
           {isViewMode && initialData && (
             <div className="flex items-center justify-between px-6 py-3 bg-muted/50 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Transaction Mode</span>
                 <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[9px] font-bold px-2 py-0.5 rounded">READ ONLY</span>
               </div>
-
-              {/* সরাসরি এই ডায়ালগটি ব্যবহার করুন */}
-              <PurchaseInvoiceView purchase={initialData} />
+              
+              <BuybackInvoiceView buyback={initialData} />
             </div>
           )}
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* ২. Supplier name fix: Ensure value is showing correctly in view mode */}
-              <SupplierSelectField
-                name="supplierId"
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                control={control as any}
-                label="Supplier"
-                required
-                readOnly={isViewMode}
-              />
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              <DatePickerField name="purchaseDate" control={control as any} label="Date" required readOnly={isViewMode} />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            <CustomerSelectField name="customerId" control={control as any} required readOnly={isViewMode} />
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            <DatePickerField name="buybackDate" control={control as any} label="Date" required readOnly={isViewMode} />
+          </div>
 
             {!isViewMode && (
               <div className="bg-muted/50 p-4 rounded-xl border border-border flex items-end gap-4">
@@ -150,7 +169,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                     name="tempItemId"
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     control={control as any}
-                    label="Search Part/Item"
+                    label="Search Device/Item"
                     canAdd
                   />
                 </div>
@@ -161,14 +180,14 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                   className="bg-primary hover:bg-primary/90 h-10 px-6 font-bold text-xs"
                 >
                   {isFetchingItem ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
-                  ADD ITEM
+                  ADD DEVICE
                 </Button>
               </div>
             )}
 
             <div className="border border-border rounded-xl overflow-hidden shadow-sm">
               <div className="bg-muted p-3 border-b border-border text-foreground text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" /> Voucher Items
+                <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" /> Devices & Items
               </div>
               <div className="divide-y divide-border">
                 {fields.map((field, index) => (
@@ -185,7 +204,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                       </div>
                       <div className="col-span-3">
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        <TextField name={`items.${index}.costPrice`} control={control as any} label="Cost (€)" type="number" min={0} disabled={isViewMode} />
+                        <TextField name={`items.${index}.agreedPrice`} control={control as any} label="Agreed Price (€)" type="number" min={0} disabled={isViewMode} />
                       </div>
                       <div className="col-span-2">
                         <TextField
@@ -202,7 +221,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                         <div>
                           <span className="text-[10px] font-bold text-muted-foreground uppercase block">Total</span>
                           <span className="text-xs font-black text-foreground">
-                            <CurrencyText amount={(Number(watch(`items.${index}.costPrice`)) || 0) * (Number(watch(`items.${index}.quantity`)) || 0)} />
+                            <CurrencyText amount={(Number(watch(`items.${index}.agreedPrice`)) || 0) * (Number(watch(`items.${index}.quantity`)) || 0)} />
                           </span>
                         </div>
                         {!isViewMode && (
@@ -300,9 +319,9 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <ImageUploadField 
                 control={control as any} 
-                name="receiptImage" 
-                label="Supplier Receipt / Invoice (Photo)" 
-                initialImage={initialData?.receiptImage as string | null} 
+                name="idProofImage" 
+                label="Customer ID Proof (Photo)" 
+                initialImage={initialData?.idProofImage as string | null} 
                 isViewMode={isViewMode} 
                 layout="compact" 
               />
@@ -327,7 +346,13 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
           </div>
 
           {!isViewMode && (
-            <FormFooter isPending={isPending} onCancel={onSuccess} saveLabel="Complete Purchase" />
+            <FormFooter 
+              isViewMode={isViewMode}
+              isEditMode={isEditMode}
+              isPending={isPending}
+              onCancel={onSuccess}
+              saveLabel={isEditMode ? "Update Buyback" : "Complete Buyback"} 
+            />
           )}
         </form>
       </Form>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useForm, FormProvider } from "react-hook-form"
+import { useSession } from "next-auth/react"
 import { useUpdateAcceptance } from "../../acceptance.api"
 import { useUserOptions } from "@/features/users/user.api"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
@@ -10,12 +11,14 @@ import type { ItemOption } from "@/features/items/item.api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { History, MessageSquarePlus, Send, UserPlus, CheckCircle, Wrench, CreditCard, Clock, XCircle, PackageCheck, Receipt, UserCheck, ArrowRight, Plus, MoreVertical } from "lucide-react"
+import { History, MessageSquarePlus, Send, UserPlus, CheckCircle, Wrench, CreditCard, Clock, XCircle, PackageCheck, Receipt, UserCheck, ArrowRight, Plus, MoreVertical, Printer, Trash2 } from "lucide-react"
 import { Acceptance } from "../../acceptance.schema"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { CurrencyText } from "@/components/shared/data-table-cells"
 import { REPAIR_STATUSES } from "../../acceptance.constants"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
+import { AcceptanceInvoiceView } from "./acceptance-invoice-view"
 import { 
   createOperationalLog, 
   createTimelineLog, 
@@ -23,6 +26,8 @@ import {
   getColorForStatus,
   prependLog 
 } from "../../acceptance-logging"
+
+type InvoiceType = "PENDING" | "IN_PROGRESS" | "READY" | "DELIVERY"
 
 // Map icon names to icon components
 const iconMap: Record<string, React.ComponentType<{ className: string }>> = {
@@ -54,6 +59,9 @@ export function TicketTimeline({
   const [paymentAmount, setPaymentAmount] = useState<string>("")
   const [discountAmount, setDiscountAmount] = useState<string>("0")
   const [paymentNotes, setPaymentNotes] = useState("")
+  const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
+  const [selectedInvoiceType, setSelectedInvoiceType] = useState<InvoiceType>("DELIVERY")
+  const [invoiceSnapshot, setInvoiceSnapshot] = useState<Record<string, any> | null>(null)
   const [confirmConfig, setConfirmConfig] = useState<{
     title: string
     message: string
@@ -62,6 +70,14 @@ export function TicketTimeline({
     onConfirm: () => void
   } | null>(null)
   const activeHeadRef = useRef<HTMLDivElement>(null)
+  const noteInputRef = useRef<HTMLTextAreaElement>(null)
+  
+  // Auto-focus note input when adding
+  useEffect(() => {
+    if (isAdding && noteInputRef.current) {
+      noteInputRef.current.focus()
+    }
+  }, [isAdding])
   
   // Form for part selection
   const partForm = useForm<{ selectedPart: string }>({
@@ -69,6 +85,9 @@ export function TicketTimeline({
   })
 
   const { mutate: updateTicket, isPending } = useUpdateAcceptance()
+  const { data: session } = useSession()
+  const currentUserId = session?.user?.id || "anonymous"
+  const currentUserName = session?.user?.name || "System"
   const { data: users } = useUserOptions()
   const { data: shopProfile } = useShopProfile()
 
@@ -93,12 +112,37 @@ export function TicketTimeline({
     setShowConfirmDialog(true)
   }
 
+  // Helper to get historical status based on invoice type
+  const getStatusForInvoiceType = (invoiceType: InvoiceType): string => {
+    switch(invoiceType) {
+      case "PENDING": return "PENDING";
+      case "IN_PROGRESS": return "IN_PROGRESS";
+      case "READY": return "READY";
+      case "DELIVERY": return "DELIVERED";
+      default: return "PENDING";
+    }
+  };
+
+  // Helper to open invoice print dialog
+  const openInvoicePrint = (type: InvoiceType, snapshot?: Record<string, any>) => {
+    setSelectedInvoiceType(type)
+    setInvoiceSnapshot(snapshot || null)
+    setInvoiceDialogOpen(true)
+  }
+
   // Auto-scroll to active workflow head when timeline changes
   useEffect(() => {
     if (activeHeadRef.current) {
       activeHeadRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
   }, [acceptance.timelineLogs?.length, acceptance.currentStatus])
+
+  // Pre-select technician if already assigned to ticket
+  useEffect(() => {
+    if (acceptance.technicianId) {
+      setSelectedTech(acceptance.technicianId)
+    }
+  }, [acceptance.technicianId])
 
   // Get parts only from inventory
 
@@ -107,13 +151,22 @@ export function TicketTimeline({
     const operationalLog = createOperationalLog(
       "NOTE_ADDED",
       note,
-      "current-user-id",
-      {}
+      currentUserId,
+      { userName: currentUserName }
+    );
+    const timelineLog = createTimelineLog(
+      "NOTE_ADDED",
+      note,
+      getIconForAction("NOTE_ADDED"),
+      "blue",
+      currentUserId,
+      undefined,
+      { userName: currentUserName }
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = { 
         operationalLogs: prependLog(acceptance.operationalLogs || [], operationalLog),
-        timelineLogs: acceptance.timelineLogs || []
+        timelineLogs: prependLog(acceptance.timelineLogs || [], timelineLog)
     };
     updateTicket({ 
       id: acceptance.id as string, 
@@ -288,7 +341,7 @@ export function TicketTimeline({
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = { 
-      advancePayment: (acceptance.advancePayment || 0) + paidAmount, 
+      finalPayment: (acceptance.finalPayment || 0) + paidAmount, 
       balanceDue: remainingDue,
       currentStatus: REPAIR_STATUSES.DELIVERED,
       operationalLogs: prependLog(acceptance.operationalLogs || [], operationalLog),
@@ -665,19 +718,45 @@ export function TicketTimeline({
   const isTradedIn = acceptance.currentStatus === REPAIR_STATUSES.TRADE_IN;
   const showActiveHead = !isDelivered && !isTradedIn;
 
+  // Handle delete note
+  const handleDeleteNote = (logId: string) => {
+    confirmAction(
+      "Delete Note?",
+      "Are you sure you want to delete this note? This action cannot be undone.",
+      "Yes, Delete",
+      "bg-red-600",
+      () => {
+        const updatedLogs = (acceptance.timelineLogs || []).filter(log => log.id !== logId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data: any = {
+          timelineLogs: updatedLogs,
+          operationalLogs: acceptance.operationalLogs || []
+        };
+        updateTicket({
+          id: acceptance.id as string,
+          data
+        }, {
+          onSuccess: (updated) => {
+            onUpdate?.(updated);
+            toast.success("Note deleted");
+          }
+        });
+      }
+    );
+  }
+
   return (
     <>
     <Card className="shadow-sm border-border">
-      <CardHeader className="py-3 border-b">
+      <CardHeader className="border-b px-5">
         <div className="flex flex-row items-center justify-between">
           <CardTitle className="text-xs flex items-center gap-2 uppercase tracking-widest text-muted-foreground font-black">
             <History className="h-4 w-4 text-blue-500" /> Workflow & Timeline
           </CardTitle>
           <div className="flex items-center gap-1">
-            <Button variant="outline" size="sm" onClick={() => setIsAdding(!isAdding)} className="h-7 text-[10px] font-bold gap-1.5"><MessageSquarePlus className="h-3 w-3" /> Add Note</Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -697,9 +776,9 @@ export function TicketTimeline({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-3">
         
-        <div className="space-y-6 border-l-2 border-muted ml-3 pl-6 relative">
+        <div className="space-y-3 border-l-2 border-muted ml-3 pl-6 relative">
           
           {/* ACTIVE WORKFLOW HEAD (THE STUCK POINT) */}
           {showActiveHead && (
@@ -711,7 +790,7 @@ export function TicketTimeline({
               <div className="bg-card rounded-2xl shadow-lg border-2 border-primary/20 overflow-hidden">
                 
                 {acceptance.currentStatus === REPAIR_STATUSES.PENDING && (
-                  <div className="p-5 bg-blue-50/50 dark:bg-blue-950/20 space-y-4">
+                  <div className="p-3 bg-blue-50/50 dark:bg-blue-950/20 space-y-2">
                     <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-sm">
                       <UserPlus className="h-4 w-4" /> Assign Technician
                     </div>
@@ -727,7 +806,7 @@ export function TicketTimeline({
                 )}
 
                 {acceptance.currentStatus === REPAIR_STATUSES.DIAGNOSING && (
-                  <div className="p-5 bg-indigo-50/50 dark:bg-indigo-950/20 space-y-4">
+                  <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/20 space-y-2">
                     <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-bold text-sm">
                       <Wrench className="h-4 w-4" /> Diagnosis Complete
                     </div>
@@ -817,7 +896,7 @@ export function TicketTimeline({
                 )}
 
                 {acceptance.currentStatus === REPAIR_STATUSES.IN_PROGRESS && (
-                  <div className="p-5 bg-indigo-50/50 dark:bg-indigo-950/20 space-y-4">
+                  <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/20 space-y-2">
                     <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-bold text-sm">
                       <Wrench className="h-4 w-4" /> Repair in Progress
                     </div>
@@ -906,7 +985,7 @@ export function TicketTimeline({
                 )}
 
                 {acceptance.currentStatus === REPAIR_STATUSES.WAITING_PARTS && (
-                  <div className="p-5 bg-amber-50/80 dark:bg-amber-950/20 space-y-4">
+                  <div className="p-3 bg-amber-50/80 dark:bg-amber-950/20 space-y-2">
                     <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-sm">
                       <Clock className="h-4 w-4" /> On Hold: Waiting Parts
                     </div>
@@ -993,7 +1072,7 @@ export function TicketTimeline({
                 )}
 
                 {acceptance.currentStatus === REPAIR_STATUSES.ON_HOLD && (
-                  <div className="p-5 bg-amber-50/80 dark:bg-amber-950/20 space-y-4">
+                  <div className="p-3 bg-amber-50/80 dark:bg-amber-950/20 space-y-2">
                     <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-sm">
                       <Clock className="h-4 w-4" /> On Hold
                     </div>
@@ -1080,7 +1159,7 @@ export function TicketTimeline({
                 )}
 
                 {acceptance.currentStatus === REPAIR_STATUSES.UNREPAIRABLE && (
-                  <div className="p-5 bg-red-50/80 dark:bg-red-950/20 space-y-4">
+                  <div className="p-3 bg-red-50/80 dark:bg-red-950/20 space-y-2">
                     <div className="flex items-center gap-2 text-red-700 dark:text-red-400 font-bold text-sm">
                       <XCircle className="h-4 w-4" /> Device Unrepairable
                     </div>
@@ -1092,7 +1171,7 @@ export function TicketTimeline({
                 )}
 
                 {acceptance.currentStatus === REPAIR_STATUSES.CANCELLED && (
-                  <div className="p-5 bg-red-50/80 dark:bg-red-950/20 space-y-4">
+                  <div className="p-3 bg-red-50/80 dark:bg-red-950/20 space-y-2">
                     <div className="flex items-center gap-2 text-red-700 dark:text-red-400 font-bold text-sm">
                       <XCircle className="h-4 w-4" /> Repair Cancelled
                     </div>
@@ -1104,7 +1183,7 @@ export function TicketTimeline({
                 )}
 
                 {acceptance.currentStatus === REPAIR_STATUSES.READY && (
-                  <div className="p-5 bg-emerald-50/80 dark:bg-emerald-950/20 space-y-4">
+                  <div className="p-3 bg-emerald-50/80 dark:bg-emerald-950/20 space-y-2">
                     <div>
                       <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-500 font-bold text-sm mb-1">
                         <CreditCard className="h-4 w-4" /> Ready for Delivery
@@ -1135,7 +1214,7 @@ export function TicketTimeline({
                 <Button variant="outline" size="sm" onClick={() => setIsAdding(!isAdding)} className="h-8 text-[11px] font-bold gap-1.5 mb-3"><MessageSquarePlus className="h-3.5 w-3.5" /> Add Note</Button>
                 {isAdding && (
                   <div className="bg-muted/20 p-3 rounded-lg border border-border">
-                    <textarea className="w-full text-sm p-2 rounded-md border border-input bg-background mb-2" rows={2} placeholder="Type technician note here..." value={note} onChange={(e) => setNote(e.target.value)} />
+                    <textarea ref={noteInputRef} className="w-full text-sm p-2 rounded-md border border-input bg-background mb-2" rows={2} placeholder="Type technician note here..." value={note} onChange={(e) => setNote(e.target.value)} />
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>Cancel</Button>
                       <Button size="sm" onClick={handleAddNote} disabled={isPending}><Send className="h-3 w-3 mr-2" /> Save Note</Button>
@@ -1152,8 +1231,24 @@ export function TicketTimeline({
             const isFirstLog = index === 0;
             const isCompleted = isDelivered && isFirstLog;
             
+            // Determine if this event should have a print button
+            const hasPrintButton = 
+              log.action === "TICKET_CREATED" || // PENDING status
+              log.action === "STATUS_CHANGED" || // Any status change (Diagnosing, In Progress, Ready)
+              log.action === "PART_ADDED" || // Parts added during repair
+              log.action === "DELIVERY_COMPLETED"; // Final invoice
+            
+            // Determine invoice type based on action/description
+            const getInvoiceTypeForLog = (): InvoiceType => {
+              if (log.action === "TICKET_CREATED") return "PENDING";
+              if (log.action === "PART_ADDED") return "IN_PROGRESS";
+              if (log.description?.includes("Ready")) return "READY";
+              if (log.action === "DELIVERY_COMPLETED") return "DELIVERY";
+              return "PENDING";
+            };
+            
             return (
-              <div key={log.id} className="relative">
+              <div key={log.id} className="relative group">
                 <div 
                   className={`absolute -left-[31px] top-1 h-3 w-3 rounded-full ring-4 transition-all flex items-center justify-center text-white text-[8px] font-bold ${isCompleted ? 'ring-green-200 bg-green-500' : 'ring-background'}`}
                   style={!isCompleted ? { backgroundColor: log.color } : undefined}
@@ -1164,11 +1259,45 @@ export function TicketTimeline({
                   {new Date(log.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </p>
                 <div className={`bg-muted/20 p-3.5 rounded-xl border text-sm shadow-sm transition-all ${isCompleted ? 'border-green-300 bg-green-50/30' : 'border-border/40'}`}>
-                  <span className="font-black text-[10px] tracking-widest uppercase px-2 py-0.5 rounded mr-2 align-middle inline-flex items-center gap-1.5" style={!isCompleted ? { backgroundColor: `${log.color}15`, color: log.color } : { backgroundColor: '#10b98120', color: '#059669' }}>
-                    {isCompleted ? <CheckCircle className="h-3 w-3" /> : (IconComponent && <IconComponent className="h-3 w-3" />)}
-                    {isCompleted ? 'Completed' : log.action}
-                  </span>
-                  <span className={`font-medium ${isCompleted ? 'text-green-700' : 'text-foreground'}`}>{log.description}</span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <span className="font-black text-[10px] tracking-widest uppercase px-2 py-0.5 rounded mr-2 align-middle inline-flex items-center gap-1.5" style={!isCompleted ? { backgroundColor: `${log.color}15`, color: log.color } : { backgroundColor: '#10b98120', color: '#059669' }}>
+                        {isCompleted ? <CheckCircle className="h-3 w-3" /> : (IconComponent && <IconComponent className="h-3 w-3" />)}
+                        {isCompleted ? 'Completed' : log.action}
+                      </span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`font-medium ${isCompleted ? 'text-green-700' : 'text-foreground'}`}>{log.description}</span>
+                        {log.metadata && 'userName' in log.metadata && (
+                          <span className="text-[10px] text-muted-foreground bg-muted/50 px-2 py-0.5 rounded">by {String(log.metadata.userName)}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {hasPrintButton && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 px-2 text-xs gap-1"
+                          onClick={() => openInvoicePrint(getInvoiceTypeForLog(), log.metadata)}
+                        >
+                          <Printer className="h-3 w-3" />
+                          Print
+                        </Button>
+                      )}
+                      {log.action === "NOTE_ADDED" && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleDeleteNote(log.id)}
+                          disabled={isPending}
+                          title="Delete note"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
@@ -1192,7 +1321,7 @@ export function TicketTimeline({
             <DialogHeader>
               <DialogTitle>💰 Checkout & Delivery</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-2">
               {/* Total Amount Due */}
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <p className="text-xs text-blue-600 font-medium">Due Amount ({currency})</p>
@@ -1323,6 +1452,29 @@ export function TicketTimeline({
         )}
       </DialogContent>
     </Dialog>
+
+    {/* Invoice Print Dialog */}
+    <PrintableDialog
+      isOpen={invoiceDialogOpen}
+      onOpenChange={setInvoiceDialogOpen}
+      title={`Repair ${selectedInvoiceType === "DELIVERY" ? "Receipt" : selectedInvoiceType === "PENDING" ? "Estimate" : "Invoice"}`}
+      icon={<Receipt className="h-4 w-4" />}
+      printableElementId="printable-invoice"
+      className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+    >
+      <AcceptanceInvoiceView
+        acceptance={{
+          ...acceptance,
+          currentStatus: getStatusForInvoiceType(selectedInvoiceType),
+          ...(invoiceSnapshot && {
+            totalCost: invoiceSnapshot.totalCost ?? acceptance.totalCost,
+            advancePayment: invoiceSnapshot.advancePayment ?? acceptance.advancePayment,
+            balanceDue: invoiceSnapshot.balanceDue ?? acceptance.balanceDue,
+          })
+        }}
+        invoiceType={selectedInvoiceType}
+      />
+    </PrintableDialog>
     </>
   )
 }

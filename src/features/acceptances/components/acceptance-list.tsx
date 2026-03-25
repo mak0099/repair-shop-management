@@ -22,7 +22,7 @@ import { Model } from "@/features/models"
 import { useBrandOptions } from "@/features/brands/brand.api"
 import { useModelOptions } from "@/features/models/model.api"
 import { AcceptanceKanbanBoard } from "./kanban/acceptance-kanban-board"
-import { REPAIR_STATUS_OPTIONS } from "../acceptance.constants"
+import { REPAIR_STATUS_OPTIONS, getStatusColors, STATUS_COLORS } from "../acceptance.constants"
 
 interface AcceptanceInList extends Acceptance {
   customer?: Pick<Customer, "id" | "name">
@@ -80,7 +80,14 @@ export function AcceptanceList() {
         header: "Repair Status",
         cell: ({ row }) => {
           const status = row.getValue("currentStatus") as string
-          return <Badge variant="outline">{status}</Badge>
+          const colors = getStatusColors(status as keyof typeof STATUS_COLORS)
+          return (
+            <Badge 
+              className={`${colors.bg} ${colors.text} ${colors.accent} border`}
+            >
+              {colors.label}
+            </Badge>
+          )
         },
       },
       {

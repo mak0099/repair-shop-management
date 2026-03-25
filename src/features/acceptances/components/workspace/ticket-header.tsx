@@ -1,40 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { Printer, ArrowRightLeft, Activity } from "lucide-react"
+import { Printer, ArrowRightLeft, Activity, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
 import { Acceptance } from "../../acceptance.schema"
 import { toast } from "sonner"
 import { useUpdateAcceptance } from "../../acceptance.api"
-import { REPAIR_STATUS_OPTIONS, REPAIR_STATUSES } from "../../acceptance.constants"
-import { AcceptanceReceiptView } from "./acceptance-receipt-view"
+import { REPAIR_STATUSES, getStatusColors, STATUS_COLORS } from "../../acceptance.constants"
+import { AcceptanceInvoiceView } from "./acceptance-invoice-view"
 
 interface TicketHeaderProps {
   acceptance: Acceptance
 }
-
-const getStatusBadgeColor = (status: string): { bg: string; text: string; border: string } => {
-  const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-    [REPAIR_STATUSES.PENDING]: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
-    [REPAIR_STATUSES.DIAGNOSING]: { bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200" },
-    [REPAIR_STATUSES.IN_PROGRESS]: { bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200" },
-    [REPAIR_STATUSES.ON_HOLD]: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
-    [REPAIR_STATUSES.WAITING_PARTS]: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
-    [REPAIR_STATUSES.UNREPAIRABLE]: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
-    [REPAIR_STATUSES.READY]: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
-    [REPAIR_STATUSES.DELIVERED]: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
-    [REPAIR_STATUSES.TRADE_IN]: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
-    [REPAIR_STATUSES.BUYBACK]: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
-    [REPAIR_STATUSES.CANCELLED]: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
-  };
-  return colorMap[status] || { bg: "bg-gray-50", text: "text-gray-700", border: "border-gray-200" };
-};
-
-const getStatusLabel = (status: string): string => {
-  const option = REPAIR_STATUS_OPTIONS.find(opt => opt.value === status);
-  return option?.label || status;
-};
 
 export function TicketHeader({ acceptance }: TicketHeaderProps) {
   const { mutate: updateTicket, isPending } = useUpdateAcceptance()
@@ -50,8 +28,7 @@ export function TicketHeader({ acceptance }: TicketHeaderProps) {
     });
   }
 
-  const badgeColor = getStatusBadgeColor(acceptance.currentStatus);
-  const statusLabel = getStatusLabel(acceptance.currentStatus);
+  const badgeColor = getStatusColors(acceptance.currentStatus as keyof typeof STATUS_COLORS)
 
   return (
     <>
@@ -61,12 +38,13 @@ export function TicketHeader({ acceptance }: TicketHeaderProps) {
             <h2 className="text-lg font-black tracking-tight">#{acceptance.acceptanceNumber}</h2>
             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Date: {new Date(acceptance.acceptanceDate).toLocaleDateString()}</p>
           </div>
-          <div className={`ml-4 flex items-center ${badgeColor.bg} border ${badgeColor.border} rounded-md px-3 py-1`}>
+          <div className={`ml-4 flex items-center ${badgeColor.bg} border ${badgeColor.accent} rounded-md px-3 py-1`}>
             <Activity className={`h-3.5 w-3.5 ${badgeColor.text} mr-2`} />
-            <span className={`text-xs font-black uppercase tracking-widest ${badgeColor.text}`}>{statusLabel}</span>
+            <span className={`text-xs font-black uppercase tracking-widest ${badgeColor.text}`}>{badgeColor.label}</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <Button onClick={handleBuyback} disabled={isPending} variant="secondary" size="sm" className="h-8 text-xs font-bold shadow-sm bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 border-amber-500/20 border"><ArrowRightLeft className="h-3.5 w-3.5 mr-2" /> Convert to Trade-in</Button>
           <Button 
             onClick={() => setShowReceipt(true)}
             disabled={!canPrint}
@@ -77,17 +55,20 @@ export function TicketHeader({ acceptance }: TicketHeaderProps) {
           >
             <Printer className="h-3.5 w-3.5 mr-2" /> Print Receipt
           </Button>
-          <Button onClick={handleBuyback} disabled={isPending} variant="secondary" size="sm" className="h-8 text-xs font-bold shadow-sm bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 border-amber-500/20 border"><ArrowRightLeft className="h-3.5 w-3.5 mr-2" /> Convert to Trade-in</Button>
         </div>
       </div>
 
-      {/* Receipt Modal */}
-      <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden h-[95vh] flex flex-col border-none shadow-2xl">
-          <DialogTitle className="sr-only">Repair Receipt</DialogTitle>
-          <AcceptanceReceiptView acceptance={acceptance} />
-        </DialogContent>
-      </Dialog>
+      {/* Invoice Modal */}
+      <PrintableDialog
+        isOpen={showReceipt}
+        onOpenChange={setShowReceipt}
+        title="Repair Invoice"
+        icon={<FileText className="h-4 w-4 text-primary" />}
+        className="max-w-4xl p-0 overflow-hidden h-[95vh] flex flex-col border-none shadow-2xl"
+        printableElementId="printable-invoice"
+      >
+        <AcceptanceInvoiceView acceptance={acceptance} />
+      </PrintableDialog>
     </>
   )
 }

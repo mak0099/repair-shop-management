@@ -278,9 +278,8 @@ export function DataTableFilterToolbar({
           })}
 
           {isFiltered && onReset && (
-            <Button variant="ghost" onClick={onReset} className="h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground">
-              Reset
-              <X className="ml-2 h-3.5 w-3.5" />
+            <Button title="Reset Filters" variant="ghost" onClick={onReset} className="h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground">           
+              <X className="h-3.5 w-3.5" />
             </Button>
           )}
         </div>

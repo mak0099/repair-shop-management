@@ -1,14 +1,14 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Smartphone, User, Info } from "lucide-react"
+import { Smartphone, User, Info, Phone } from "lucide-react"
 import { Acceptance } from "../../acceptance.schema"
 
 export function TicketOverview({ acceptance }: { acceptance: Acceptance }) {
 
   return (
     <Card className="shadow-sm border-border">
-      <CardHeader className="py-3 border-b">
+      <CardHeader className="border-b">
         <CardTitle className="text-xs flex items-center gap-2 uppercase tracking-widest text-muted-foreground font-black">
           <Smartphone className="h-4 w-4 text-primary" /> Device & Customer Overview
         </CardTitle>
@@ -16,7 +16,7 @@ export function TicketOverview({ acceptance }: { acceptance: Acceptance }) {
       <CardContent className="p-4 space-y-4">
         <div>
           <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-2">Customer Details</p>
-          <p className="font-bold flex items-center gap-2 text-sm"><User className="h-3 w-3 text-muted-foreground" /> {acceptance.customer?.name || acceptance.customerId || 'N/A'}</p>
+          <p className="font-bold flex items-center gap-2 text-sm"><User className="h-3 w-3 text-muted-foreground" /> {acceptance.customer?.name || acceptance.customerId || 'N/A'} {acceptance.customer?.mobile || acceptance.customer?.phone ? <span className="font-normal text-muted-foreground flex items-center gap-1">• <Phone className="h-3 w-3" /> {acceptance.customer?.mobile || acceptance.customer?.phone}</span> : null}</p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           {/* Device Model Section */}

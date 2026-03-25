@@ -70,7 +70,13 @@ export function TicketFinance({ acceptance, onUpdate }: TicketFinanceProps) {
       `Part removed: ${removedPart?.name} (₹${removedPart?.price.toLocaleString('en-IN')})`,
       getIconForAction("PART_REMOVED"),
       "red",
-      "current-user-id"
+      "current-user-id",
+      undefined,
+      {
+        totalCost: newTotal,
+        advancePayment: acceptance.advancePayment || 0,
+        balanceDue: newBalance,
+      }
     )
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,7 +107,7 @@ export function TicketFinance({ acceptance, onUpdate }: TicketFinanceProps) {
   return (
     <>
       <Card className="shadow-sm border-border overflow-hidden">
-      <CardHeader className="py-3 border-b">
+      <CardHeader className="border-b">
         <CardTitle className="text-xs flex items-center justify-between uppercase tracking-widest text-muted-foreground font-black">
           <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-emerald-500" /> Financials</span>
         </CardTitle>
@@ -158,9 +164,17 @@ export function TicketFinance({ acceptance, onUpdate }: TicketFinanceProps) {
             <span className="text-muted-foreground font-medium">Advance Paid</span>
             <span className="font-bold text-emerald-600"><CurrencyText amount={acceptance.advancePayment || 0} /></span>
           </div>
+          {(acceptance.finalPayment || 0) > 0 && (
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground font-medium">Final Payment</span>
+              <span className="font-bold text-emerald-600"><CurrencyText amount={acceptance.finalPayment || 0} /></span>
+            </div>
+          )}
           <div className="flex justify-between items-center pt-3 border-t border-dashed">
             <span className="font-black uppercase text-xs tracking-widest text-muted-foreground">Balance Due</span>
-            <span className="font-black text-2xl text-destructive"><CurrencyText amount={acceptance.balanceDue || 0} /></span>
+            <span className={`font-black text-2xl ${((acceptance.totalCost || 0) - (acceptance.advancePayment || 0) - (acceptance.finalPayment || 0)) > 0 ? 'text-destructive' : 'text-emerald-600'}`}>
+              <CurrencyText amount={Math.max(0, (acceptance.totalCost || 0) - (acceptance.advancePayment || 0) - (acceptance.finalPayment || 0))} />
+            </span>
           </div>
         </div>
       </CardContent>

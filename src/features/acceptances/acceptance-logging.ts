@@ -14,7 +14,7 @@ type OperationalAction =
   | "PHOTO_ADDED"
   | "DELIVERY_COMPLETED";
 
-type TimelineAction = "TICKET_CREATED" | "TECHNICIAN_ASSIGNED" | "STATUS_CHANGED" | "DELIVERY_COMPLETED" | "PART_ADDED" | "PART_REMOVED";
+type TimelineAction = "TICKET_CREATED" | "TECHNICIAN_ASSIGNED" | "STATUS_CHANGED" | "DELIVERY_COMPLETED" | "PART_ADDED" | "PART_REMOVED" | "NOTE_ADDED";
 
 type LogColor = "blue" | "indigo" | "emerald" | "amber" | "red";
 
@@ -35,6 +35,13 @@ export interface TimelineLog {
   color?: LogColor;
   timestamp: string;
   userId?: string;
+  metadata?: {
+    // Financial snapshot at time of this event
+    totalCost?: number;
+    advancePayment?: number;
+    balanceDue?: number;
+    [key: string]: unknown;
+  };
 }
 
 /**
@@ -64,7 +71,8 @@ export const createTimelineLog = (
   icon?: string,
   color?: LogColor,
   userId?: string,
-  timestamp?: string | Date
+  timestamp?: string | Date,
+  metadata?: TimelineLog["metadata"]
 ): TimelineLog => ({
   id: `timeline-log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
   action,
@@ -73,6 +81,7 @@ export const createTimelineLog = (
   color,
   timestamp: timestamp ? (typeof timestamp === 'string' ? timestamp : timestamp.toISOString()) : new Date().toISOString(),
   userId,
+  metadata,
 });
 
 /**
@@ -86,6 +95,7 @@ export const getIconForAction = (action: TimelineAction): string => {
     DELIVERY_COMPLETED: "check-circle",
     PART_ADDED: "wrench",
     PART_REMOVED: "wrench",
+    NOTE_ADDED: "message-square-plus",
   };
   return iconMap[action];
 };

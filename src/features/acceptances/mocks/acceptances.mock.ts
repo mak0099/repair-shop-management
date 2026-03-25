@@ -283,7 +283,6 @@ const generateAcceptances = (count: number): Acceptance[] => {
             timelineLogs: timelineLogs,
             createdAt: dateObj.toISOString(),
             updatedAt: new Date().toISOString(),
-            isActive: true,
             priceOffered: Math.random() > 0.9 ? Math.floor(Math.random() * 200) : 0,
             dealer: "",
             replacementDeviceId: "",

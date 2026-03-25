@@ -1,19 +1,20 @@
 "use client"
 
 import Image from "next/image"
-import { Receipt, Printer } from "lucide-react"
 import { Acceptance } from "../../acceptance.schema"
 import { format } from "date-fns"
-import { Button } from "@/components/ui/button"
 import { useInvoiceSetup } from "@/features/invoice-setup/invoice-setup.api"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
-import { REPAIR_STATUS_OPTIONS } from "../../acceptance.constants"
+import { REPAIR_STATUS_OPTIONS, getStatusColors, STATUS_COLORS } from "../../acceptance.constants"
 
-interface AcceptanceReceiptViewProps {
+type InvoiceType = "PENDING" | "IN_PROGRESS" | "READY" | "DELIVERY"
+
+interface AcceptanceInvoiceViewProps {
   acceptance: Acceptance
+  invoiceType?: InvoiceType
 }
 
-export function AcceptanceReceiptView({ acceptance }: AcceptanceReceiptViewProps) {
+export function AcceptanceInvoiceView({ acceptance, invoiceType = "DELIVERY" }: AcceptanceInvoiceViewProps) {
   const invoiceSetupQuery = useInvoiceSetup()
   const shopProfileQuery = useShopProfile()
 
@@ -51,37 +52,29 @@ export function AcceptanceReceiptView({ acceptance }: AcceptanceReceiptViewProps
 
   const statusLabel = REPAIR_STATUS_OPTIONS.find(opt => opt.value === acceptance.currentStatus)?.label || acceptance.currentStatus
 
-  const handlePrint = () => {
-    if (!isLoading && invoiceSetup && shopProfile) {
-      window.print()
+  // Determine invoice title based on type
+  const getInvoiceTitle = () => {
+    switch(invoiceType) {
+      case "PENDING": return "REPAIR ESTIMATE"
+      case "IN_PROGRESS": return "REPAIR PROGRESS"
+      case "READY": return "REPAIR READY"
+      case "DELIVERY": return "RECEIPT"
+      default: return "RECEIPT"
     }
   }
 
+  // Determine if we should show parts section
+  const showParts = invoiceType !== "PENDING" && acceptance.partsUsed && acceptance.partsUsed.length > 0
+
   const subtotal = acceptance.totalCost || 0
   const advancePaid = acceptance.advancePayment || 0
-  const balanceDue = Math.max(0, subtotal - advancePaid)
+  const finalPayment = acceptance.finalPayment || 0
+  const balanceDue = Math.max(0, subtotal - advancePaid - finalPayment)
 
   return (
     <>
-      {/* Header for Web - Hidden on Print */}
-      <div className="flex justify-between items-center p-4 border-b print:hidden bg-muted/50 pr-12 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <Receipt className="h-4 w-4 text-primary" />
-          <span className="text-sm font-black uppercase tracking-widest">Repair Receipt</span>
-        </div>
-        <Button 
-          onClick={handlePrint} 
-          size="sm" 
-          className="gap-2 h-8 text-[11px] font-bold"
-          disabled={isLoading}
-          title={isLoading ? "Receipt loading..." : "Print repair receipt"}
-        >
-          <Printer className="h-3.5 w-3.5" /> PRINT RECEIPT
-        </Button>
-      </div>
-
-      {/* The Actual Receipt Content - Scrollable */}
-      <div id="printable-receipt" className="p-8 md:p-12 print:p-3 overflow-y-auto print:overflow-y-visible">
+      {/* The Actual Invoice Content - Scrollable */}
+      <div id="printable-invoice" className="p-8 md:p-12 print:p-3 overflow-y-auto print:overflow-y-visible h-full">
         <div className="max-w-[800px] mx-auto space-y-6 print:space-y-2">
 
           {/* Company Info */}
@@ -102,7 +95,7 @@ export function AcceptanceReceiptView({ acceptance }: AcceptanceReceiptViewProps
               {shopProfile.email && <p className="text-xs text-muted-foreground">{shopProfile.email}</p>}
             </div>
             <div className="text-right space-y-1">
-              <p className="text-2xl font-black tracking-tight">RECEIPT</p>
+              <p className="text-2xl font-black tracking-tight">{getInvoiceTitle()}</p>
               <p className="text-xs font-bold text-muted-foreground">#{acceptance.acceptanceNumber}</p>
               <p className="text-xs text-muted-foreground">{formatDate(acceptance.acceptanceDate)}</p>
             </div>
@@ -136,7 +129,7 @@ export function AcceptanceReceiptView({ acceptance }: AcceptanceReceiptViewProps
           </div>
 
           {/* Parts Used - If Any */}
-          {acceptance.partsUsed && acceptance.partsUsed.length > 0 && (
+          {showParts && (
             <div className="space-y-2">
               <p className="text-xs font-black uppercase text-muted-foreground tracking-widest">Parts Used</p>
               <table className="w-full text-sm">
@@ -174,6 +167,12 @@ export function AcceptanceReceiptView({ acceptance }: AcceptanceReceiptViewProps
                 <span className="font-semibold text-emerald-600">-{formatCurrency(advancePaid)}</span>
               </div>
             )}
+            {invoiceType === "DELIVERY" && (acceptance.finalPayment || 0) > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Final Payment:</span>
+                <span className="font-semibold text-emerald-600">-{formatCurrency(acceptance.finalPayment || 0)}</span>
+              </div>
+            )}
             <div className="flex justify-between text-base font-bold border-t pt-2 mt-2">
               <span>Balance Due:</span>
               <span className={balanceDue > 0 ? "text-amber-600" : "text-emerald-600"}>
@@ -183,13 +182,18 @@ export function AcceptanceReceiptView({ acceptance }: AcceptanceReceiptViewProps
           </div>
 
           {/* Status & Repair Timeline */}
-          <div className="bg-blue-50 p-4 rounded-lg space-y-2 border border-blue-200">
-            <p className="text-xs font-black uppercase text-blue-700 tracking-widest">Status</p>
-            <p className="text-sm font-bold text-blue-900">{statusLabel}</p>
-            {acceptance.technician?.name && (
-              <p className="text-xs text-blue-700">Technician: <span className="font-semibold">{acceptance.technician.name}</span></p>
-            )}
-          </div>
+          {(() => {
+            const colors = getStatusColors(acceptance.currentStatus as keyof typeof STATUS_COLORS)
+            return (
+              <div className={`${colors.bg} p-4 rounded-lg space-y-2 border ${colors.accent}`}>
+                <p className={`text-xs font-black uppercase ${colors.text} tracking-widest`}>Status</p>
+                <p className={`text-sm font-bold ${colors.text}`}>{statusLabel}</p>
+                {acceptance.technician?.name && (
+                  <p className={`text-xs ${colors.text}`}>Technician: <span className="font-semibold">{acceptance.technician.name}</span></p>
+                )}
+              </div>
+            )
+          })()}
 
           {/* Footer with Terms */}
           {invoiceSetup.thankYouMessage && (
@@ -211,48 +215,6 @@ export function AcceptanceReceiptView({ acceptance }: AcceptanceReceiptViewProps
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @page {
-          size: A4;
-          margin: 0;
-        }
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #printable-receipt, #printable-receipt * {
-            visibility: visible;
-          }
-          #printable-receipt {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 15px;
-            font-size: 13px;
-          }
-          
-          #printable-receipt h1 {
-            font-size: 18px;
-            margin: 6px 0;
-          }
-          
-          #printable-receipt h2 {
-            font-size: 14px;
-            margin: 4px 0;
-          }
-          
-          #printable-receipt p {
-            margin: 2px 0;
-          }
-          
-          #printable-receipt table {
-            font-size: 12px;
-            margin: 4px 0;
-          }
-        }
-      `}</style>
     </>
   )
 }

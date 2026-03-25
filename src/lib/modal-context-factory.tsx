@@ -4,6 +4,14 @@ import React, { createContext, useCallback, useContext, ReactNode } from "react"
 import { useGlobalModal } from "@/components/shared/global-modal-context"
 
 /**
+ * Configuration for printing support in modal
+ */
+interface PrintConfig {
+  enabled?: boolean
+  elementId: string // e.g., "printable-receipt"
+}
+
+/**
  * Generic options for opening a feature-specific modal.
  */
 interface BaseModalOptions<T> {
@@ -35,6 +43,7 @@ interface ModalConfig<T = any> {
   editDescription?: string
   viewTitle?: string
   viewDescription?: string
+  printConfig?: PrintConfig
 }
 
 /**
@@ -52,6 +61,7 @@ export function createModalContext<
     modalClassName,
     hideHeader = false,
     renderHeader,
+    printConfig,
     addTitle = `Add New ${featureName}`,
     addDescription = `Create a new ${featureName.toLowerCase()}.`,
     editTitle = `Edit ${featureName}`,
@@ -88,7 +98,10 @@ export function createModalContext<
         openGlobalModal(formName, {
           title,
           description,
-          hideHeader,          renderHeader: renderHeader ? () => renderHeader(initialData) : undefined,          className: modalClassName,
+          hideHeader,
+          renderHeader: renderHeader ? () => renderHeader(initialData) : undefined,
+          className: modalClassName,
+          printConfig,
           initialData,
           isViewMode,
           onSuccess: (data: unknown) => {

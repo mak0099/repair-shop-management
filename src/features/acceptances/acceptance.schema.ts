@@ -11,10 +11,11 @@ const booleanString = z.enum(["true", "false"]).transform((value) => value === "
  */
 export const formSchema = z.object({
   customerId: z.string().trim().min(1, "Customer selection is required"),
-  estimatedPrice: z.number().optional(),
-  advancePayment: z.number().optional(),
-  totalCost: z.number().optional(),
-  balanceDue: z.number().optional(),
+  estimatedPrice: z.coerce.number().optional(),
+  advancePayment: z.coerce.number().optional(),
+  finalPayment: z.coerce.number().optional(),
+  totalCost: z.coerce.number().optional(),
+  balanceDue: z.coerce.number().optional(),
   brandId: z.string().trim().min(1, "Brand is required"),
   modelId: z.string().trim().min(1, "Model is required"),
   color: z.string().optional(),
@@ -32,7 +33,7 @@ export const formSchema = z.object({
   warranty: z.string().optional(),
   replacementDeviceId: z.string().optional(),
   dealer: z.string().optional(),
-  priceOffered: z.number().optional(),
+  priceOffered: z.coerce.number().optional(),
   reservedNotes: z.string().optional(),
   importantInformation: booleanString,
   pinUnlock: booleanString,
@@ -50,8 +51,8 @@ export const formSchema = z.object({
   partsUsed: z.array(z.object({
     itemId: z.string(),
     name: z.string(),
-    quantity: z.number(),
-    price: z.number(),
+    quantity: z.coerce.number(),
+    price: z.coerce.number(),
   })).optional().default([]),
 
   // Operational Logs - Complete audit trail of all events
@@ -74,9 +75,9 @@ export const formSchema = z.object({
     metadata: z.object({
       from: z.string().optional(),
       to: z.string().optional(),
-      amount: z.number().optional(),
+      amount: z.coerce.number().optional(),
       itemName: z.string().optional(),
-      partPrice: z.number().optional(),
+      partPrice: z.coerce.number().optional(),
     }).optional(),
   })).optional().default([]),
 
@@ -90,12 +91,14 @@ export const formSchema = z.object({
       "DELIVERY_COMPLETED",
       "PART_ADDED",
       "PART_REMOVED",
+      "NOTE_ADDED",
     ]),
     description: z.string(),
     icon: z.string().optional(),
     color: z.enum(["blue", "indigo", "emerald", "amber", "red"]).optional(),
     timestamp: z.date().or(z.string()),
     userId: z.string().optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
   })).optional().default([]),
 }).refine((data) => {
   if (data.pinUnlock === true) {
@@ -126,7 +129,6 @@ export type FormData = z.input<typeof formSchema>;
 export interface Acceptance extends BaseEntity, Omit<z.output<typeof formSchema>, 'photo1' | 'photo2' | 'photo3' | 'photo4' | 'photo5'> {
   acceptanceNumber: string;
   photos: string[];
-  isActive: boolean;
   // Populated by API for list display
   customer?: { id: string; name?: string; mobile?: string; phone?: string };
   brand?: { id: string; name: string };

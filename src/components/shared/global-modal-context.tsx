@@ -11,6 +11,10 @@ interface ModalProps {
   hideHeader?: boolean;
   renderHeader?: () => React.ReactNode;
   className?: string;
+  printConfig?: {
+    enabled?: boolean;
+    elementId: string;
+  };
   [key: string]: unknown; // Allow any other props
 }
 

@@ -11,10 +11,10 @@ const initialMasterSettings: MasterSetting[] = [
     createdAt: now,
     updatedAt: now,
     values: [
-      { id: "m-dt-1", value: "Global", isActive: true },
-      { id: "m-dt-2", value: "Official", isActive: true },
-      { id: "m-dt-3", value: "USA Variant", isActive: true },
-      { id: "m-dt-4", value: "Indian Version", isActive: true },
+      { id: "m-dt-1", value: "Smartphone", isActive: true },
+      { id: "m-dt-2", value: "Tablet", isActive: true },
+      { id: "m-dt-3", value: "Laptop", isActive: true },
+      { id: "m-dt-4", value: "Desktop", isActive: true },
     ],
   },
   {

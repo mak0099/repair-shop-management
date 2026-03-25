@@ -24,6 +24,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
 
+export interface TabConfig {
+  enabled?: boolean
+  position?: "above" | "below" | "card"
+  counts?: Record<string, number>
+  selectedValue?: string
+  onChange?: (value: string) => void
+  options?: { label: string; value: string }[]
+  colors?: Record<string, string>
+}
+
 export interface FilterDefinition {
   key: string
   title: string
@@ -81,6 +91,7 @@ interface ResourceListPageProps<TData extends { id?: string }, TValue> {
     unknown
   >
   config?: ResourceListConfig
+  tabs?: TabConfig
 }
 
 const DEFAULT_INITIAL_FILTERS: ResourceFilters = {
@@ -106,6 +117,7 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
   bulkDeleteMutation,
   bulkStatusUpdateMutation,
   config = {},
+  tabs,
 }: ResourceListPageProps<TData, TValue>) {
   const mergedFilters = { ...DEFAULT_INITIAL_FILTERS, ...initialFilters }
   const [filters, setFilters] = useState<ResourceFilters>(mergedFilters as ResourceFilters)
@@ -277,6 +289,84 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
         )}
       </PageHeader>
 
+      {tabs?.enabled && tabs?.position === "above" && tabs?.options && (
+        <div className="flex items-center bg-card p-3 rounded-lg border border-border shadow-sm overflow-x-auto gap-2">
+          {tabs.options.map((tab) => {
+            const count = tabs.counts?.[tab.value] || 0
+            const isActive = tabs.selectedValue === tab.value
+            const tabBorderColor = tabs.colors?.[tab.value] || "border-border"
+            return (
+              <Button
+                key={tab.value}
+                variant="ghost"
+                size="sm"
+                onClick={() => tabs.onChange?.(tab.value)}
+                className={`h-8 px-3 text-xs font-bold whitespace-nowrap shrink-0 gap-1.5 transition-all duration-200 rounded-md border ${
+                  isActive
+                    ? "bg-secondary text-secondary-foreground shadow-sm border-secondary"
+                    : `${tabBorderColor} hover:border-foreground/30 hover:bg-accent`
+                }`}
+              >
+                {tab.label} <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full transition-colors duration-200 ${
+                  isActive 
+                    ? "bg-secondary-foreground/20 text-secondary-foreground" 
+                    : "bg-primary/10 text-primary"
+                }`}>{count}</span>
+              </Button>
+            )
+          })}
+        </div>
+      )}
+
+      {tabs?.enabled && tabs?.position === "card" && tabs?.options && (
+        <div className="rounded-lg border border-border bg-card shadow-sm p-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 overflow-x-auto shrink-0">
+              {tabs.options.map((tab) => {
+                const count = tabs.counts?.[tab.value] || 0
+                const isActive = tabs.selectedValue === tab.value
+                const tabBorderColor = tabs.colors?.[tab.value] || "border-border"
+                return (
+                  <Button
+                    key={tab.value}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => tabs.onChange?.(tab.value)}
+                    className={`h-8 px-3 text-xs font-bold whitespace-nowrap gap-1.5 transition-all duration-200 rounded-md border ${
+                      isActive
+                        ? "bg-secondary text-secondary-foreground shadow-sm border-secondary"
+                        : `${tabBorderColor} hover:border-foreground/30 hover:bg-accent`
+                    }`}
+                  >
+                    {tab.label} <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full transition-colors duration-200 ${
+                      isActive 
+                      ? "bg-secondary-foreground/20 text-secondary-foreground" 
+                        : "bg-primary/10 text-primary"
+                    }`}>{count}</span>
+                  </Button>
+                )
+              })}
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <DataTableFilterToolbar
+                searchQuery={filters.search}
+                onSearchChange={(value) => setFilters({ ...filters, search: value, page: 1 })}
+                searchPlaceholder={searchPlaceholder}
+                onReset={handleReset}
+                isFiltered={isFiltered}
+                filters={effectiveFilterDefinitions.map((def) => ({
+                  ...def,
+                  value: String(filters[def.key] ?? ""),
+                  onChange: (val: string) => setFilters({ ...filters, [def.key]: val, page: 1 }),
+                }))}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!(tabs?.enabled && tabs?.position === "card") && (
+        <>
       <DataTableFilterToolbar
         searchQuery={filters.search}
         onSearchChange={(value) => setFilters({ ...filters, search: value, page: 1 })}
@@ -289,6 +379,37 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
           onChange: (val: string) => setFilters({ ...filters, [def.key]: val, page: 1 }),
         }))}
       />
+        </>
+      )}
+
+      {tabs?.enabled && tabs?.position === "below" && tabs?.options && (
+        <div className="flex items-center bg-card p-3 rounded-lg border border-border shadow-sm overflow-x-auto gap-2">
+          {tabs.options.map((tab) => {
+            const count = tabs.counts?.[tab.value] || 0
+            const isActive = tabs.selectedValue === tab.value
+            const tabBorderColor = tabs.colors?.[tab.value] || "border-border"
+            return (
+              <Button
+                key={tab.value}
+                variant="ghost"
+                size="sm"
+                onClick={() => tabs.onChange?.(tab.value)}
+                className={`h-8 px-3 text-xs font-bold whitespace-nowrap shrink-0 gap-1.5 transition-all duration-200 rounded-md border ${
+                  isActive
+                    ? "bg-secondary text-secondary-foreground shadow-sm border-secondary"
+                    : `${tabBorderColor} hover:border-foreground/30 hover:bg-accent`
+                }`}
+              >
+                {tab.label} <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full transition-colors duration-200 ${
+                  isActive 
+                    ? "bg-secondary-foreground/20 text-secondary-foreground" 
+                    : "bg-primary/10 text-primary"
+                }`}>{count}</span>
+              </Button>
+            )
+          })}
+        </div>
+      )}
 
       <DataTableCard
         table={table}

@@ -6,6 +6,7 @@ import { mockCustomers } from '@/features/customers/mocks/customers.mock';
 import { Acceptance } from '../acceptance.schema';
 import { mockBrands } from '@/features/brands/mocks/brands.mock';
 import { mockModels } from '@/features/models/mocks/models.mock';
+import { mockUsers } from '@/features/users/mocks/users.mock';
 
 // In-memory store for mock operations
 let acceptances = [...mockAcceptances];
@@ -29,11 +30,13 @@ export const acceptanceHandlers = [
         const customer = mockCustomers.find(c => c.id === acceptance.customerId);
         const brand = mockBrands.find(b => b.id === acceptance.brandId);
         const model = mockModels.find(m => m.id === acceptance.modelId);
+        const technician = acceptance.technicianId ? mockUsers.find(u => u.id === acceptance.technicianId) : undefined;
         return {
             ...acceptance,
             customer: customer ? { id: customer.id, name: customer.name, mobile: customer.mobile, phone: customer.phone } : undefined,
             brand: brand ? { id: brand.id, name: brand.name } : undefined,
             model: model ? { id: model.id, name: model.name } : undefined,
+            technician: technician ? { id: technician.id, name: technician.name } : undefined,
         };
     });
 
@@ -46,7 +49,7 @@ export const acceptanceHandlers = [
               (acceptance.imei || "").toLowerCase().includes(search)
             : true;
 
-        const statusMatch = !status || status === 'all' || String(acceptance.currentStatus).toLowerCase() === String(status).toLowerCase();
+        const statusMatch = !status || status === 'all' || String(acceptance.currentStatus) === String(status);
         const customerMatch = !customerId || customerId === 'all' || String(acceptance.customerId) === String(customerId);
         const brandMatch = !brandId || brandId === 'all' || String(acceptance.brandId) === String(brandId);
         const modelMatch = !modelId || modelId === 'all' || String(acceptance.modelId) === String(modelId);

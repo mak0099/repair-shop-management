@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, ReactNode, useCallback } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Quotation } from "./quotations.schema"
 import { QuotationForm } from "./components/quotation-form"
 import { QuotationView } from "./components/quotation-view"
@@ -40,6 +40,7 @@ export function QuotationModalProvider({ children }: { children: ReactNode }) {
       
       <Dialog open={state.isOpen} onOpenChange={closeModal}>
         <DialogContent className="max-w-5xl p-0 overflow-hidden h-[90vh] flex flex-col">
+          <DialogTitle className="sr-only">Quotation {state.isViewMode ? "View" : "Form"}</DialogTitle>
           {state.isViewMode && state.initialData ? (
             <QuotationView quotation={state.initialData} />
           ) : (

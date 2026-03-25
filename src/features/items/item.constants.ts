@@ -5,6 +5,18 @@ export const TYPE_OPTIONS = [
   { value: "ACCESSORY", label: "Accessory" },
 ]
 
+export const ITEM_TYPE = {
+  DEVICE: "DEVICE",
+  PART: "PART",
+  LOANED: "LOANED"
+} as const;
+
+export const ITEM_TYPE_OPTIONS = [
+  { value: "DEVICE", label: "Device" },
+  { value: "PART", label: "Part" },
+  { value: "LOANED", label: "Loaned Item" },
+];
+
 export const STATUS_OPTIONS = [
   { value: "all", label: "All Status" },
   { value: "true", label: "Active" },

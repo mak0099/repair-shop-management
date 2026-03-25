@@ -31,6 +31,8 @@ const generateItems = (count: number): Item[] => {
       salePrice: itemInfo.price,
       minStockLevel: 5,
       
+      itemType: i >= 2 && i < 7 ? "PART" : "DEVICE", // First 2 are devices, next 5 are parts, rest are devices
+      
       isSerialized: itemInfo.serialized,
       
       isActive: true,
@@ -45,7 +47,9 @@ const generateItems = (count: number): Item[] => {
       
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+      // Add quantity for stock tracking (not part of schema, but used in options)
+      quantity: Math.floor(Math.random() * 50) + 1, // Random quantity 1-50
+    } as any);
   }
   return items;
 };

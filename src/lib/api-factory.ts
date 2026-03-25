@@ -47,8 +47,16 @@ const convertToFormData = <T>(data: T): FormData => {
       } else if (value instanceof Date) {
         payload.append(key, value.toISOString())
       } else if (Array.isArray(value)) {
-        // Handle array values by appending them with square brackets
-        value.forEach((v) => payload.append(`${key}[]`, String(v)))
+        // For complex objects, stringify; for primitives, use array format
+        if (value.length > 0 && typeof value[0] === 'object') {
+          payload.append(key, JSON.stringify(value))
+        } else {
+          // Handle array values by appending them with square brackets for primitives
+          value.forEach((v) => payload.append(`${key}[]`, String(v)))
+        }
+      } else if (typeof value === 'object') {
+        // Stringify complex objects
+        payload.append(key, JSON.stringify(value))
       } else {
         payload.append(key, String(value))
       }
@@ -167,9 +175,8 @@ export function createApiHooksFor<
     const queryClient = useQueryClient()
     return useMutation<TResource, Error, { id: string; data: TUpdateParams }>({
       mutationFn: async ({ id, data }) => {
-        const payload = convertToFormData(data)
-        payload.append("_method", "PUT")
-        const response = await api.post<TResource>(`/${resourceName}/${id}`, payload)
+        // Send as JSON instead of FormData for better compatibility with mock handlers
+        const response = await api.put<TResource>(`/${resourceName}/${id}`, data)
         return response.data
       },
       onSuccess: (data) => {

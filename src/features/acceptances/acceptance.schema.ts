@@ -13,6 +13,8 @@ export const formSchema = z.object({
   customerId: z.string().trim().min(1, "Customer selection is required"),
   estimatedPrice: z.number().optional(),
   advancePayment: z.number().optional(),
+  totalCost: z.number().optional(),
+  balanceDue: z.number().optional(),
   brandId: z.string().trim().min(1, "Brand is required"),
   modelId: z.string().trim().min(1, "Model is required"),
   color: z.string().optional(),
@@ -25,7 +27,8 @@ export const formSchema = z.object({
   acceptanceDate: z.date({ message: "Acceptance date is required" }),
   imei: z.string().trim().min(1, "IMEI/Serial is required"),
   secondaryImei: z.string().trim().optional(),
-  technicianId: z.string().trim().min(1, "Technician assignment is required"),
+  loanerDeviceId: z.string().optional(), // For tracking temporary phones given to customers
+  technicianId: z.string().trim().optional(),
   warranty: z.string().optional(),
   replacementDeviceId: z.string().optional(),
   dealer: z.string().optional(),
@@ -42,6 +45,58 @@ export const formSchema = z.object({
   photo3: z.any().optional(),
   photo4: z.any().optional(),
   photo5: z.any().optional(),
+
+  // Advanced Tracking
+  partsUsed: z.array(z.object({
+    itemId: z.string(),
+    name: z.string(),
+    quantity: z.number(),
+    price: z.number(),
+  })).optional().default([]),
+
+  // Operational Logs - Complete audit trail of all events
+  operationalLogs: z.array(z.object({
+    id: z.string(),
+    action: z.enum([
+      "TICKET_CREATED",
+      "STATUS_CHANGED",
+      "TECHNICIAN_ASSIGNED",
+      "PART_ADDED",
+      "PART_REMOVED",
+      "PAYMENT_RECEIVED",
+      "NOTE_ADDED",
+      "PHOTO_ADDED",
+      "DELIVERY_COMPLETED",
+    ]),
+    description: z.string(),
+    timestamp: z.date().or(z.string()),
+    userId: z.string().optional(),
+    metadata: z.object({
+      from: z.string().optional(),
+      to: z.string().optional(),
+      amount: z.number().optional(),
+      itemName: z.string().optional(),
+      partPrice: z.number().optional(),
+    }).optional(),
+  })).optional().default([]),
+
+  // Timeline Logs - Important workflow events for visual timeline
+  timelineLogs: z.array(z.object({
+    id: z.string(),
+    action: z.enum([
+      "TICKET_CREATED",
+      "TECHNICIAN_ASSIGNED",
+      "STATUS_CHANGED",
+      "DELIVERY_COMPLETED",
+      "PART_ADDED",
+      "PART_REMOVED",
+    ]),
+    description: z.string(),
+    icon: z.string().optional(),
+    color: z.enum(["blue", "indigo", "emerald", "amber", "red"]).optional(),
+    timestamp: z.date().or(z.string()),
+    userId: z.string().optional(),
+  })).optional().default([]),
 }).refine((data) => {
   if (data.pinUnlock === true) {
     return !!data.pinUnlockNumber && data.pinUnlockNumber.trim().length > 0;
@@ -72,4 +127,9 @@ export interface Acceptance extends BaseEntity, Omit<z.output<typeof formSchema>
   acceptanceNumber: string;
   photos: string[];
   isActive: boolean;
+  // Populated by API for list display
+  customer?: { id: string; name?: string; mobile?: string; phone?: string };
+  brand?: { id: string; name: string };
+  model?: { id: string; name: string };
+  technician?: { id: string; name: string };
 }

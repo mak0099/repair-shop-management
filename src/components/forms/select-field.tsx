@@ -34,14 +34,16 @@ interface SelectFieldProps<TFieldValues extends FieldValues> {
   placeholder: string
   searchPlaceholder?: string
   noResultsMessage?: string
-  options: { value: string; label: string }[]
+  options: { value: string; label: string; [key: string]: unknown }[]
   onAdd?: () => void
+  onValueChange?: (value: string) => void
   required?: boolean
   isLoading?: boolean
   disabled?: boolean
   readOnly?: boolean
   className?: string
   isMulti?: boolean
+  renderOption?: (option: { value: string; label: string; [key: string]: unknown }) => React.ReactNode
 }
 
 export function SelectField<TFieldValues extends FieldValues>({
@@ -53,12 +55,14 @@ export function SelectField<TFieldValues extends FieldValues>({
   noResultsMessage = "No results found.",
   options,
   onAdd,
+  onValueChange,
   required,
   isLoading = false,
   disabled = false,
   readOnly = false,
   className,
   isMulti = false,
+  renderOption,
 }: SelectFieldProps<TFieldValues>) {
   const [open, setOpen] = React.useState(false)
   
@@ -80,6 +84,10 @@ export function SelectField<TFieldValues extends FieldValues>({
         field.onChange("")
       } else {
         field.onChange(optionValue)
+        // Call onValueChange callback after setting the value
+        if (onValueChange) {
+          onValueChange(optionValue)
+        }
       }
       setOpen(false)
     }
@@ -208,10 +216,16 @@ export function SelectField<TFieldValues extends FieldValues>({
                             onSelect={() => handleSelect(option.value, field)}
                             className="flex items-center justify-between py-2 cursor-pointer text-sm"
                           >
-                            <span className="truncate">{option.label}</span>
+                            {renderOption ? (
+                              <div className="flex flex-1 min-w-0">
+                                {renderOption(option)}
+                              </div>
+                            ) : (
+                              <span className="truncate">{option.label}</span>
+                            )}
                             <Check
                               className={cn(
-                                "h-4 w-4 text-primary",
+                                "h-4 w-4 text-primary shrink-0 ml-2",
                                 isMulti 
                                   ? (Array.isArray(field.value) && field.value.includes(option.value) ? "opacity-100" : "opacity-0")
                                   : (field.value === option.value ? "opacity-100" : "opacity-0")

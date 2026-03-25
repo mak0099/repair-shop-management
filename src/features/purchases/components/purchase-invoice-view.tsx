@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Truck, Printer, FileText, Hash, CheckCircle2 } from "lucide-react"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CurrencyText } from "@/components/shared/data-table-cells"
@@ -33,6 +33,7 @@ export function PurchaseInvoiceView({ purchase, trigger }: PurchaseInvoiceViewPr
       </DialogTrigger>
       
       <DialogContent className="max-w-4xl p-0 overflow-hidden h-[95vh] flex flex-col border-none shadow-2xl">
+        <DialogTitle className="sr-only">Purchase Invoice</DialogTitle>
         {/* --- Action Header (Screen Only) --- */}
         <div className="flex justify-between items-center p-4 border-b print:hidden bg-muted/80 backdrop-blur-sm">
           <div className="flex items-center gap-2 text-foreground font-black text-[10px] uppercase tracking-widest">

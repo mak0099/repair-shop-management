@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 import { itemSchema, Item, ItemFormValues } from "../item.schema"
+import { ITEM_TYPE_OPTIONS } from "../item.constants"
 import { useCreateItem, useUpdateItem } from "../item.api"
 
 import { CategorySelectField } from "@/features/categories"
@@ -57,6 +58,7 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
       name: "",
       subtitle: "",
       condition: "NEW",
+      itemType: "DEVICE",
       purchasePrice: 0,
       salePrice: 0,
       minStockLevel: 2, // স্কিমা অনুযায়ী সঠিক নাম
@@ -181,6 +183,18 @@ export function ItemForm({ initialData, onSuccess, isViewMode: initialIsViewMode
                         name="condition"
                         label="Item Condition"
                         options={[{ label: "New", value: "NEW" }, { label: "Used", value: "USED" }, { label: "Refurbished", value: "REFURBISHED" }]}
+                        readOnly={isViewMode}
+                        layout="partial-horizontal"
+                      />
+                    </div>
+
+                    <div className="p-3 bg-muted/30 rounded-lg border border-border">
+                      <RadioGroupField
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        control={control as any}
+                        name="itemType"
+                        label="Item Type"
+                        options={ITEM_TYPE_OPTIONS}
                         readOnly={isViewMode}
                         layout="partial-horizontal"
                       />

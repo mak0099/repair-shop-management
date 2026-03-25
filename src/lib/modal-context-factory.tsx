@@ -23,10 +23,12 @@ interface ModalContextType<T, O extends object> {
 /**
  * Configuration for the modal context factory.
  */
-interface ModalConfig {
+interface ModalConfig<T = any> {
   featureName: string
   formName: string
   modalClassName?: string
+  hideHeader?: boolean
+  renderHeader?: (data?: T) => React.ReactNode
   addTitle?: string
   addDescription?: string
   editTitle?: string
@@ -43,11 +45,13 @@ interface ModalConfig {
 export function createModalContext<
   T extends { id?: string }, 
   O extends object = object,
->(config: ModalConfig) {
+>(config: ModalConfig<T>) {
   const {
     featureName,
     formName,
     modalClassName,
+    hideHeader = false,
+    renderHeader,
     addTitle = `Add New ${featureName}`,
     addDescription = `Create a new ${featureName.toLowerCase()}.`,
     editTitle = `Edit ${featureName}`,
@@ -84,7 +88,7 @@ export function createModalContext<
         openGlobalModal(formName, {
           title,
           description,
-          className: modalClassName,
+          hideHeader,          renderHeader: renderHeader ? () => renderHeader(initialData) : undefined,          className: modalClassName,
           initialData,
           isViewMode,
           onSuccess: (data: unknown) => {

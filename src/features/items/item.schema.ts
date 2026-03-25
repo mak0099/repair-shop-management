@@ -24,6 +24,7 @@ export const itemSchema = z.object({
   isSerialized: booleanSchema.default(false),
   minStockLevel: z.coerce.number().min(0).default(2), 
   
+  itemType: z.enum(["DEVICE", "PART", "LOANED"]).default("DEVICE"),
   deviceType: z.string().optional().nullable(),
   
   color: z.string().optional().nullable(),

@@ -66,7 +66,7 @@ export function AppTopNav() {
     <header 
       className="sticky top-0 z-50 w-full border-b transition-all duration-500 shadow-sm backdrop-blur-lg"
       style={{ 
-        backgroundColor: 'color-mix(in srgb, var(--tn-top-nav), transparent 15%)',
+        backgroundColor: 'color-mix(in srgb, var(--tn-top-nav), transparent 5%)',
         color: 'var(--tn-top-nav-foreground)',
         borderColor: 'color-mix(in srgb, var(--tn-top-nav-border), transparent 50%)',
         /* লোকাল ভেরিয়েবল স্কোপিং: যাতে ভেতরের সব কম্পোনেন্ট ডার্ক মোডের কালার পায় */

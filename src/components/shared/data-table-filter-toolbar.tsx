@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FilterCombobox, FilterOption } from "@/components/ui/filter-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { DayPicker, type DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
 
@@ -303,9 +304,14 @@ export function DataTableFilterToolbar({
       })}
 
       {isFiltered && onReset && (
-        <Button title="Reset Filters" variant="ghost" onClick={onReset} className="h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground">
-          <X className="h-3.5 w-3.5" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" onClick={onReset} className="h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground">
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Reset Filters</TooltipContent>
+        </Tooltip>
       )}
     </>
   )

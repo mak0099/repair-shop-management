@@ -89,7 +89,7 @@ export function FrontdeskView() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { icon: Wrench, label: "New Repair Intake", action: () => openAcceptanceModal(), type: 'gradient', color: '' },
-          { icon: Smartphone, label: "Sell Accessories", action: () => router.push(SALES_POS_HREF), type: 'outline', color: 'text-cyan-500' },
+          { icon: Smartphone, label: "Sell Products", action: () => router.push(SALES_POS_HREF), type: 'outline', color: 'text-cyan-500' },
           { icon: Receipt, label: "Create Quotation", action: () => openQuotationModal(), type: 'outline', color: 'text-pink-500' },
           { icon: Wallet, label: "Quick Expense", action: () => openExpenseModal(), type: 'outline', color: 'text-amber-500' },
         ].map((btn, i) => {

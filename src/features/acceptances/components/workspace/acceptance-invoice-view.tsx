@@ -80,7 +80,7 @@ export function AcceptanceInvoiceView({ acceptance, invoiceType = "DELIVERY" }: 
           {/* Company Info */}
           <div className="flex justify-between items-start border-b pb-6">
             <div className="space-y-1">
-              {shopProfile.logoUrl && (
+              {invoiceSetup?.showLogo !== false && shopProfile.logoUrl && (
                 <Image 
                   src={shopProfile.logoUrl} 
                   alt="Shop Logo" 
@@ -89,22 +89,21 @@ export function AcceptanceInvoiceView({ acceptance, invoiceType = "DELIVERY" }: 
                   className="mb-2"
                 />
               )}
-              <h1 className="text-xl font-black">{shopProfile.name}</h1>
-              <p className="text-xs text-muted-foreground">{shopProfile.address}</p>
-              <p className="text-xs text-muted-foreground">{shopProfile.phone}</p>
-              {shopProfile.email && <p className="text-xs text-muted-foreground">{shopProfile.email}</p>}
+              <h1 className="text-xl font-black">{invoiceSetup?.shopName || shopProfile.name}</h1>
+              <p className="text-xs text-muted-foreground">{invoiceSetup?.shopAddress || shopProfile.address}</p>
+              <p className="text-xs text-muted-foreground">{invoiceSetup?.shopContact || [shopProfile.phone, shopProfile.email].filter(Boolean).join(' • ')}</p>
             </div>
             <div className="text-right space-y-1">
-              <p className="text-2xl font-black tracking-tight">{getInvoiceTitle()}</p>
-              <p className="text-xs font-bold text-muted-foreground">#{acceptance.acceptanceNumber}</p>
-              <p className="text-xs text-muted-foreground">{formatDate(acceptance.acceptanceDate)}</p>
+              <p className="text-2xl font-black tracking-tight">{invoiceSetup?.invoiceTitle || getInvoiceTitle()}</p>
+              <p className="text-xs font-bold text-muted-foreground">{invoiceSetup?.invoiceNumberLabel || 'Ticket #'}: {acceptance.acceptanceNumber}</p>
+              <p className="text-xs text-muted-foreground">{invoiceSetup?.dateLabel || 'Date'}: {formatDate(acceptance.acceptanceDate)}</p>
             </div>
           </div>
 
           {/* Customer & Device Info */}
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <p className="text-xs font-black uppercase text-muted-foreground tracking-widest">Customer</p>
+              <p className="text-xs font-black uppercase text-muted-foreground tracking-widest">{invoiceSetup?.customerInfoLabel || 'Customer'}</p>
               <p className="font-bold text-sm">{acceptance.customer?.name || 'N/A'}</p>
               <p className="text-xs text-muted-foreground">{acceptance.customer?.phone || acceptance.customer?.mobile || 'N/A'}</p>
             </div>
@@ -135,10 +134,10 @@ export function AcceptanceInvoiceView({ acceptance, invoiceType = "DELIVERY" }: 
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 px-0 text-xs font-black uppercase">Part Name</th>
-                    <th className="text-right py-2 px-0 text-xs font-black uppercase">Qty</th>
-                    <th className="text-right py-2 px-0 text-xs font-black uppercase">Unit Price</th>
-                    <th className="text-right py-2 px-0 text-xs font-black uppercase">Total</th>
+                    <th className="text-left py-2 px-0 text-xs font-black uppercase">{invoiceSetup?.itemColumnLabel || 'Part Name'}</th>
+                    <th className="text-center py-2 px-0 text-xs font-black uppercase">{invoiceSetup?.quantityColumnLabel || 'Qty'}</th>
+                    <th className="text-right py-2 px-0 text-xs font-black uppercase">{invoiceSetup?.priceColumnLabel || 'Unit Price'}</th>
+                    <th className="text-right py-2 px-0 text-xs font-black uppercase">{invoiceSetup?.totalColumnLabel || 'Total'}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -158,23 +157,23 @@ export function AcceptanceInvoiceView({ acceptance, invoiceType = "DELIVERY" }: 
           {/* Pricing Summary */}
           <div className="space-y-2 border-t pt-4">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Service/Labor Cost:</span>
+              <span className="text-muted-foreground">{invoiceSetup?.subtotalLabel || 'Service/Labor Cost'}:</span>
               <span className="font-semibold">{formatCurrency(subtotal)}</span>
             </div>
             {advancePaid > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Advance Paid:</span>
+                <span className="text-muted-foreground">{invoiceSetup?.advancePaidLabel || 'Advance Paid'}:</span>
                 <span className="font-semibold text-emerald-600">-{formatCurrency(advancePaid)}</span>
               </div>
             )}
             {invoiceType === "DELIVERY" && (acceptance.finalPayment || 0) > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Final Payment:</span>
+                <span className="text-muted-foreground">{invoiceSetup?.finalPaymentLabel || 'Final Payment'}:</span>
                 <span className="font-semibold text-emerald-600">-{formatCurrency(acceptance.finalPayment || 0)}</span>
               </div>
             )}
             <div className="flex justify-between text-base font-bold border-t pt-2 mt-2">
-              <span>Balance Due:</span>
+              <span>{invoiceSetup?.balanceDueLabel || 'Balance Due'}:</span>
               <span className={balanceDue > 0 ? "text-amber-600" : "text-emerald-600"}>
                 {formatCurrency(balanceDue)}
               </span>
@@ -203,16 +202,18 @@ export function AcceptanceInvoiceView({ acceptance, invoiceType = "DELIVERY" }: 
           )}
 
           {/* Signature Line */}
-          <div className="grid grid-cols-2 gap-8 pt-8 print:pt-12">
-            <div className="space-y-6">
-              <div className="border-t border-gray-400"></div>
-              <p className="text-xs text-muted-foreground text-center font-semibold">Customer Signature</p>
+          {invoiceSetup?.showSignature !== false && (
+            <div className="grid grid-cols-2 gap-8 pt-8 print:pt-12">
+              <div className="space-y-6">
+                <div className="border-t border-gray-400"></div>
+                <p className="text-xs text-muted-foreground text-center font-semibold">Customer Signature</p>
+              </div>
+              <div className="space-y-6">
+                <div className="border-t border-gray-400"></div>
+                <p className="text-xs text-muted-foreground text-center font-semibold">{invoiceSetup?.signatureLabel || 'Shop Representative'}</p>
+              </div>
             </div>
-            <div className="space-y-6">
-              <div className="border-t border-gray-400"></div>
-              <p className="text-xs text-muted-foreground text-center font-semibold">Shop Representative</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </>

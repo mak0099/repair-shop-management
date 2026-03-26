@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import {
   Dialog,
   DialogContent,
@@ -52,51 +53,63 @@ export function PrintableDialog({
     window.print()
   }
 
-  return (
-    <>
-      <style jsx global>{`
-        @page {
-          size: A4;
-          margin: 0;
-        }
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #${printableElementId}, #${printableElementId} * {
-            visibility: visible;
-          }
-          #${printableElementId} {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 15px;
-            font-size: 13px;
-          }
-          
-          #${printableElementId} h1 {
-            font-size: 18px;
-            margin: 6px 0;
-          }
-          
-          #${printableElementId} h2 {
-            font-size: 14px;
-            margin: 4px 0;
-          }
-          
-          #${printableElementId} p {
-            margin: 2px 0;
-          }
-          
-          #${printableElementId} table {
-            font-size: 12px;
-            margin: 4px 0;
-          }
-        }
-      `}</style>
+  // Add print styles dynamically on mount
+  React.useEffect(() => {
+    const styleId = `print-styles-${printableElementId}`
+    if (document.getElementById(styleId)) return
 
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    const style = document.createElement('style')
+    style.id = styleId
+    style.textContent = `
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #${printableElementId}, #${printableElementId} * {
+          visibility: visible;
+        }
+        #${printableElementId} {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          padding: 15px;
+          font-size: 13px;
+        }
+        
+        #${printableElementId} h1 {
+          font-size: 18px;
+          margin: 6px 0;
+        }
+        
+        #${printableElementId} h2 {
+          font-size: 14px;
+          margin: 4px 0;
+        }
+        
+        #${printableElementId} p {
+          margin: 2px 0;
+        }
+        
+        #${printableElementId} table {
+          font-size: 12px;
+          margin: 4px 0;
+        }
+      }
+    `
+    document.head.appendChild(style)
+
+    return () => {
+      style.remove()
+    }
+  }, [printableElementId])
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className={className}>
           {/* DialogTitle for accessibility - hidden if custom header is shown */}
           {title ? (
@@ -134,6 +147,5 @@ export function PrintableDialog({
           {children}
         </DialogContent>
       </Dialog>
-    </>
-  )
-}
+    )
+  }

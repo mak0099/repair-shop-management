@@ -1,19 +1,22 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
+import { FileText } from "lucide-react"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
 import { DataTableColumnHeader } from "@/components/shared/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { DateCell, TitleCell, CurrencyCell } from "@/components/shared/data-table-cells"
 import { ResourceActions } from "@/components/shared/resource-actions"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
 
 import { useBuybacks, useDeleteBuyback, useDeleteManyBuybacks } from "../buyback.api"
 import { Buyback } from "../buyback.schema"
+import { BuybackInvoiceView } from "./buyback-invoice-view"
 import { useBuybackModal } from "../buyback-modal-context"
 import { Customer } from "@/features/customers"
-import { Item } from "@/features/items"
 
 interface BuybackInList extends Buyback {
   customer?: Pick<Customer, "id" | "name">
@@ -21,6 +24,7 @@ interface BuybackInList extends Buyback {
 
 export function BuybackList() {
     const { openModal } = useBuybackModal()
+    const [selectedInvoice, setSelectedInvoice] = useState<Buyback | null>(null)
     const deleteMutation = useDeleteBuyback()
     const bulkDeleteMutation = useDeleteManyBuybacks()
 
@@ -81,6 +85,14 @@ export function BuybackList() {
             id: "actions",
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 gap-2 text-[10px] font-bold border-slate-200 hover:bg-slate-50"
+                        onClick={() => setSelectedInvoice(row.original)}
+                    >
+                        <FileText className="h-3.5 w-3.5 text-blue-600" /> INVOICE
+                    </Button>
                     <ResourceActions
                         resourceTitle={row.original.buybackNumber}
                         resource={row.original}
@@ -95,16 +107,30 @@ export function BuybackList() {
     ], [openModal, deleteMutation])
 
     return (
-        <ResourceListPage<Buyback, unknown>
-            title="Customer Buybacks"
-            description="Manage devices traded-in or purchased from customers."
-            resourceName="buybacks"
-            columns={columns as ColumnDef<Buyback, unknown>[]}
-            useResourceQuery={useBuybacks}
-            onAdd={() => openModal()}
-            addLabel="New Buyback"
-            bulkDeleteMutation={bulkDeleteMutation}
-            searchPlaceholder="Search reference, IMEI, or customer..."
-        />
+        <>
+            <ResourceListPage<Buyback, unknown>
+                title="Customer Buybacks"
+                description="Manage devices traded-in or purchased from customers."
+                resourceName="buybacks"
+                columns={columns as ColumnDef<Buyback, unknown>[]}
+                useResourceQuery={useBuybacks}
+                onAdd={() => openModal()}
+                addLabel="New Buyback"
+                bulkDeleteMutation={bulkDeleteMutation}
+                searchPlaceholder="Search reference, IMEI, or customer..."
+            />
+            {selectedInvoice && (
+                <PrintableDialog
+                    title="Buyback Agreement"
+                    icon={<FileText />}
+                    printableElementId="printable-buyback-agreement"
+                    className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+                    isOpen={!!selectedInvoice}
+                    onOpenChange={(open) => !open && setSelectedInvoice(null)}
+                >
+                    <BuybackInvoiceView buyback={selectedInvoice} />
+                </PrintableDialog>
+            )}
+        </>
     )
 }

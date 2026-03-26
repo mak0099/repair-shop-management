@@ -25,6 +25,8 @@ import { MasterSettingSelectField } from "@/features/master-settings"
 import { purchaseSchema, PurchaseFormValues, ProductPurchase } from "../purchases.schema"
 import { useCreatePurchase, fetchItemDetailsForPurchase } from "../purchases.api"
 import { PurchaseInvoiceView } from "./purchase-invoice-view"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
+import { FileText } from "lucide-react"
 
 export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialData?: ProductPurchase | null, onSuccess: () => void, isViewMode?: boolean }) {
   const { mutate: createPurchase, isPending } = useCreatePurchase()
@@ -121,9 +123,6 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                 <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Transaction Mode</span>
                 <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[9px] font-bold px-2 py-0.5 rounded">READ ONLY</span>
               </div>
-
-              {/* সরাসরি এই ডায়ালগটি ব্যবহার করুন */}
-              <PurchaseInvoiceView purchase={initialData} />
             </div>
           )}
 

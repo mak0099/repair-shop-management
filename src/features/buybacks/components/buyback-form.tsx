@@ -26,6 +26,8 @@ import { useCreateBuyback, useUpdateBuyback } from "../buyback.api"
 // Reusing fetch function from purchases
 import { fetchItemDetailsForPurchase } from "@/features/purchases/purchases.api"
 import { BuybackInvoiceView } from "./buyback-invoice-view"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
+import { FileSignature } from "lucide-react"
 
 interface BuybackFormProps {
   initialData?: Buyback | null
@@ -148,8 +150,15 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
                 <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Transaction Mode</span>
                 <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[9px] font-bold px-2 py-0.5 rounded">READ ONLY</span>
               </div>
-              
-              <BuybackInvoiceView buyback={initialData} />
+
+              <PrintableDialog
+                title="Buyback Agreement"
+                icon={<FileSignature className="h-4 w-4" />}
+                printableElementId="printable-buyback-agreement"
+                className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+              >
+                <BuybackInvoiceView buyback={initialData} />
+              </PrintableDialog>
             </div>
           )}
 

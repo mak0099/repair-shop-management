@@ -7,6 +7,7 @@ import { format, isValid } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { useCurrency } from "@/providers/currency-provider"
+import { formatCurrency } from "@/lib/currency-config"
 
 import { cn } from "@/lib/utils"
 
@@ -206,20 +207,15 @@ export function CurrencyCell({
 }: CurrencyCellProps) {
   const { config } = useCurrency()
   
-  const currencyCode = overrideCurrencyCode || config.currencyCode
-  const locale = overrideLocale || config.locale
-  const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
-
-  if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
-    return <div className={cn("text-right font-medium text-muted-foreground", className)}>-</div>
+  const finalConfig = {
+    ...config,
+    ...(overrideCurrencyCode && { currencyCode: overrideCurrencyCode }),
+    ...(overrideLocale && { locale: overrideLocale }),
+    ...(minimumFractionDigits !== undefined && { minimumFractionDigits }),
+    ...(maximumFractionDigits !== undefined && { maximumFractionDigits }),
   }
-
-  const formatted = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currencyCode,
-    minimumFractionDigits: minimumFractionDigits ?? config.minimumFractionDigits,
-    maximumFractionDigits: maximumFractionDigits ?? config.maximumFractionDigits,
-  }).format(numericAmount)
+  
+  const formatted = formatCurrency(amount, finalConfig)
 
   return (
     <div className={cn("text-right pr-4", className)}>
@@ -240,18 +236,13 @@ export function CurrencyText({
 }: Pick<CurrencyCellProps, "amount" | "currencyCode" | "locale" | "minimumFractionDigits" | "maximumFractionDigits">) {
   const { config } = useCurrency()
   
-  const currencyCode = overrideCurrencyCode || config.currencyCode
-  const locale = overrideLocale || config.locale
-  const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
-
-  if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
-    return <>-</>
+  const finalConfig = {
+    ...config,
+    ...(overrideCurrencyCode && { currencyCode: overrideCurrencyCode }),
+    ...(overrideLocale && { locale: overrideLocale }),
+    ...(minimumFractionDigits !== undefined && { minimumFractionDigits }),
+    ...(maximumFractionDigits !== undefined && { maximumFractionDigits }),
   }
 
-  return <>{new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currencyCode,
-    minimumFractionDigits: minimumFractionDigits ?? config.minimumFractionDigits,
-    maximumFractionDigits: maximumFractionDigits ?? config.maximumFractionDigits,
-  }).format(numericAmount)}</>
+  return <>{formatCurrency(amount, finalConfig)}</>
 }

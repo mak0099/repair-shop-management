@@ -1,13 +1,18 @@
 /**
  * Global Currency Configuration
  * Centralized place to manage currency formatting across the application
+ * 
+ * Currency Priority Chain:
+ * 1. Shop Profile (Database) - per-shop setting
+ * 2. NEXT_PUBLIC_DEFAULT_CURRENCY (.env) - environment fallback
+ * 3. DEFAULT_CURRENCY_CONFIG - hardcoded default (EUR)
  */
 
 export const DEFAULT_CURRENCY_CONFIG = {
-  // Default locale (can be overridden by shop profile)
+  // Default locale (can be overridden by shop profile or .env)
   locale: "it-IT",
   
-  // Default currency code (can be overridden by shop profile)
+  // Default currency code (can be overridden by shop profile or NEXT_PUBLIC_DEFAULT_CURRENCY env)
   currencyCode: "EUR",
   
   // Default amount formatting options

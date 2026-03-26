@@ -6,6 +6,22 @@ import { useLoading } from "@/components/shared/loading-context"
 const IS_BROWSER = typeof window !== "undefined"
 const shouldMock = process.env.NEXT_PUBLIC_API_MOCKING === "enabled"
 
+// Suppress Chrome extension "Could not establish connection" errors
+if (IS_BROWSER) {
+  const originalError = console.error
+  console.error = function (...args: any[]) {
+    const message = String(args[0] ?? "")
+    if (
+      message.includes("Could not establish connection") ||
+      message.includes("Receiving end does not exist") ||
+      message.includes("runtime.lastError")
+    ) {
+      return
+    }
+    originalError.apply(console, args)
+  }
+}
+
 export function MSWProvider({ children }: PropsWithChildren) {
   const [isMockingReady, setIsMockingReady] = useState(!shouldMock)
   const { startLoading, stopLoading } = useLoading()

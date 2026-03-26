@@ -5,7 +5,7 @@ import { useForm, useWatch, FieldValues } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
-import { Smartphone, Wrench, CreditCard, Camera, Receipt } from "lucide-react"
+import { Smartphone, Wrench, CreditCard, Camera, Receipt, Grid3x3, Tabs as TabsIcon } from "lucide-react"
 import { useCurrency } from "@/providers/currency-provider"
 
 import { Form } from "@/components/ui/form"
@@ -83,6 +83,7 @@ export function AcceptanceForm({ onSuccess }: AcceptanceFormProps) {
   const [activeTab, setActiveTab] = useState<TabId>("general")
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [createdAcceptance, setCreatedAcceptance] = useState<Acceptance | null>(null)
+  const [fullViewMode, setFullViewMode] = useState(false)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -93,6 +94,53 @@ export function AcceptanceForm({ onSuccess }: AcceptanceFormProps) {
   const brandId = useWatch({ control, name: "brandId" })
   const pinUnlock = useWatch({ control, name: "pinUnlock" })
   const urgent = useWatch({ control, name: "urgent" })
+
+  // Map fields to their tabs for error detection
+  const fieldTabMap: Record<string, TabId> = {
+    customerId: "general",
+    brandId: "general",
+    modelId: "general",
+    imei: "general",
+    secondaryImei: "general",
+    color: "general",
+    deviceType: "general",
+    defectDescription: "repair",
+    accessories: "repair",
+    warranty: "repair",
+    technicianId: "repair",
+    pinUnlock: "repair",
+    pinUnlockNumber: "repair",
+    urgent: "repair",
+    urgentDateTime: "repair",
+    estimatedPrice: "finance",
+    advancePayment: "finance",
+    totalCost: "finance",
+    acceptanceDate: "finance",
+    loanerDeviceId: "finance",
+    replacementDeviceId: "finance",
+    dealer: "finance",
+    priceOffered: "finance",
+    quote: "finance",
+    importantInformation: "finance",
+    notes: "finance",
+    reservedNotes: "finance",
+    photo1: "photos",
+    photo2: "photos",
+    photo3: "photos",
+    photo4: "photos",
+    photo5: "photos",
+  }
+
+  // Check which tabs have errors
+  const getTabsWithErrors = useCallback(() => {
+    const errorFields = Object.keys(formState.errors)
+    const tabsWithErrors = new Set<TabId>()
+    errorFields.forEach((field) => {
+      const tab = fieldTabMap[field]
+      if (tab) tabsWithErrors.add(tab)
+    })
+    return tabsWithErrors
+  }, [formState.errors])
 
   // Reset model when brand changes
   useEffect(() => {
@@ -123,6 +171,22 @@ export function AcceptanceForm({ onSuccess }: AcceptanceFormProps) {
 
   // Form submission
   const onSubmit = (data: FormData) => {
+    // Check for validation errors
+    const errors = formState.errors
+    if (Object.keys(errors).length > 0) {
+      // Find first error and its tab
+      let firstErrorField = Object.keys(errors)[0]
+      let firstErrorTab = fieldTabMap[firstErrorField] || "general"
+      const firstErrorMessage = errors[firstErrorField as keyof typeof errors]?.message || "Validation error"
+
+      // Navigate to tab with error
+      setActiveTab(firstErrorTab as TabId)
+
+      // Show toast with error info
+      toast.error(`Error in ${firstErrorTab === "general" ? "Customer & Device" : firstErrorTab === "repair" ? "Repair Details" : firstErrorTab === "finance" ? "Finance & Admin" : "Photos"} tab: ${firstErrorMessage}`)
+      return
+    }
+
     // Calculate financial fields
     const totalCost = data.estimatedPrice || 0
     const advancePaid = data.advancePayment || 0
@@ -167,122 +231,166 @@ export function AcceptanceForm({ onSuccess }: AcceptanceFormProps) {
   // Main render
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full bg-muted/10">
-        <div className="flex-1 overflow-y-auto p-6">
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabId)} className="w-full max-w-5xl mx-auto space-y-6">
-            {/* Tab Navigation */}
-            <TabsList className="grid w-full grid-cols-4 h-auto p-1.5 bg-muted/50 border shadow-sm rounded-xl">
-              {TABS_CONFIG.map(({ id, label, icon: Icon }) => (
-                <TabsTrigger key={id} value={id} className="py-2.5 text-xs font-bold rounded-lg data-[state=active]:shadow-sm">
-                  <Icon className="w-4 h-4 mr-2 hidden sm:block" />
-                  {label}
-                </TabsTrigger>
-              ))}
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full overflow-hidden bg-muted/10">
+        {/* Single Tabs wrapper for the entire form */}
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabId)} className="flex flex-col flex-1 overflow-hidden min-h-0">
+          {/* Tab Navigation - Fixed at top */}
+          <div className="px-6 pt-4 pb-3 bg-background border-b border-border flex-shrink-0">
+            <TabsList className="grid w-full grid-cols-4 h-12 p-1 bg-muted/50 border shadow-sm rounded-lg">
+              {TABS_CONFIG.map(({ id, label, icon: Icon }) => {
+                const tabsWithErrors = getTabsWithErrors()
+                const hasError = tabsWithErrors.has(id)
+                return (
+                  <TabsTrigger key={id} value={id} className="py-2.5 px-2 text-xs font-bold rounded-md data-[state=active]:shadow-sm flex items-center justify-center gap-1.5 relative">
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="hidden sm:inline truncate">{label}</span>
+                    {hasError && (
+                      <div className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full" title="This tab has validation errors" />
+                    )}
+                  </TabsTrigger>
+                )
+              })}
             </TabsList>
+          </div>
 
-            {/* General Tab */}
-            <TabsContent value="general" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="bg-card p-6 rounded-2xl shadow-sm border border-border space-y-6 min-h-[420px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="md:col-span-2">
-                    <CustomerSelectField name="customerId" control={control as unknown as any} required />
+          {/* Tab Content - Scrollable in the middle */}
+          <div className="flex-1 overflow-y-auto min-h-0 max-h-[calc(75vh-160px)]">
+            <div className="max-w-4xl mx-auto px-6 pb-6">
+                {/* General Tab */}
+                <TabsContent value="general" className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+                  <div className="bg-card p-5 rounded-xl shadow-sm border border-border space-y-4">
+                    {/* Customer - Full Width */}
+                    <div>
+                      <CustomerSelectField name="customerId" control={control as unknown as any} required />
+                    </div>
+                    {/* Device Info - Compact Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="md:col-span-1">
+                        <BrandSelectField name="brandId" control={control as unknown as any} required />
+                      </div>
+                      <div className="md:col-span-1">
+                        <ModelSelectField name="modelId" control={control as unknown as any} brandId={brandId} required disabled={!brandId} />
+                      </div>
+                      <div className="md:col-span-1">
+                        <MasterSettingSelectField control={control as unknown as any} name="deviceType" type="DEVICE_TYPE" label="Device Type" required />
+                      </div>
+                    </div>
+                    {/* Color & IMEI - Compact Row */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div>
+                        <MasterSettingSelectField control={control as unknown as any} name="color" type="COLOR" label="Device Color" />
+                      </div>
+                      <div>
+                        <TextField control={control as unknown as any} name="imei" label="IMEI" required />
+                      </div>
+                      <div>
+                        <TextField control={control as unknown as any} name="secondaryImei" label="Secondary IMEI" />
+                      </div>
+                    </div>
                   </div>
-                  <BrandSelectField name="brandId" control={control as unknown as any} required />
-                  <ModelSelectField name="modelId" control={control as unknown as any} brandId={brandId} required disabled={!brandId} />
-                  <MasterSettingSelectField control={control as unknown as any} name="deviceType" type="DEVICE_TYPE" label="Device Type" required />
-                  <MasterSettingSelectField control={control as unknown as any} name="color" type="COLOR" label="Device Color" />
-                  <TextField control={control as unknown as any} name="imei" label="IMEI / Serial Number" required />
-                  <TextField control={control as unknown as any} name="secondaryImei" label="Secondary IMEI (Optional)" />
-                </div>
-              </div>
-            </TabsContent>
+                </TabsContent>
 
-            {/* Repair Details Tab */}
-            <TabsContent value="repair" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="bg-card p-6 rounded-2xl shadow-sm border border-border space-y-6 min-h-[420px]">
-                <div className="grid grid-cols-1 gap-6">
-                  <TextareaField control={control as unknown as any} name="defectDescription" label="Defect / Problem Description" required rows={3} />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <MasterSettingSelectField control={control as unknown as any} name="accessories" type="ACCESSORY" label="Included Accessories" />
-                  <MasterSettingSelectField control={control as unknown as any} name="warranty" type="WARRANTY" label="Warranty Promised" />
-                  <UserSelectField variant="technician" control={control as unknown as any} name="technicianId" label="Assign Technician (Optional)" />
-                </div>
-                {/* PIN & Urgent Options */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-muted/30 rounded-xl border border-border/60">
-                  <div className="space-y-4">
-                    <RadioGroupField control={control as unknown as any} name="pinUnlock" label="Device has PIN/Password?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
-                    {pinUnlock === "true" && <TextField control={control as unknown as any} name="pinUnlockNumber" label="PIN Code" required />}
-                  </div>
-                  <div className="space-y-4 md:border-l md:pl-6 border-border">
-                    <RadioGroupField control={control as unknown as any} name="urgent" label="Is this Urgent?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
-                    {urgent === "true" && <DatePickerField control={control as unknown as any} name="urgentDateTime" label="Deadline Date & Time" required showTime />}
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
+                {/* Repair Details Tab */}
+                <TabsContent value="repair" className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+                  <div className="bg-card p-5 rounded-xl shadow-sm border border-border space-y-4">
+                    {/* Problem Description - Compact */}
+                    <TextareaField control={control as unknown as any} name="defectDescription" label="Defect / Problem Description" rows={2} />
+                    
+                    {/* Accessories & Warranty - Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <MasterSettingSelectField control={control as unknown as any} name="accessories" type="ACCESSORY" label="Accessories" />
+                      <MasterSettingSelectField control={control as unknown as any} name="warranty" type="WARRANTY" label="Warranty" />
+                      <UserSelectField variant="technician" control={control as unknown as any} name="technicianId" label="Technician" />
+                    </div>
 
-            {/* Finance & Admin Tab */}
-            <TabsContent value="finance" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="bg-card p-6 rounded-2xl shadow-sm border border-border space-y-6 min-h-[420px]">
-                {/* Primary Finance Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-border/50 pb-6">
-                  <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="totalCost" label="Total Cost" type="number" min={0} />
-                  <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="estimatedPrice" label="Estimated Cost" type="number" min={0} />
-                  <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="advancePayment" label="Advance Paid" type="number" min={0} />
-                  <DatePickerField control={control as unknown as any} name="acceptanceDate" label="Acceptance Date" required />
-                </div>
-                {/* Loaner & Buyback Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-border/50 pb-6">
-                  <ItemSelectField control={control as unknown as any} name="loanerDeviceId" label="Loaner Phone" type="LOANER" />
-                  <ItemSelectField control={control as unknown as any} name="replacementDeviceId" label="Replacement Device ID" inStock={true} extras={['salePrice']} />
-                  <TextField control={control as unknown as any} name="dealer" label="Dealer Name" placeholder="B2B dealer if applicable" />
-                  <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="priceOffered" label="Buyback Price Offered" type="number" />
-                </div>
-                {/* Flags & Notes */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-5 p-4 bg-muted/30 rounded-xl border border-border">
-                    <RadioGroupField control={control as unknown as any} name="quote" label="Needs Quote First?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
-                    <RadioGroupField control={control as unknown as any} name="importantInformation" label="Flag as Important?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
+                    {/* PIN & Urgent - Compact Flags */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/40 rounded-lg border border-border/50">
+                      <div className="space-y-3">
+                        <RadioGroupField control={control as unknown as any} name="pinUnlock" label="Has PIN?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
+                        {pinUnlock === "true" && (
+                          <TextField control={control as unknown as any} name="pinUnlockNumber" label="PIN" required />
+                        )}
+                      </div>
+                      <div className="space-y-3">
+                        <RadioGroupField control={control as unknown as any} name="urgent" label="Urgent?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
+                        {urgent === "true" && (
+                          <DatePickerField control={control as unknown as any} name="urgentDateTime" label="Deadline" required showTime />
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-4">
-                    <TextareaField control={control as unknown as any} name="notes" label="Public Notes (Prints on Invoice)" rows={2} />
-                    <TextareaField control={control as unknown as any} name="reservedNotes" label="Internal Notes (Hidden from customer)" rows={2} />
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
+                </TabsContent>
 
-            {/* Photos Tab */}
-            <TabsContent value="photos" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="bg-card p-6 rounded-2xl shadow-sm border border-border min-h-[420px]">
-                <div className="mb-6">
-                  <h4 className="text-sm font-bold text-foreground">Condition Proof Photos</h4>
-                  <p className="text-xs text-muted-foreground mt-1">Upload up to 5 photos to document the device condition (scratches, dents, etc.) before taking it in.</p>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <ImageUploadField key={num} control={control as unknown as any} name={`photo${num}` as keyof FieldValues} label={`Photo ${num}`} layout="compact" />
-                  ))}
-                </div>
+                {/* Finance & Admin Tab */}
+                <TabsContent value="finance" className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+                  <div className="bg-card p-5 rounded-xl shadow-sm border border-border space-y-4">
+                    {/* Financial Summary - 4 Column */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/40 rounded-lg">
+                      <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="estimatedPrice" label="Estimated" type="number" />
+                      <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="advancePayment" label="Advance" type="number" />
+                      <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="totalCost" label="Total" type="number" />
+                      <DatePickerField control={control as unknown as any} name="acceptanceDate" label="Date" required />
+                    </div>
+
+                    {/* Loaner & Replacement - 2 Column */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ItemSelectField control={control as unknown as any} name="loanerDeviceId" label="Loaner Phone" type="LOANER" />
+                      <ItemSelectField control={control as unknown as any} name="replacementDeviceId" label="Replacement Device" inStock={true} extras={['salePrice']} />
+                    </div>
+
+                    {/* B2B / Buyback - 2 Column */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <TextField control={control as unknown as any} name="dealer" label="Dealer Name (B2B)" />
+                      <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="priceOffered" label="Buyback Price" type="number" />
+                    </div>
+
+                    {/* Flags - Inline Horizontal */}
+                    <div className="flex flex-col md:flex-row gap-6 p-4 bg-muted/40 rounded-lg border border-border/50">
+                      <div className="flex-1">
+                        <RadioGroupField control={control as unknown as any} name="quote" label="Needs Quote?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
+                      </div>
+                      <div className="flex-1">
+                        <RadioGroupField control={control as unknown as any} name="importantInformation" label="Flag Important?" options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} layout="partial-horizontal" />
+                      </div>
+                    </div>
+
+                    {/* Notes - Side by Side */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <TextareaField control={control as unknown as any} name="notes" label="Public Notes" rows={2} />
+                      <TextareaField control={control as unknown as any} name="reservedNotes" label="Internal Notes" rows={2} />
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Photos Tab */}
+                <TabsContent value="photos" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="bg-card p-5 rounded-xl shadow-sm border border-border">
+                    <h4 className="text-xs font-bold text-foreground mb-2">Condition Proof Photos</h4>
+                    <p className="text-[11px] text-muted-foreground mb-4">Upload up to 5 photos to document device condition</p>
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                      {[1, 2, 3, 4, 5].map((num) => (
+                        <ImageUploadField key={num} control={control as unknown as any} name={`photo${num}` as keyof FieldValues} label={`Photo ${num}`} layout="compact" />
+                      ))}
+                    </div>
+                  </div>
+                </TabsContent>
               </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+          </div>
+        </Tabs>
 
         {/* Form Actions Footer */}
-        <div className="bg-background border-t border-border p-4 px-6 sticky bottom-0 z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
-          <div className="flex justify-between items-center max-w-5xl mx-auto w-full">
-            <Button type="button" variant="ghost" onClick={() => onSuccess?.(null as any)}>
+        <div className="bg-background border-t border-border px-6 py-2.5 z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.02)] flex-shrink-0">
+          <div className="flex justify-between items-center max-w-4xl mx-auto w-full">
+            <Button type="button" variant="ghost" size="sm" className="h-9 text-xs" onClick={() => onSuccess?.(null as any)}>
               Cancel
             </Button>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {activeTab !== "photos" && (
-                <Button type="button" variant="secondary" onClick={handleNextTab}>
-                  Next Step
+                <Button type="button" variant="secondary" size="sm" className="h-9 text-xs" onClick={handleNextTab}>
+                  Next
                 </Button>
               )}
-              <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md font-bold px-6">
+              <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md font-bold text-xs h-9 px-4" size="sm">
                 {isPending ? "Creating..." : "Create Ticket"}
               </Button>
             </div>

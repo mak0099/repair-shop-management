@@ -6,7 +6,7 @@ import { Acceptance } from "./acceptance.schema"
 const { ModalProvider, useModal } = createModalContext<Acceptance>({
   featureName: "Acceptance",
   formName: "acceptanceForm",
-  modalClassName: "max-w-5xl max-h-[95vh] overflow-y-auto",
+  modalClassName: "max-w-5xl max-h-[95vh] min-h-[85vh] overflow-hidden flex flex-col",
   addDescription: "Create a new repair acceptance record.",
   editDescription: "Update acceptance details.",
   viewDescription: "View acceptance details.",

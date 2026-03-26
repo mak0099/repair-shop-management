@@ -105,7 +105,7 @@ export function SelectField<TFieldValues extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem className={cn("min-w-0", className)}>
           {label && <FieldLabel label={label} required={required} readOnly={readOnly} />}
 
@@ -129,7 +129,12 @@ export function SelectField<TFieldValues extends FieldValues>({
               </div>
             </FormControl>
           ) : (
-            <div className="flex items-center w-full">
+            <div className={cn(
+              "flex items-center w-full rounded-md border transition-colors",
+              fieldState.error
+                ? "border-red-500 bg-red-50/30"
+                : "border-input"
+            )}>
               <Popover open={open} onOpenChange={setOpen} modal={true}>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -139,8 +144,8 @@ export function SelectField<TFieldValues extends FieldValues>({
                       aria-expanded={open}
                       disabled={isLoading || disabled}
                       className={cn(
-                        "flex flex-1 justify-between min-h-[2.25rem] h-auto px-3 py-2 font-normal shadow-sm transition-all min-w-0",
-                        onAdd && "rounded-r-none border-r-0",
+                        "flex flex-1 justify-between min-h-[2.25rem] h-auto px-3 py-2 font-normal shadow-none transition-all min-w-0 border-l-0 border-r-0 border-t-0 border-b-0",
+                        onAdd && "rounded-r-none",
                         (!field.value || (Array.isArray(field.value) && field.value.length === 0)) && "text-muted-foreground"
                       )}
                     >
@@ -245,7 +250,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                   variant="outline"
                   size="icon"
                   disabled={isLoading || disabled}
-                  className="h-9 w-9 rounded-l-none bg-muted/50 hover:bg-muted shadow-sm shrink-0"
+                  className="h-9 w-9 rounded-l-none bg-muted/50 hover:bg-muted shadow-none border-l-0 border-t-0 border-b-0 shrink-0"
                   onClick={(e) => {
                     e.preventDefault();
                     onAdd();

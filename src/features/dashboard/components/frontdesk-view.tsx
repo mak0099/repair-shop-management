@@ -13,11 +13,11 @@ import { CurrencyText } from "@/components/shared/data-table-cells"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAcceptanceModal } from "@/features/acceptances/acceptance-modal-context"
-import { useQuotationModal } from "@/features/quotations/quotation-modal-context"
 import { useExpenseModal } from "@/features/expenses/expense-modal-context"
 import { SALES_POS_HREF } from "@/config/paths"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { usePurchaseModal } from "@/features/purchases/purchase-modal-context"
 
 export function FrontdeskView() {
   const { data: stats, isLoading: statsLoading } = useFrontdeskStats()
@@ -25,7 +25,7 @@ export function FrontdeskView() {
   const { data: recentJobs, isLoading: recentLoading } = useRecentActivities()
   const router = useRouter()
   const { openModal: openAcceptanceModal } = useAcceptanceModal()
-  const { openModal: openQuotationModal } = useQuotationModal()
+  const { openModal: openPurchaseModal } = usePurchaseModal()
   const { openModal: openExpenseModal } = useExpenseModal()
 
   // সাবলীল লোডিং এনিমেশন (Pulse + Fade in)
@@ -90,7 +90,7 @@ export function FrontdeskView() {
         {[
           { icon: Wrench, label: "New Repair Intake", action: () => openAcceptanceModal(), type: 'gradient', color: '' },
           { icon: Smartphone, label: "Sell Products", action: () => router.push(SALES_POS_HREF), type: 'outline', color: 'text-cyan-500' },
-          { icon: Receipt, label: "Create Quotation", action: () => openQuotationModal(), type: 'outline', color: 'text-pink-500' },
+          { icon: Receipt, label: "New Purchase", action: () => openPurchaseModal(), type: 'outline', color: 'text-pink-500' },
           { icon: Wallet, label: "Quick Expense", action: () => openExpenseModal(), type: 'outline', color: 'text-amber-500' },
         ].map((btn, i) => {
           const isGradient = btn.type === 'gradient';
@@ -108,13 +108,23 @@ export function FrontdeskView() {
                 backgroundImage: 'var(--primary-gradient)',
                 color: 'var(--primary-foreground)',
                 backgroundSize: '200% auto',
-                animation: 'gradient-slide 5s ease infinite'
+                backgroundPosition: '-5px center',
+                animation: 'gradient-slide 5s ease infinite',
+                transitionDuration: 'var(--animation-speed)'
               } : {}}
               onMouseEnter={(e) => {
-                if (isGradient) e.currentTarget.style.boxShadow = 'var(--button-glow)';
+                if (isGradient) {
+                  e.currentTarget.style.boxShadow = 'var(--button-glow)';
+                  e.currentTarget.style.backgroundPosition = 'right center';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }
               }}
               onMouseLeave={(e) => {
-                if (isGradient) e.currentTarget.style.boxShadow = 'none';
+                if (isGradient) {
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.backgroundPosition = '-5px center';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
               }}
             >
                 <btn.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", isGradient ? "text-current" : btn.color)} />

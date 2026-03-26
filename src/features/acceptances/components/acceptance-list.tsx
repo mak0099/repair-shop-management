@@ -37,23 +37,6 @@ export function AcceptanceList() {
 
   const { data: brands } = useBrandOptions()
   const { data: models } = useModelOptions()
-  const { data: allAcceptances } = useAcceptances({ page: 1, pageSize: 1000 })
-
-  // Calculate status counts
-  const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: 0 }
-    KANBAN_COLUMNS.forEach(status => {
-      counts[status] = 0
-    })
-    
-    allAcceptances?.data?.forEach((acceptance) => {
-      counts.all++
-      if (counts[acceptance.currentStatus] !== undefined) {
-        counts[acceptance.currentStatus]++
-      }
-    })
-    return counts
-  }, [allAcceptances])
 
   const columns: ColumnDef<AcceptanceInList>[] = useMemo(
     () => [
@@ -129,7 +112,6 @@ export function AcceptanceList() {
 
   return (
     <ResourceListPage<Acceptance, unknown>
-      key={selectedStatus}
       title="Acceptances"
       resourceName="acceptances"
       description="Manage all repair acceptances."
@@ -149,10 +131,10 @@ export function AcceptanceList() {
       searchPlaceholder="Search by No, Customer, Phone"
       tabs={{
         enabled: true,
-        position: "card",
+        position: "bottom",
         selectedValue: selectedStatus,
         onChange: setSelectedStatus,
-        counts: statusCounts,
+        filterKey: "currentStatus", // Auto-calculate counts by grouping on currentStatus
         options: [
           { label: "All", value: "all" },
           ...KANBAN_COLUMNS.map((status) => ({

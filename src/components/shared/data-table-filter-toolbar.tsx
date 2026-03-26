@@ -20,6 +20,16 @@ export interface FilterConfig {
   type?: "select" | "date-range" | "date"
 }
 
+export interface TabConfig {
+  enabled?: boolean
+  selectedValue?: string
+  onChange?: (value: string) => void
+  options?: { label: string; value: string }[]
+  colors?: Record<string, string>
+  counts?: Record<string, number>
+  position?: "top" | "bottom" | "left" | "right"
+}
+
 interface DataTableFilterToolbarProps {
   searchQuery: string
   onSearchChange: (value: string) => void
@@ -27,6 +37,9 @@ interface DataTableFilterToolbarProps {
   filters?: FilterConfig[]
   onReset?: () => void
   isFiltered?: boolean
+  tabs?: TabConfig
+  onTabChange?: (value: string) => void
+  tabCounts?: Record<string, number>
   children?: React.ReactNode
 }
 
@@ -66,6 +79,37 @@ const DAY_PICKER_COMPONENTS = {
     if (props.orientation === 'left') return <ChevronLeft className="h-4 w-4" />;
     return <ChevronRight className="h-4 w-4" />;
   }
+}
+
+// Simple date input filter
+function DateFilter({ filter }: { filter: FilterConfig }) {
+  const Icon = filter.icon || Filter
+  return (
+    <div className="flex items-center border border-input bg-background rounded-md h-8 px-2.5 text-xs shadow-sm transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-ring hover:border-foreground/30">
+      <Icon className="mr-2 h-3.5 w-3.5 text-muted-foreground shrink-0" />
+      <span className="text-muted-foreground font-medium mr-2 hidden sm:inline-block">{filter.title}</span>
+      <input
+        type="date"
+        className="bg-transparent text-foreground text-xs outline-none w-[110px] dark:[color-scheme:dark]"
+        value={filter.value || ""}
+        onChange={(e) => filter.onChange(e.target.value)}
+      />
+    </div>
+  )
+}
+
+// Select/Combobox filter
+function SelectFilter({ filter }: { filter: FilterConfig }) {
+  const Icon = filter.icon || Filter
+  return (
+    <FilterCombobox
+      options={filter.options || []}
+      value={filter.value}
+      onChange={filter.onChange}
+      placeholder={filter.title}
+      icon={Icon === undefined ? Filter : Icon}
+    />
+  )
 }
 
 function DateRangeFilter({ filter }: { filter: FilterConfig }) {
@@ -229,12 +273,81 @@ export function DataTableFilterToolbar({
   filters = [],
   onReset,
   isFiltered,
+  tabs,
+  onTabChange,
+  tabCounts,
   children,
 }: DataTableFilterToolbarProps) {
-  return (
-    <div className="bg-background p-2.5 rounded-lg border shadow-sm w-full">
-      <div className="flex flex-col sm:flex-row flex-wrap items-start gap-2.5 w-full">
-        <div className="relative w-full sm:w-[240px] md:w-[280px] shrink-0">
+  // Handle tab change with callback
+  const handleTabChange = (value: string) => {
+    if (onTabChange) {
+      onTabChange(value)
+    } else if (tabs?.onChange) {
+      tabs.onChange(value)
+    }
+  }
+
+  // Render filter items
+  const renderFilters = () => (
+    <>
+      {filters.map((filter) => {
+        if (filter.type === "date") {
+          return <DateFilter key={filter.key} filter={filter} />
+        }
+
+        if (filter.type === "date-range") {
+          return <DateRangeFilter key={filter.key} filter={filter} />
+        }
+
+        return <SelectFilter key={filter.key} filter={filter} />
+      })}
+
+      {isFiltered && onReset && (
+        <Button title="Reset Filters" variant="ghost" onClick={onReset} className="h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground">
+          <X className="h-3.5 w-3.5" />
+        </Button>
+      )}
+    </>
+  )
+
+  // If tabs are enabled, render with position-based layout
+  if (tabs?.enabled && tabs?.options) {
+    const tabPosition = tabs.position || "top"
+    
+    // Render tabs section
+    const tabsSection = (
+      <div className="flex items-center gap-2 flex-wrap">
+        {tabs.options.map((tab) => {
+          const count = (tabCounts?.[tab.value] || tabs.counts?.[tab.value]) || 0
+          const isActive = tabs.selectedValue === tab.value
+          const tabBorderColor = tabs.colors?.[tab.value] || "border-border"
+          return (
+            <Button
+              key={tab.value}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleTabChange(tab.value)}
+              className={`h-8 px-3 text-xs font-bold whitespace-nowrap gap-1.5 transition-all duration-200 rounded-md border ${
+                isActive
+                  ? `${tabBorderColor} bg-secondary text-secondary-foreground shadow-sm`
+                  : `border-border hover:border-foreground/30 hover:bg-accent`
+              }`}
+            >
+              {tab.label} <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full transition-colors duration-200 ${
+                isActive
+                  ? "bg-secondary-foreground/20 text-secondary-foreground"
+                  : "bg-primary/10 text-primary"
+              }`}>{count}</span>
+            </Button>
+          )
+        })}
+      </div>
+    )
+
+    // Render filters section
+    const filtersSection = (
+      <div className="flex flex-col lg:flex-row lg:flex-nowrap items-start gap-2.5 w-full">
+        <div className="relative w-full lg:w-[240px] lg:shrink-0">
           <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={searchPlaceholder}
@@ -243,49 +356,83 @@ export function DataTableFilterToolbar({
             className="pl-8 h-8 text-xs"
           />
         </div>
-        <div className="flex flex-wrap items-start gap-2 flex-1">
-          {filters.map((filter) => {
-            if (filter.type === "date") {
-              const Icon = filter.icon || Filter
-              return (
-                <div key={filter.key} className="flex items-center border border-dashed border-border bg-background rounded-md h-8 px-2.5 text-xs shadow-sm transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-ring">
-                  <Icon className="mr-2 h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                  <span className="text-muted-foreground font-medium mr-2 hidden sm:inline-block">{filter.title}</span>
-                  <input
-                    type="date"
-                    className="bg-transparent text-foreground text-xs outline-none w-[110px] dark:[color-scheme:dark]"
-                    value={filter.value || ""}
-                    onChange={(e) => filter.onChange(e.target.value)}
-                  />
-                </div>
-              )
-            }
-
-            if (filter.type === "date-range") {
-              return <DateRangeFilter key={filter.key} filter={filter} />
-            }
-
-            return (
-              <FilterCombobox
-                key={filter.key}
-                options={filter.options || []}
-                value={filter.value}
-                onChange={filter.onChange}
-                placeholder={filter.title}
-                icon={filter.icon === undefined ? Filter : filter.icon}
-              />
-            )
-          })}
-
-          {isFiltered && onReset && (
-            <Button title="Reset Filters" variant="ghost" onClick={onReset} className="h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground">           
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          )}
+        <div className="flex lg:flex-nowrap flex-wrap items-start gap-2 flex-1 overflow-x-auto pb-1">
+          {renderFilters()}
         </div>
-
         {children && (
-          <div className="flex items-start gap-2 sm:ml-auto shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+          <div className="flex items-start gap-2 lg:ml-auto shrink-0 w-full lg:w-auto justify-end">
+            {children}
+          </div>
+        )}
+      </div>
+    )
+
+    // Render based on position
+    if (tabPosition === "top") {
+      return (
+        <div className="rounded-lg border border-border bg-background shadow-sm p-3">
+          {tabsSection}
+          <div className="border-t border-border mt-2 pt-2">
+            {filtersSection}
+          </div>
+        </div>
+      )
+    } else if (tabPosition === "bottom") {
+      return (
+        <div className="rounded-lg border border-border bg-background shadow-sm p-3">
+          {filtersSection}
+          <div className="border-t border-border mt-2 pt-2">
+            {tabsSection}
+          </div>
+        </div>
+      )
+    } else if (tabPosition === "left") {
+      return (
+        <div className="rounded-lg border border-border bg-background shadow-sm p-3">
+          <div className="flex flex-col lg:flex-row gap-3">
+            <div className="flex-shrink-0 flex flex-wrap lg:flex-col items-center lg:items-start gap-2">
+              {tabsSection}
+            </div>
+            <div className="flex-1 lg:border-l lg:border-border lg:pl-3">
+              {filtersSection}
+            </div>
+          </div>
+        </div>
+      )
+    } else if (tabPosition === "right") {
+      return (
+        <div className="rounded-lg border border-border bg-background shadow-sm p-3">
+          <div className="flex flex-col lg:flex-row gap-3">
+            <div className="flex-1 lg:border-r lg:border-border lg:pr-3">
+              {filtersSection}
+            </div>
+            <div className="flex-shrink-0 flex flex-wrap lg:flex-col items-center lg:items-end gap-2">
+              {tabsSection}
+            </div>
+          </div>
+        </div>
+      )
+    }
+  }
+
+  // Default single-row layout (no tabs)
+  return (
+    <div className="bg-background p-2.5 rounded-lg border shadow-sm w-full pb-1">
+      <div className="flex flex-col lg:flex-row lg:flex-nowrap items-start gap-2.5 w-full">
+        <div className="relative w-full lg:w-[240px] lg:shrink-0">
+          <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-8 h-8 text-xs"
+          />
+        </div>
+        <div className="flex lg:flex-nowrap flex-wrap items-start gap-2 flex-1 overflow-x-auto pb-1">
+          {renderFilters()}
+        </div>
+        {children && (
+          <div className="flex items-start gap-2 lg:ml-auto shrink-0 w-full lg:w-auto justify-end mt-2 lg:mt-0">
             {children}
           </div>
         )}

@@ -13,6 +13,7 @@ import {
   OperationalLog,
   TimelineLog
 } from "../acceptance-logging";
+import { formatCurrency } from "@/lib/currency-config";
 
 const getMasterValues = (key: string) => {
     const setting = mockMasterSettings.find(s => s.key === key);
@@ -233,7 +234,7 @@ const generateAcceptances = (count: number): Acceptance[] => {
             
             const partOp = createOperationalLog(
                 "PART_ADDED",
-                "Screen Replacement Kit added to bill (₹49.99)",
+                `Screen Replacement Kit added to bill (${formatCurrency(49.99)})`,
                 technician.id,
                 { itemName: "Screen Replacement Kit", itemPrice: 49.99, newTotal: totalCost },
                 new Date(partTime)

@@ -107,7 +107,7 @@ export function SelectField<TFieldValues extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className={cn("min-w-0", className)}>
-          <FieldLabel label={label} required={required} readOnly={readOnly} />
+          {label && <FieldLabel label={label} required={required} readOnly={readOnly} />}
 
           {readOnly ? (
             <FormControl>
@@ -212,7 +212,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                         {options.map((option) => (
                           <CommandItem
                             key={option.value}
-                            value={option.label}
+                            value={option.value}
                             onSelect={() => handleSelect(option.value, field)}
                             className="flex items-center justify-between py-2 cursor-pointer text-sm"
                           >

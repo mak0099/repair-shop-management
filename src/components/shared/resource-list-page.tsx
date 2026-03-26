@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import Link from "next/link"
 import { Plus, CircleDot, Download, Trash, Loader2 } from "lucide-react"
 import type { ColumnDef, SortingState, Table } from "@tanstack/react-table"
@@ -26,12 +26,13 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog"
 
 export interface TabConfig {
   enabled?: boolean
-  position?: "above" | "below" | "card"
   counts?: Record<string, number>
   selectedValue?: string
   onChange?: (value: string) => void
   options?: { label: string; value: string }[]
   colors?: Record<string, string>
+  filterKey?: string // Auto-calculate counts by grouping data on this field
+  position?: "top" | "bottom" | "left" | "right"
 }
 
 export interface FilterDefinition {
@@ -124,15 +125,31 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
   const [sorting, setSorting] = useState<SortingState>([])
   const [itemIdsToDelete, setItemIdsToDelete] = useState<string[]>([])
 
-  const apiFilters: ResourceFilters = {
+  const apiFilters: ResourceFilters = useMemo(() => ({
     ...filters,
     _sort: sorting.length > 0 ? sorting[0].id : undefined,
     _order: sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined,
-  }
+  }), [filters, sorting])
+
+  // For tab counts, fetch without the tab filter to show accurate counts for all tabs
+  const countFilters: ResourceFilters = useMemo(() => {
+    const unfiltered = { ...apiFilters }
+    if (tabs?.filterKey) {
+      delete unfiltered[tabs.filterKey]
+    }
+    // Remove pagination and sorting for count query, just get raw counts
+    return { ...unfiltered, page: 1, pageSize: 1000 }
+  }, [apiFilters, tabs?.filterKey])
 
   const { data, isFetching, isError, error } = useResourceQuery(apiFilters)
-  const resources = data?.data || []
-  const meta = data?.meta || { total: resources.length, page: 1, pageSize: filters.pageSize, totalPages: 1 }
+  const { data: countData } = useResourceQuery(countFilters)
+  
+  const resources = useMemo(() => data?.data || [], [data?.data])
+  const countResources = useMemo(() => countData?.data || [], [countData?.data])
+  const meta = useMemo(
+    () => data?.meta || { total: resources.length, page: 1, pageSize: filters.pageSize, totalPages: 1 },
+    [data?.meta, resources.length, filters.pageSize]
+  )
 
   const isFiltered =
     Object.keys(filters).some(
@@ -168,6 +185,34 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
     enableSortingRemoval: sortingConfig.enableRemoval !== false,
     enableRowSelection: rowSelectionConfig.enabled !== false,
   })
+
+  // Auto-calculate tab counts if filterKey is provided
+  const computedTabCounts = useMemo(() => {
+    if (!tabs?.filterKey || tabs?.counts) return tabs?.counts // Use provided counts if available
+    
+    const counts: Record<string, number> = { all: countResources.length }
+    const filterKey = tabs.filterKey
+    
+    // Group resources by filter key and count (using unfiltered data)
+    countResources.forEach((resource) => {
+      const value = (resource as Record<string, unknown>)[filterKey] || "unknown"
+      const key = String(value)
+      counts[key] = (counts[key] || 0) + 1
+    })
+    
+    return counts
+  }, [countResources, tabs?.filterKey, tabs?.counts])
+
+  // Handle tab change - update filter directly
+  const handleTabChange = (value: string) => {
+    // Call the onChange callback if provided
+    tabs?.onChange?.(value)
+    
+    // If filterKey is provided, update the filter automatically
+    if (tabs?.filterKey) {
+      setFilters({ ...filters, [tabs.filterKey]: value, page: 1 })
+    }
+  }
 
   // Hook for passing table instance
   useState(() => { onTableReady?.(table) })
@@ -289,84 +334,7 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
         )}
       </PageHeader>
 
-      {tabs?.enabled && tabs?.position === "above" && tabs?.options && (
-        <div className="flex items-center bg-card p-3 rounded-lg border border-border shadow-sm overflow-x-auto gap-2">
-          {tabs.options.map((tab) => {
-            const count = tabs.counts?.[tab.value] || 0
-            const isActive = tabs.selectedValue === tab.value
-            const tabBorderColor = tabs.colors?.[tab.value] || "border-border"
-            return (
-              <Button
-                key={tab.value}
-                variant="ghost"
-                size="sm"
-                onClick={() => tabs.onChange?.(tab.value)}
-                className={`h-8 px-3 text-xs font-bold whitespace-nowrap shrink-0 gap-1.5 transition-all duration-200 rounded-md border ${
-                  isActive
-                    ? "bg-secondary text-secondary-foreground shadow-sm border-secondary"
-                    : `${tabBorderColor} hover:border-foreground/30 hover:bg-accent`
-                }`}
-              >
-                {tab.label} <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full transition-colors duration-200 ${
-                  isActive 
-                    ? "bg-secondary-foreground/20 text-secondary-foreground" 
-                    : "bg-primary/10 text-primary"
-                }`}>{count}</span>
-              </Button>
-            )
-          })}
-        </div>
-      )}
-
-      {tabs?.enabled && tabs?.position === "card" && tabs?.options && (
-        <div className="rounded-lg border border-border bg-card shadow-sm p-3">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2 overflow-x-auto shrink-0">
-              {tabs.options.map((tab) => {
-                const count = tabs.counts?.[tab.value] || 0
-                const isActive = tabs.selectedValue === tab.value
-                const tabBorderColor = tabs.colors?.[tab.value] || "border-border"
-                return (
-                  <Button
-                    key={tab.value}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => tabs.onChange?.(tab.value)}
-                    className={`h-8 px-3 text-xs font-bold whitespace-nowrap gap-1.5 transition-all duration-200 rounded-md border ${
-                      isActive
-                        ? "bg-secondary text-secondary-foreground shadow-sm border-secondary"
-                        : `${tabBorderColor} hover:border-foreground/30 hover:bg-accent`
-                    }`}
-                  >
-                    {tab.label} <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full transition-colors duration-200 ${
-                      isActive 
-                      ? "bg-secondary-foreground/20 text-secondary-foreground" 
-                        : "bg-primary/10 text-primary"
-                    }`}>{count}</span>
-                  </Button>
-                )
-              })}
-            </div>
-            <div className="flex-1 min-w-[200px]">
-              <DataTableFilterToolbar
-                searchQuery={filters.search}
-                onSearchChange={(value) => setFilters({ ...filters, search: value, page: 1 })}
-                searchPlaceholder={searchPlaceholder}
-                onReset={handleReset}
-                isFiltered={isFiltered}
-                filters={effectiveFilterDefinitions.map((def) => ({
-                  ...def,
-                  value: String(filters[def.key] ?? ""),
-                  onChange: (val: string) => setFilters({ ...filters, [def.key]: val, page: 1 }),
-                }))}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {!(tabs?.enabled && tabs?.position === "card") && (
-        <>
+      {/* Filters + Tabs Section */}
       <DataTableFilterToolbar
         searchQuery={filters.search}
         onSearchChange={(value) => setFilters({ ...filters, search: value, page: 1 })}
@@ -378,38 +346,18 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
           value: String(filters[def.key] ?? ""),
           onChange: (val: string) => setFilters({ ...filters, [def.key]: val, page: 1 }),
         }))}
+        tabs={tabs?.enabled ? {
+          enabled: true,
+          selectedValue: tabs.selectedValue,
+          onChange: tabs.onChange,
+          options: tabs.options,
+          colors: tabs.colors,
+          counts: tabs.counts,
+          position: tabs.position,
+        } : undefined}
+        onTabChange={handleTabChange}
+        tabCounts={computedTabCounts}
       />
-        </>
-      )}
-
-      {tabs?.enabled && tabs?.position === "below" && tabs?.options && (
-        <div className="flex items-center bg-card p-3 rounded-lg border border-border shadow-sm overflow-x-auto gap-2">
-          {tabs.options.map((tab) => {
-            const count = tabs.counts?.[tab.value] || 0
-            const isActive = tabs.selectedValue === tab.value
-            const tabBorderColor = tabs.colors?.[tab.value] || "border-border"
-            return (
-              <Button
-                key={tab.value}
-                variant="ghost"
-                size="sm"
-                onClick={() => tabs.onChange?.(tab.value)}
-                className={`h-8 px-3 text-xs font-bold whitespace-nowrap shrink-0 gap-1.5 transition-all duration-200 rounded-md border ${
-                  isActive
-                    ? "bg-secondary text-secondary-foreground shadow-sm border-secondary"
-                    : `${tabBorderColor} hover:border-foreground/30 hover:bg-accent`
-                }`}
-              >
-                {tab.label} <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full transition-colors duration-200 ${
-                  isActive 
-                    ? "bg-secondary-foreground/20 text-secondary-foreground" 
-                    : "bg-primary/10 text-primary"
-                }`}>{count}</span>
-              </Button>
-            )
-          })}
-        </div>
-      )}
 
       <DataTableCard
         table={table}

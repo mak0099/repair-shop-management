@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { useUpdateAcceptance } from "../../acceptance.api"
 import { createOperationalLog, createTimelineLog, getIconForAction, prependLog } from "../../acceptance-logging"
 import { toast } from "sonner"
+import { useCurrencySymbol } from "@/providers/currency-provider"
 
 interface TicketFinanceProps {
   acceptance: Acceptance
@@ -18,6 +19,7 @@ interface TicketFinanceProps {
 
 export function TicketFinance({ acceptance, onUpdate }: TicketFinanceProps) {
   const { mutate: updateTicket } = useUpdateAcceptance()
+  const currencySymbol = useCurrencySymbol()
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [confirmConfig, setConfirmConfig] = useState<{
     title: string
@@ -43,7 +45,7 @@ export function TicketFinance({ acceptance, onUpdate }: TicketFinanceProps) {
     
     confirmAction(
       "Remove Part?",
-      `Are you sure you want to remove ${removedPart?.name} (₹${removedPart?.price.toLocaleString('en-IN')}) from the parts list? This action will be logged in the audit trail.`,
+      `Are you sure you want to remove ${removedPart?.name} (${currencySymbol}${removedPart?.price.toLocaleString('en-IN')}) from the parts list? This action will be logged in the audit trail.`,
       "Yes, Remove",
       "bg-destructive",
       () => executeRemovePart(indexToRemove)
@@ -59,7 +61,7 @@ export function TicketFinance({ acceptance, onUpdate }: TicketFinanceProps) {
     // Create operational log for audit trail
     const operationalLog = createOperationalLog(
       "PART_REMOVED",
-      `Part removed from bill: ${removedPart?.name} (₹${removedPart?.price.toLocaleString('en-IN')})`,
+      `Part removed from bill: ${removedPart?.name} (${currencySymbol}${removedPart?.price.toLocaleString('en-IN')})`,
       "current-user-id",
       { itemName: removedPart?.name, itemPrice: removedPart?.price, newTotal }
     )
@@ -67,7 +69,7 @@ export function TicketFinance({ acceptance, onUpdate }: TicketFinanceProps) {
     // Create timeline log for visibility in workflow
     const timelineLog = createTimelineLog(
       "PART_REMOVED",
-      `Part removed: ${removedPart?.name} (₹${removedPart?.price.toLocaleString('en-IN')})`,
+      `Part removed: ${removedPart?.name} (${currencySymbol}${removedPart?.price.toLocaleString('en-IN')})`,
       getIconForAction("PART_REMOVED"),
       "red",
       "current-user-id",

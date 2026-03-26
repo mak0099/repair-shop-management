@@ -48,11 +48,24 @@ export const itemHandlers = [
     // Handle both single field and array of fields
     const fieldsParams = url.searchParams.getAll("fields[]") || url.searchParams.getAll("fields") || []
     
+    console.log("[ItemsAPI /options]", {
+      url: request.url,
+      itemTypeParam,
+      totalItemsCount: items.length,
+      loanerItemsCount: items.filter(i => i.itemType === "LOANER").length,
+      paramsReceived: {
+        itemType: itemTypeParam,
+        inStock: inStockParam,
+        fields: fieldsParams.length > 0 ? fieldsParams : "none"
+      }
+    })
+    
     let filtered = items
     
     // Filter by item type if provided
     if (itemTypeParam) {
       filtered = filtered.filter(item => item.itemType === itemTypeParam)
+      console.log(`[ItemsAPI] After filtering by type "${itemTypeParam}": ${filtered.length} items`)
     }
     
     // Filter by stock status if provided
@@ -81,6 +94,8 @@ export const itemHandlers = [
       
       return option
     })
+    
+    console.log(`[ItemsAPI /options] Returning ${itemOptions.length} options`)
     
     return HttpResponse.json(itemOptions)
   }),

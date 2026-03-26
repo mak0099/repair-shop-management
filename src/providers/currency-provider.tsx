@@ -4,6 +4,7 @@ import React, { createContext, useContext } from "react"
 import { Euro, DollarSign, Building } from "lucide-react"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 import { DEFAULT_CURRENCY_CONFIG, type CurrencyConfig } from "@/lib/currency-config"
+import { getCurrencySymbol } from "@/lib/currency-symbols"
 
 // Currency code to lucide-react icon mapping
 const CURRENCY_ICONS: Record<string, React.ComponentType<{ className: string }>> = {
@@ -33,6 +34,7 @@ interface CurrencyContextType {
   config: CurrencyConfig
   locale: string
   currencyCode: string
+  symbol: string
   getCurrencyIcon: (className?: string) => React.ReactNode
 }
 
@@ -54,7 +56,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const getCurrencyIconFunc = (className = "h-4 w-4") => getCurrencyIconJSX(currencyCode, className)
 
   return (
-    <CurrencyContext.Provider value={{ config, locale: config.locale, currencyCode, getCurrencyIcon: getCurrencyIconFunc }}>
+    <CurrencyContext.Provider value={{ config, locale: config.locale, currencyCode, symbol: getCurrencySymbol(currencyCode), getCurrencyIcon: getCurrencyIconFunc }}>
       {children}
     </CurrencyContext.Provider>
   )
@@ -71,4 +73,17 @@ export function useCurrency(): CurrencyContextType {
     throw new Error("useCurrency must be used within CurrencyProvider")
   }
   return context
+}
+
+/**
+ * Lightweight hook to get just the currency symbol
+ * @returns Currency symbol string (e.g., "€", "$", "₹")
+ * @throws Error if used outside of CurrencyProvider
+ */
+export function useCurrencySymbol(): string {
+  const context = useContext(CurrencyContext)
+  if (!context) {
+    throw new Error("useCurrencySymbol must be used within CurrencyProvider")
+  }
+  return context.symbol
 }

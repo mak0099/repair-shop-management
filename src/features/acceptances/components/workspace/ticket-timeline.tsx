@@ -5,7 +5,9 @@ import { useForm, FormProvider } from "react-hook-form"
 import { useSession } from "next-auth/react"
 import { useUpdateAcceptance } from "../../acceptance.api"
 import { useUserOptions } from "@/features/users/user.api"
+import { UserSelectField } from "@/features/users/components/user-select-field"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
+import { useCurrencySymbol } from "@/providers/currency-provider"
 import { ItemSelectField } from "@/features/items/components/item-select-field"
 import type { ItemOption } from "@/features/items/item.api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -47,7 +49,6 @@ export function TicketTimeline({
 }) {
   const [isAdding, setIsAdding] = useState(false)
   const [note, setNote] = useState("")
-  const [selectedTech, setSelectedTech] = useState("")
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showAddPartDialog, setShowAddPartDialog] = useState(false)
   const [isCheckoutMode, setIsCheckoutMode] = useState(false)
@@ -84,12 +85,18 @@ export function TicketTimeline({
     defaultValues: { selectedPart: "" }
   })
 
+  // Form for technician selection
+  const techForm = useForm<{ technicianId: string }>({
+    defaultValues: { technicianId: "" }
+  })
+
   const { mutate: updateTicket, isPending } = useUpdateAcceptance()
   const { data: session } = useSession()
   const currentUserId = session?.user?.id || "anonymous"
   const currentUserName = session?.user?.name || "System"
   const { data: users } = useUserOptions()
   const { data: shopProfile } = useShopProfile()
+  const currencySymbol = useCurrencySymbol()
 
   // Handle part selection to auto-populate name and price
   const handlePartSelect = (selectedOption: ItemOption) => {
@@ -140,9 +147,9 @@ export function TicketTimeline({
   // Pre-select technician if already assigned to ticket
   useEffect(() => {
     if (acceptance.technicianId) {
-      setSelectedTech(acceptance.technicianId)
+      techForm.setValue("technicianId", acceptance.technicianId)
     }
-  }, [acceptance.technicianId])
+  }, [acceptance.technicianId, techForm])
 
   // Get parts only from inventory
 
@@ -182,8 +189,9 @@ export function TicketTimeline({
   }
 
   const handleAssignTech = () => {
-    if (!selectedTech) return toast.error("Please select a technician");
-    const techName = users?.find(u => u.id === selectedTech)?.name || "Technician";
+    const technicianId = techForm.getValues("technicianId")
+    if (!technicianId) return toast.error("Please select a technician");
+    const techName = users?.find(u => u.id === technicianId)?.name || "Technician";
     
     confirmAction(
       "Assign Technician?",
@@ -195,7 +203,7 @@ export function TicketTimeline({
           "TECHNICIAN_ASSIGNED",
           `Ticket assigned to ${techName}. Status changed to Diagnosing.`,
           "current-user-id",
-          { technicianId: selectedTech, technicianName: techName }
+          { technicianId: technicianId, technicianName: techName }
         );
         const timelineLog = createTimelineLog(
           "TECHNICIAN_ASSIGNED",
@@ -206,7 +214,7 @@ export function TicketTimeline({
         );
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any = { 
-            technicianId: selectedTech, 
+            technicianId: technicianId, 
             currentStatus: REPAIR_STATUSES.DIAGNOSING,
             operationalLogs: prependLog(acceptance.operationalLogs || [], operationalLog),
             timelineLogs: prependLog(acceptance.timelineLogs || [], timelineLog)
@@ -215,6 +223,7 @@ export function TicketTimeline({
           id: acceptance.id as string, 
           data
         }, { onSuccess: (updated) => {
+          techForm.reset()
           onUpdate?.(updated);
           toast.success("Technician assigned!");
         } })
@@ -676,7 +685,7 @@ export function TicketTimeline({
     // Create operational log for audit trail
     const operationalLog = createOperationalLog(
       "PART_ADDED",
-      `Part added to bill: ${partName} (₹${price.toLocaleString('en-IN')})`,
+      `Part added to bill: ${partName} (${currencySymbol}${price.toLocaleString('en-IN')})`,
       "current-user-id",
       { itemName: partName, itemPrice: price, newTotal }
     );
@@ -684,7 +693,7 @@ export function TicketTimeline({
     // Create timeline log for visibility in workflow
     const timelineLog = createTimelineLog(
       "PART_ADDED",
-      `Part added: ${partName} (₹${price.toLocaleString('en-IN')})`,
+      `Part added: ${partName} (${currencySymbol}${price.toLocaleString('en-IN')})`,
       getIconForAction("PART_ADDED"),
       "blue",
       "current-user-id"
@@ -795,12 +804,19 @@ export function TicketTimeline({
                       <UserPlus className="h-4 w-4" /> Assign Technician
                     </div>
                     <p className="text-xs text-blue-600/80 dark:text-blue-400/80">This ticket is currently unassigned. Please assign a tech to start diagnosis.</p>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <select className="h-9 px-3 rounded-md border border-blue-200 bg-white dark:bg-background text-sm flex-1 min-w-[200px]" value={selectedTech} onChange={e => setSelectedTech(e.target.value)}>
-                        <option value="">Select Technician...</option>
-                        {users?.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                      </select>
-                      <Button onClick={handleAssignTech} disabled={isPending} className="h-9 bg-blue-600 hover:bg-blue-700 text-white shadow-sm">Assign & Start</Button>
+                    <div className="flex items-center gap-2">
+                      <FormProvider {...techForm}>
+                        <UserSelectField
+                          name="technicianId"
+                          control={techForm.control}
+                          placeholder="Select Technician..."
+                          variant="technician"
+                          label=""
+                          canAdd={false}
+                          className="flex-1 mt-0"
+                        />
+                      </FormProvider>
+                      <Button onClick={handleAssignTech} disabled={isPending} className="h-9 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white shadow-sm">Assign & Start</Button>
                     </div>
                   </div>
                 )}
@@ -822,6 +838,7 @@ export function TicketTimeline({
                                 type="PART"
                                 inStock={true}
                                 extras={["salePrice"]}
+                                label=""
                                 placeholder="Search parts..."
                                 onSelectOption={handlePartSelect}
                               />
@@ -829,7 +846,7 @@ export function TicketTimeline({
                                 <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/30 rounded border border-blue-200 dark:border-blue-900 text-xs">
                                   <div>
                                     <p className="font-semibold text-blue-900 dark:text-blue-100">{partName}</p>
-                                    <p className="text-blue-700 dark:text-blue-300">₹ {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
+                                    <p className="text-blue-700 dark:text-blue-300">{currencySymbol} {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
                                   </div>
                                   <button 
                                     type="button" 
@@ -919,7 +936,7 @@ export function TicketTimeline({
                                 <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/30 rounded border border-blue-200 dark:border-blue-900 text-xs">
                                   <div>
                                     <p className="font-semibold text-blue-900 dark:text-blue-100">{partName}</p>
-                                    <p className="text-blue-700 dark:text-blue-300">₹ {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
+                                    <p className="text-blue-700 dark:text-blue-300">{currencySymbol} {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
                                   </div>
                                   <button 
                                     type="button" 
@@ -1008,7 +1025,7 @@ export function TicketTimeline({
                                 <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/30 rounded border border-blue-200 dark:border-blue-900 text-xs">
                                   <div>
                                     <p className="font-semibold text-blue-900 dark:text-blue-100">{partName}</p>
-                                    <p className="text-blue-700 dark:text-blue-300">₹ {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
+                                    <p className="text-blue-700 dark:text-blue-300">{currencySymbol} {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
                                   </div>
                                   <button 
                                     type="button" 
@@ -1095,7 +1112,7 @@ export function TicketTimeline({
                                 <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/30 rounded border border-blue-200 dark:border-blue-900 text-xs">
                                   <div>
                                     <p className="font-semibold text-blue-900 dark:text-blue-100">{partName}</p>
-                                    <p className="text-blue-700 dark:text-blue-300">₹ {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
+                                    <p className="text-blue-700 dark:text-blue-300">{currencySymbol} {parseFloat(partPrice || "0").toLocaleString('en-IN')}</p>
                                   </div>
                                   <button 
                                     type="button" 

@@ -21,7 +21,9 @@ export type MasterSettingType =
   | "DESIGNATION"
   | "COLOR"
   | "ACCESSORY"
-  | "WARRANTY";
+  | "WARRANTY"
+  | "SERVICE_TYPE"
+  | "PART_TYPE";
 
 interface MasterSettingSelectFieldProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>

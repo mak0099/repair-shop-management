@@ -21,7 +21,10 @@ export type CurrencyConfig = typeof DEFAULT_CURRENCY_CONFIG
  * Format amount as currency
  * @param amount - Number or string to format
  * @param config - Currency and locale configuration
- * @returns Formatted currency string
+ * @returns Formatted currency string with symbol
+ * @example
+ * formatCurrency(100, { locale: 'en-US', currencyCode: 'USD' })
+ * // Returns: "$100.00" or "100$ USD" based on locale
  */
 export function formatCurrency(
   amount: number | string | undefined | null,

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
@@ -11,7 +11,7 @@ import { ResourceActions } from "@/components/shared/resource-actions"
 
 import { useItems, useDeleteItem, useDeleteManyItems, usePartialUpdateItem } from "../item.api"
 import { Item } from "../item.schema"
-import { ITEM_TYPE_OPTIONS } from "../item.constants"
+import { ITEM_TYPE_OPTIONS, ITEM_TYPE_COLORS } from "../item.constants"
 import { useItemModal } from "../item-modal-context"
 
 /**
@@ -24,6 +24,9 @@ export function ItemList() {
   const deleteMutation = useDeleteItem()
   const updateMutation = usePartialUpdateItem()
   const bulkDeleteMutation = useDeleteManyItems()
+
+  // Local state for itemType filter (driven by tabs)
+  const [itemTypeFilter, setItemTypeFilter] = useState<string>("all")
 
   const columns: ColumnDef<Item>[] = useMemo(() => [
     {
@@ -67,15 +70,11 @@ export function ItemList() {
       accessorKey: "itemType",
       header: "Type",
       cell: ({ row }) => {
-        const typeColors: Record<string, string> = {
-          DEVICE: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900",
-          PART: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-900",
-          LOANED: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900",
-        }
+        const itemType = (row.original.itemType || "DEVICE") as keyof typeof ITEM_TYPE_COLORS
         return (
           <Badge
             variant="outline"
-            className={`text-[9px] uppercase font-bold px-1.5 py-0 ${typeColors[row.original.itemType || "DEVICE"]}`}
+            className={`text-[9px] uppercase font-bold px-1.5 py-0 ${ITEM_TYPE_COLORS[itemType].badge}`}
           >
             {row.original.itemType || "DEVICE"}
           </Badge>
@@ -128,7 +127,7 @@ export function ItemList() {
       addLabel="New Product"
       bulkDeleteMutation={bulkDeleteMutation}
       searchPlaceholder="Search products or SKU..."
-      initialFilters={{ condition: "all", itemType: "all" }}
+      initialFilters={{ condition: "all", itemType: itemTypeFilter }}
       filterDefinitions={[
         {
           key: "condition",
@@ -140,15 +139,24 @@ export function ItemList() {
             { label: "Refurbished", value: "REFURBISHED" },
           ],
         },
-        {
-          key: "itemType",
-          title: "Item Type",
-          options: [
-            { label: "All Types", value: "all" },
-            ...ITEM_TYPE_OPTIONS,
-          ],
-        }
       ]}
+      tabs={{
+        enabled: true,
+        position: "bottom",
+        selectedValue: itemTypeFilter,
+        onChange: setItemTypeFilter,
+        filterKey: "itemType", // Auto-calculate counts by grouping on itemType
+        options: [
+          { label: "All Types", value: "all" },
+          ...ITEM_TYPE_OPTIONS,
+        ],
+        colors: {
+          all: "border-border",
+          ...Object.fromEntries(
+            Object.entries(ITEM_TYPE_COLORS).map(([key, val]) => [key, val.tab])
+          ),
+        },
+      }}
     />
   )
 }

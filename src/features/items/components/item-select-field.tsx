@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 import { Control, FieldValues, Path, PathValue, useFormContext } from "react-hook-form"
 
 import { SelectField } from "@/components/forms/select-field"
@@ -17,7 +17,7 @@ interface ItemSelectFieldProps<TFieldValues extends FieldValues> {
   disabled?: boolean
   readOnly?: boolean
   canAdd?: boolean
-  type?: "DEVICE" | "PART" | "LOANED"
+  type?: "DEVICE" | "PART" | "SERVICE" | "LOANER"
   extras?: string[]
   inStock?: boolean
   onSelectOption?: (option: ItemOption) => void
@@ -26,7 +26,7 @@ interface ItemSelectFieldProps<TFieldValues extends FieldValues> {
 export function ItemSelectField<TFieldValues extends FieldValues>({
   name,
   control,
-  label = "Item",
+  label = "",
   placeholder = "Select Item",
   required = false,
   disabled = false,
@@ -57,14 +57,31 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
     if (fieldsToRequest.length > 0) {
       params.fields = fieldsToRequest
     }
+    
+    console.log(`[ItemSelectField] Making API call with params:`, params)
+    
     return params
   }, [type, inStock, extras])
   
-  const { data: optionsData, isLoading } = useItemOptions(queryParams)
+  const { data: optionsData, isLoading, error } = useItemOptions(queryParams)
+
+  // Log errors for debugging
+  useEffect(() => {
+    if (error) {
+      console.error(`[ItemSelectField] Error loading ${type || 'all'} items:`, error)
+    }
+  }, [error, type])
 
   // Transform API response to SelectField format { value, label, ...extras }
   const itemOptions = useMemo(() => {
-    if (!optionsData) return []
+    if (!optionsData) {
+      if (error) {
+        console.warn(`[ItemSelectField] No options data (type=${type}), error:`, error)
+      }
+      return []
+    }
+    
+    console.log(`[ItemSelectField] Received ${optionsData.length} options for type=${type}`)
     
     return optionsData.map((option: ItemOption) => ({
       value: option.id,
@@ -73,7 +90,7 @@ export function ItemSelectField<TFieldValues extends FieldValues>({
         Object.entries(option).filter(([key]) => !['id', 'name'].includes(key))
       ),
     }))
-  }, [optionsData])
+  }, [optionsData, error, type])
 
   // Create a map of option values to full option objects for lookup
   const optionMap = useMemo(() => {

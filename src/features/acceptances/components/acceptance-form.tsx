@@ -234,7 +234,7 @@ export function AcceptanceForm({ onSuccess }: AcceptanceFormProps) {
                 </div>
                 {/* Loaner & Buyback Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-border/50 pb-6">
-                  <ItemSelectField control={control as unknown as any} name="loanerDeviceId" label="Loaner Phone" type="LOANED" />
+                  <ItemSelectField control={control as unknown as any} name="loanerDeviceId" label="Loaner Phone" type="LOANER" />
                   <ItemSelectField control={control as unknown as any} name="replacementDeviceId" label="Replacement Device ID" inStock={true} extras={['salePrice']} />
                   <TextField control={control as unknown as any} name="dealer" label="Dealer Name" placeholder="B2B dealer if applicable" />
                   <TextField control={control as unknown as any} icon={getCurrencyIcon()} name="priceOffered" label="Buyback Price Offered" type="number" />

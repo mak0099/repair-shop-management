@@ -27,10 +27,7 @@ export const purchaseItemSchema = z.object({
  * ২. মেইন পারচেজ স্কিমা
  */
 export const purchaseSchema = z.object({
-  supplierId: z.string({ 
-    required_error: "Supplier is required",
-    invalid_type_error: "Supplier is required"
-  }).trim().min(1, "Supplier is required"),
+  supplierId: z.string().min(1, "Supplier is required").trim(),
   purchaseDate: z.date().or(z.string()),
   billNumber: z.string().optional().nullable(),
   
@@ -46,10 +43,7 @@ export const purchaseSchema = z.object({
   
   paymentStatus: z.string().default("PAID"),
   status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]).default("COMPLETED"),
-  paymentMethod: z.string({
-    required_error: "Payment method is required",
-    invalid_type_error: "Payment method is required"
-  }).min(1, "Payment method is required"),
+  paymentMethod: z.string().min(1, "Payment method is required"),
   
   notes: z.string().optional().nullable(),
   receiptImage: z.any().optional(),

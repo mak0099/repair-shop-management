@@ -141,6 +141,7 @@ export const acceptanceHandlers = [
       : [];
 
     // Create new acceptance without logs first, then add them explicitly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newAcceptance: Acceptance = {
       id: `rec-${Math.random().toString(36).substring(7)}`,
       // Copy all body fields except logs
@@ -155,7 +156,7 @@ export const acceptanceHandlers = [
       // Explicitly set logs
       operationalLogs,
       timelineLogs,
-    };
+    } as any;
 
     acceptances.unshift(newAcceptance);
 
@@ -190,7 +191,6 @@ export const acceptanceHandlers = [
       partsUsed: newAcceptance.partsUsed,
       createdAt: newAcceptance.createdAt,
       updatedAt: newAcceptance.updatedAt,
-      isActive: newAcceptance.isActive,
       // Explicitly include logs
       operationalLogs: operationalLogs,
       timelineLogs: timelineLogs,

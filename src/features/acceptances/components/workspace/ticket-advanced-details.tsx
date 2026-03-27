@@ -23,8 +23,9 @@ export function TicketAdvancedDetails({ acceptance }: { acceptance: Acceptance }
   const [isEditing, setIsEditing] = useState(false)
 
   // Convert booleans back to string for the radio groups to satisfy schema
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       ...acceptance,
       importantInformation: acceptance.importantInformation ? "true" : "false",

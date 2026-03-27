@@ -23,7 +23,7 @@ export const buybackItemSchema = z.object({
 
 export const buybackSchema = z.object({
   customerId: z.string().trim().min(1, "Customer is required"),
-  buybackDate: z.date({ required_error: "Buyback date is required" }),
+  buybackDate: z.date({ message: "Buyback date is required" }),
   items: z
     .array(buybackItemSchema)
     .min(1, "Please add at least one device/item"),
@@ -31,10 +31,7 @@ export const buybackSchema = z.object({
   totalAmount: z.coerce.number(),
   paidAmount: z.coerce.number().default(0),
   dueAmount: z.coerce.number().default(0),
-  paymentMethod: z.string({
-    required_error: "Payment method is required",
-    invalid_type_error: "Payment method is required"
-  }).min(1, "Payment method is required"),
+  paymentMethod: z.string().min(1, "Payment method is required"),
   notes: z.string().optional(),
   status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]).default("COMPLETED"),
   idProofImage: z.any().optional(), // Added for customer ID proof

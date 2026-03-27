@@ -71,7 +71,7 @@ export const purchaseHandlers = [
       // এই ফ্ল্যাগটিই আপনার ফর্মের IMEI ইনপুট ফিল্ডগুলোকে কন্ট্রোল করবে
       isSerialized: item.isSerialized || false,
       // মক ডেটায় যদি আগে থেকে কিছু সিরিয়াল থাকে তাও পাঠিয়ে দিচ্ছি (Sales এর সময় কাজে লাগবে)
-      serialList: item.serialList || []
+      serialList: []
     });
   }),
 ];

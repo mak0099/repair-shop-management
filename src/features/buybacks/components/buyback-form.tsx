@@ -39,6 +39,7 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
   const { mutate: createBuyback, isPending: isCreating } = useCreateBuyback()
   const { mutate: updateBuyback, isPending: isUpdating } = useUpdateBuyback()
   const [isFetchingItem, setIsFetchingItem] = useState(false)
+  const [showAgreement, setShowAgreement] = useState(false)
 
   const [mode, setMode] = useState<"view" | "edit" | "create">(
     initialIsViewMode ? "view" : initialData ? "edit" : "create"
@@ -50,19 +51,19 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
   const form = useForm<BuybackFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(buybackSchema) as any,
-    defaultValues: initialData || {
+    defaultValues: {
       customerId: initialData?.customerId || "",
       buybackDate: initialData?.buybackDate ? new Date(initialData.buybackDate) : new Date(),
-      items: [],
-      subtotal: 0,
-      totalAmount: 0,
-      paidAmount: 0,
-      dueAmount: 0,
+      items: initialData?.items || [],
+      subtotal: initialData?.subtotal || 0,
+      totalAmount: initialData?.totalAmount || 0,
+      paidAmount: initialData?.paidAmount || 0,
+      dueAmount: initialData?.dueAmount || 0,
       paymentMethod: initialData?.paymentMethod || "CASH",
       notes: initialData?.notes || "",
       status: initialData?.status || "COMPLETED",
-      tempItemId: ""
-    }
+      tempItemId: initialData?.tempItemId || ""
+    } as BuybackFormValues
   })
 
   const { control, watch, setValue, getValues, handleSubmit } = form
@@ -151,15 +152,30 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
                 <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[9px] font-bold px-2 py-0.5 rounded">READ ONLY</span>
               </div>
 
-              <PrintableDialog
-                title="Buyback Agreement"
-                icon={<FileSignature className="h-4 w-4" />}
-                printableElementId="printable-buyback-agreement"
-                className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-8 text-xs font-bold"
+                onClick={() => setShowAgreement(true)}
               >
-                <BuybackInvoiceView buyback={initialData} />
-              </PrintableDialog>
+                <FileSignature className="h-3.5 w-3.5 mr-2" />
+                View Agreement
+              </Button>
             </div>
+          )}
+
+          {showAgreement && initialData && (
+            <PrintableDialog
+              isOpen={showAgreement}
+              onOpenChange={setShowAgreement}
+              title="Buyback Agreement"
+              icon={<FileSignature className="h-4 w-4" />}
+              printableElementId="printable-buyback-agreement"
+              className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+            >
+              <BuybackInvoiceView buyback={initialData} />
+            </PrintableDialog>
           )}
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -274,11 +290,11 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                                   Unit #{sIndex + 1} Details
                                 </span>
-                                {!isViewMode && watchedItems[index].serialList.length > 1 && (
+                                {!isViewMode && watchedItems[index]?.serialList && watchedItems[index]?.serialList?.length > 1 && (
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      const currentSerials = [...watchedItems[index].serialList];
+                                      const currentSerials = watchedItems[index]?.serialList?.filter(Boolean) || [];
                                       currentSerials.splice(sIndex, 1);
                                       setValue(`items.${index}.serialList`, currentSerials);
                                       setValue(`items.${index}.quantity`, currentSerials.length);
@@ -317,7 +333,7 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border">
                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-               <SelectField name="status" control={control as any} label="Status" options={[{ label: "Completed", value: "COMPLETED" }, { label: "Pending", value: "PENDING" }, { label: "Cancelled", value: "CANCELLED" }]} required readOnly={isViewMode} />
+               <SelectField name="status" control={control as any} label="Status" placeholder="Select status" options={[{ label: "Completed", value: "COMPLETED" }, { label: "Pending", value: "PENDING" }, { label: "Cancelled", value: "CANCELLED" }]} required readOnly={isViewMode} />
                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                <MasterSettingSelectField type="PAYMENT_METHOD" name="paymentMethod" control={control as any} label="Payment Method" required readOnly={isViewMode} />
             </div>
@@ -340,7 +356,7 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
               <div className="w-full md:w-1/2 space-y-4 bg-muted/50 p-6 rounded-2xl border border-border">
                 <div className="flex justify-between items-center text-muted-foreground font-bold uppercase text-[11px]">
                   <span>Grand Total</span>
-                  <span className="text-xl font-black text-foreground"><CurrencyText amount={watch("totalAmount")} /></span>
+                  <span className="text-xl font-black text-foreground"><CurrencyText amount={Number(watch("totalAmount")) || 0} /></span>
                 </div>
                 <div className="pt-4 border-t border-border">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -348,7 +364,7 @@ export function BuybackForm({ initialData, onSuccess, isViewMode: initialIsViewM
                 </div>
                 <div className="flex justify-between items-center pt-2 text-destructive font-black">
                   <span className="text-[10px] uppercase tracking-widest">Balance Due</span>
-                  <span className="text-lg"><CurrencyText amount={watch("dueAmount")} /></span>
+                  <span className="text-lg"><CurrencyText amount={Number(watch("dueAmount")) || 0} /></span>
                 </div>
               </div>
             </div>

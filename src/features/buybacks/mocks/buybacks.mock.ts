@@ -16,6 +16,8 @@ export const mockBuybacks: Buyback[] = [
         serialList: [{
           imei: "358123456789012",
           condition: "Grade A",
+          isBoxIncluded: true,
+          isChargerIncluded: true,
         }]
       }
     ],
@@ -45,6 +47,8 @@ export const mockBuybacks: Buyback[] = [
         serialList: [{
           imei: "358987654321098",
           condition: "Broken Screen",
+          isBoxIncluded: false,
+          isChargerIncluded: false,
         }]
       }
     ],

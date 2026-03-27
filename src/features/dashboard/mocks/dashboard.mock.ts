@@ -56,7 +56,7 @@ export const mockRecentActivities: RecentActivity[] = mockAcceptances
     const customer = mockCustomers.find(c => c.id === acc.customerId)
     return {
       id: acc.acceptanceNumber,
-      customer: customer ? customer.name : "Unknown Customer",
+      customer: customer?.name || "Unknown Customer",
       device: `${acc.brandId} ${acc.modelId}`, // In real app, these would be names resolved from IDs
       issue: (acc.defectDescription || "").substring(0, 30) + "...",
       status: acc.currentStatus,
@@ -72,11 +72,11 @@ export const mockUrgentJobs: UrgentJob[] = mockAcceptances
     const customer = mockCustomers.find(c => c.id === acc.customerId)
     return {
       id: acc.acceptanceNumber,
-      customer: customer ? customer.name : "Unknown",
+      customer: customer?.name || "Unknown",
       device: `${acc.brandId} ${acc.modelId}`,
       issue: acc.defectDescription || "No description",
       priority: "High",
-      dueDate: acc.urgentDate ? format(new Date(acc.urgentDate), "dd MMM") : "ASAP",
+      dueDate: acc.urgentDateTime ? format(new Date(acc.urgentDateTime), "dd MMM") : "ASAP",
     }
   })
 
@@ -115,8 +115,8 @@ export const mockStatusDistribution = Object.entries(statusCounts).map(([status,
 // --- 7. Inventory Report ---
 export const mockInventoryReport: InventoryReport = {
   totalItems: mockItems.length,
-  lowStockItems: mockItems.filter(i => i.initialStock <= (i.minStockLevel || 5)).length,
-  totalValue: mockItems.reduce((sum, i) => sum + (i.initialStock * i.purchasePrice), 0),
+  lowStockItems: Math.max(3, Math.floor(mockItems.length / 4)),
+  totalValue: mockItems.reduce((sum, i) => sum + (i.salePrice || 0), 0),
 }
 
 // --- 8. Sales Report ---
@@ -133,6 +133,6 @@ export const mockSalesReport: SalesReport = {
 const monthPurchases = mockPurchases.filter(p => isAfter(new Date(p.purchaseDate), startOfCurrentMonth))
 
 export const mockPurchaseReport: PurchaseReport = {
-  pendingOrders: mockPurchases.filter(p => p.status === "Ordered" || p.status === "Pending").length,
+  pendingOrders: mockPurchases.filter(p => p.status === "PENDING").length,
   monthExpenses: monthPurchases.reduce((sum, p) => sum + p.totalAmount, 0),
 }

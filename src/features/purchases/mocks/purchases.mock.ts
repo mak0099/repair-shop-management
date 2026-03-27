@@ -35,7 +35,8 @@ export const mockPurchases: ProductPurchase[] = [
     dueAmount: 0,
     paymentStatus: PURCHASE_PAYMENT_STATUS.PAID,
     addToKhata: true,
-    status: PURCHASE_STATUS.RECEIVED,
+    status: PURCHASE_STATUS.COMPLETED,
+    paymentMethod: "CASH",
     notes: "Spare parts batch.",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -56,7 +57,11 @@ export const mockPurchases: ProductPurchase[] = [
         costPrice: 850, 
         subtotal: 2550, 
         isSerialized: true, 
-        serialList: ["IMEI-88552211001", "IMEI-88552211002", "IMEI-88552211003"] 
+        serialList: [
+          { imei: "IMEI-88552211001", isBoxIncluded: true, isChargerIncluded: true },
+          { imei: "IMEI-88552211002", isBoxIncluded: true, isChargerIncluded: true },
+          { imei: "IMEI-88552211003", isBoxIncluded: true, isChargerIncluded: false }
+        ]
       }
     ],
     subtotal: 2550,
@@ -65,7 +70,8 @@ export const mockPurchases: ProductPurchase[] = [
     dueAmount: 1550,
     paymentStatus: PURCHASE_PAYMENT_STATUS.PARTIAL,
     addToKhata: true,
-    status: PURCHASE_STATUS.RECEIVED,
+    status: PURCHASE_STATUS.COMPLETED,
+    paymentMethod: "CARD",
     notes: "High value units.",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -86,7 +92,7 @@ export const mockPurchases: ProductPurchase[] = [
         costPrice: 1000, 
         subtotal: 1000, 
         isSerialized: true, 
-        serialList: ["SN-SAM-S24-PROMO-001"] 
+        serialList: [{ imei: "SN-SAM-S24-PROMO-001", isBoxIncluded: true, isChargerIncluded: true }]
       },
       { 
         productId: "item-104", 
@@ -104,7 +110,8 @@ export const mockPurchases: ProductPurchase[] = [
     dueAmount: 1600,
     paymentStatus: PURCHASE_PAYMENT_STATUS.DUE,
     addToKhata: true,
-    status: PURCHASE_STATUS.ORDERED,
+    status: PURCHASE_STATUS.PENDING,
+    paymentMethod: "MOBILE_PAYMENT",
     notes: "Combo purchase for store display.",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

@@ -38,6 +38,9 @@ export const invoiceSetupSchema = z.object({
   discountLabel: z.string().optional(),
   grandTotalLabel: z.string().optional(),
   amountPaidLabel: z.string().optional(),
+  advancePaidLabel: z.string().optional(),
+  finalPaymentLabel: z.string().optional(),
+  balanceDueLabel: z.string().optional(),
 
   // Footer
   thankYouMessage: z.string().optional(),

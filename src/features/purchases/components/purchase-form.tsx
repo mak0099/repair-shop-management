@@ -245,11 +245,11 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                                   Unit #{sIndex + 1} Details
                                 </span>
-                                {!isViewMode && watchedItems[index].serialList.length > 1 && (
+                                {!isViewMode && watchedItems[index]?.serialList?.length && watchedItems[index]?.serialList?.length > 1 && (
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      const currentSerials = [...watchedItems[index].serialList];
+                                      const currentSerials = [...(watchedItems[index]?.serialList || [])];
                                       currentSerials.splice(sIndex, 1);
                                       setValue(`items.${index}.serialList`, currentSerials);
                                       setValue(`items.${index}.quantity`, currentSerials.length);
@@ -288,7 +288,7 @@ export function PurchaseForm({ initialData, onSuccess, isViewMode }: { initialDa
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border">
                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-               <SelectField name="status" control={control as any} label="Status" options={[{ label: "Completed", value: "COMPLETED" }, { label: "Pending", value: "PENDING" }, { label: "Cancelled", value: "CANCELLED" }]} required readOnly={isViewMode} />
+               <SelectField name="status" control={control as any} label="Status" placeholder="Select Status" options={[{ label: "Completed", value: "COMPLETED" }, { label: "Pending", value: "PENDING" }, { label: "Cancelled", value: "CANCELLED" }]} required readOnly={isViewMode} />
                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                <MasterSettingSelectField type="PAYMENT_METHOD" name="paymentMethod" control={control as any} label="Payment Method" required readOnly={isViewMode} />
             </div>

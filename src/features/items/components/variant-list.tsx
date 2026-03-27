@@ -67,7 +67,7 @@ export function VariantList({ variants }: VariantListProps) {
               </TableCell>
               <TableCell className="text-right">
                 <span className="px-2 py-1 rounded-md bg-muted font-bold text-foreground text-xs">
-                  {item.initialStock || 0}
+                  -
                 </span>
               </TableCell>
               <TableCell className="text-center">

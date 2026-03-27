@@ -8,7 +8,6 @@ const ATTRIBUTE_MAP: Record<string, keyof Item> = {
   RAM: "ram",
   ROM: "rom",
   Color: "color",
-  Grade: "grade",
   Size: "size",
 };
 
@@ -61,7 +60,6 @@ export const createVariantsFromAttributes = (
       sku: generateSKU(productName, combination),
       purchasePrice: basePrices.purchase,
       salePrice: basePrices.sale,
-      initialStock: 0,
       isActive: true,
       condition: "Used",
     };

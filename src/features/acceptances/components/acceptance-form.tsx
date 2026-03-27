@@ -5,7 +5,7 @@ import { useForm, useWatch, FieldValues } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
-import { Smartphone, Wrench, CreditCard, Camera, Receipt, Grid3x3, Tabs as TabsIcon } from "lucide-react"
+import { Smartphone, Wrench, CreditCard, Camera, Receipt, Grid3x3, List } from "lucide-react"
 import { useCurrency } from "@/providers/currency-provider"
 
 import { Form } from "@/components/ui/form"
@@ -85,8 +85,9 @@ export function AcceptanceForm({ onSuccess }: AcceptanceFormProps) {
   const [createdAcceptance, setCreatedAcceptance] = useState<Acceptance | null>(null)
   const [fullViewMode, setFullViewMode] = useState(false)
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: FORM_DEFAULT_VALUES,
   })
 
@@ -188,8 +189,8 @@ export function AcceptanceForm({ onSuccess }: AcceptanceFormProps) {
     }
 
     // Calculate financial fields
-    const totalCost = data.estimatedPrice || 0
-    const advancePaid = data.advancePayment || 0
+    const totalCost = Number(data.estimatedPrice) || 0
+    const advancePaid = Number(data.advancePayment) || 0
 
     // Create initial logs for new ticket
     const operationalLog = createOperationalLog(

@@ -21,7 +21,7 @@ export function TicketWorkspace({ acceptance, onClose }: TicketWorkspaceProps) {
 
   return (
     <div className="flex flex-col h-full bg-muted/20">
-      <TicketHeader acceptance={acceptance} onClose={onClose} />
+      <TicketHeader acceptance={acceptance} />
 
       <div className="flex items-center gap-2 px-6 pt-4 pb-2 border-b border-border/50 bg-gradient-to-r from-background to-transparent sticky top-[73px] z-10">
         <Button

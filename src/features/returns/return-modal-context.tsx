@@ -1,7 +1,9 @@
 "use client"
 
 import { createContext, useContext, useState, ReactNode, useCallback } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { RotateCcw } from "lucide-react"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
 import { SaleReturn } from "./returns.schema"
 import { ReturnForm } from "./components/return-form"
 import { ReturnInvoiceView } from "./components/return-invoice-view"
@@ -38,11 +40,21 @@ export function ReturnModalProvider({ children }: { children: ReactNode }) {
     <ReturnModalContext.Provider value={{ openModal, closeModal }}>
       {children}
       
-      <Dialog open={state.isOpen} onOpenChange={closeModal}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden h-[90vh] flex flex-col">
-          {state.isViewMode && state.initialData ? (
-            <ReturnInvoiceView data={state.initialData} />
-          ) : (
+      {state.isViewMode && state.initialData ? (
+        <PrintableDialog
+          isOpen={state.isOpen}
+          onOpenChange={closeModal}
+          title="Return Receipt / Credit Note"
+          icon={<RotateCcw className="h-4 w-4" />}
+          printableElementId="printable-return"
+          className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+        >
+          <ReturnInvoiceView data={state.initialData} />
+        </PrintableDialog>
+      ) : (
+        <Dialog open={state.isOpen && !state.isViewMode} onOpenChange={closeModal}>
+          <DialogContent className="max-w-4xl p-0 overflow-hidden h-[95vh] flex flex-col">
+            <DialogTitle className="sr-only">Return Form</DialogTitle>
             <ReturnForm 
               initialData={state.initialData} 
               onSuccess={(data) => {
@@ -53,9 +65,9 @@ export function ReturnModalProvider({ children }: { children: ReactNode }) {
                 }
               }} 
             />
-          )}
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </ReturnModalContext.Provider>
   )
 }

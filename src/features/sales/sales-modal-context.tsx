@@ -1,7 +1,10 @@
 "use client"
 
 import { createContext, useContext, useState, ReactNode } from "react"
+import { Receipt } from "lucide-react"
 import { Sale } from "./sales.schema"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
+import { SaleInvoiceView } from "./components/sale-invoice-view"
 
 interface SalesModalState {
   sale: Sale | null
@@ -24,24 +27,19 @@ export function SalesModalProvider({ children }: { children: ReactNode }) {
   return (
     <SalesModalContext.Provider value={{ openInvoice, closeModal }}>
       {children}
-      {state.isOpen && state.sale && (
-        <SalesModal sale={state.sale} onClose={closeModal} />
+      {state.sale && (
+        <PrintableDialog
+          isOpen={state.isOpen}
+          onOpenChange={closeModal}
+          title="Sales Invoice"
+          icon={<Receipt className="h-4 w-4" />}
+          printableElementId="printable-sale-invoice"
+          className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+        >
+          <SaleInvoiceView sale={state.sale} />
+        </PrintableDialog>
       )}
     </SalesModalContext.Provider>
-  )
-}
-
-// Internal Modal Component
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { InvoiceView } from "./components/invoice-view"
-
-function SalesModal({ sale, onClose }: { sale: Sale; onClose: () => void }) {
-  return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden h-[90vh] flex flex-col">
-        <InvoiceView sale={sale} />
-      </DialogContent>
-    </Dialog>
   )
 }
 

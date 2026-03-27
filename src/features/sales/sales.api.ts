@@ -20,21 +20,55 @@ export const useDeleteSale = salesApiHooks.useDelete
 export const useDeleteManySales = createBulkDeleteHook("sales")
 
 /**
- * Dedicated POS Product Hook
+ * POS Filter Parameters
+ */
+export interface POSFilterParams {
+  search?: string
+  categoryId?: string
+  brandId?: string
+  condition?: string
+  deviceType?: string
+  color?: string
+  partType?: string
+  compatibility?: string
+  serviceType?: string
+  itemType?: string
+}
+
+/**
+ * Dedicated POS Product Hook with Multi-Filter Support
  * Fetching from a specialized endpoint for security and performance
  */
-export const usePOSItems = (search: string = "", categoryId: string = "") => {
+export const usePOSItems = (filters: POSFilterParams = {}) => {
+  const {
+    search = "",
+    categoryId = "",
+    brandId = "",
+    condition = "",
+    deviceType = "",
+    partType = "",
+    compatibility = "",
+    serviceType = "",
+    itemType = ""
+  } = filters
+
   return useQuery<POSProduct[]>({
-    queryKey: ["pos-products", search, categoryId],
+    queryKey: ["pos-products", search, categoryId, brandId, condition, deviceType, partType, compatibility, serviceType, itemType],
     queryFn: async () => {
       // Points to a dedicated POS endpoint instead of general items
-      const response = await api.get<{ data: POSProduct[] }>("/pos/products", { 
-        params: { 
-          search, 
-          categoryId,
-          isActive: true
-        } 
-      })
+      const params: Record<string, string> = { isActive: "true" }
+      
+      if (search) params.search = search
+      if (categoryId) params.categoryId = categoryId
+      if (brandId) params.brandId = brandId
+      if (condition) params.condition = condition
+      if (deviceType) params.deviceType = deviceType
+      if (partType) params.partType = partType
+      if (compatibility) params.compatibility = compatibility
+      if (serviceType) params.serviceType = serviceType
+      if (itemType) params.itemType = itemType
+
+      const response = await api.get<{ data: POSProduct[] }>("/pos/products", { params })
       
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (response.data as any) || []

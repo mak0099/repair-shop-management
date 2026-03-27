@@ -1,142 +1,113 @@
 "use client"
 
-import { Printer, RotateCcw, Receipt } from "lucide-react"
+import { Receipt } from "lucide-react"
 import { SaleReturn } from "../returns.schema"
-import { Button } from "@/components/ui/button"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
 
-export function ReturnInvoiceView({ data }: { data: SaleReturn }) {
+interface ReturnInvoiceViewProps {
+  data: SaleReturn
+}
+
+export function ReturnInvoiceView({ data }: ReturnInvoiceViewProps) {
   const { data: shopProfile } = useShopProfile()
-  const currency = shopProfile?.currency || "BDT"
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: shopProfile?.currency || 'BDT'
+    }).format(amount)
+  }
+
   return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Action Header */}
-      <div className="flex justify-between items-center p-4 border-b print:hidden bg-muted/50 mr-12">
-        <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
-          <RotateCcw className="h-4 w-4" />
-          <span className="text-xs font-black uppercase tracking-widest">Return Receipt / Credit Note</span>
+    <div id="printable-return" className="p-8 md:p-12 print:p-3 overflow-y-auto print:overflow-y-visible h-full bg-background">
+      <div className="max-w-[800px] mx-auto space-y-6 print:space-y-2">
+        {/* Company Branding */}
+        <div className="flex justify-between items-start border-b pb-6">
+          <div className="space-y-1">
+            <h1 className="text-xl font-black">{shopProfile?.name || "ARIF REPAIR SHOP"}</h1>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest">{shopProfile?.address || "Professional Tech Solutions"}</p>
+            <p className="text-[10px] text-muted-foreground">{shopProfile?.phone} {shopProfile?.email && `• ${shopProfile.email}`}</p>
+          </div>
+          <div className="text-right space-y-1">
+            <h2 className="text-2xl font-black tracking-tight">CREDIT NOTE</h2>
+            <p className="text-sm font-bold text-muted-foreground">Return #: {data.returnNumber}</p>
+          </div>
         </div>
-        <Button onClick={() => window.print()} size="sm" className="gap-2 h-8 text-[11px] font-bold">
-          <Printer className="h-3.5 w-3.5" /> PRINT RECEIPT
-        </Button>
-      </div>
 
-      {/* Printable Content */}
-      <div id="printable-return" className="p-8 md:p-16 print:p-0 overflow-y-auto flex-1">
-        <div className="max-w-[800px] mx-auto">
-          {/* Company Branding */}
-          <div className="flex justify-between items-start border-b-4 border-foreground pb-8">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-black tracking-tighter text-foreground uppercase">{shopProfile?.name || "ARIF REPAIR SHOP"}</h1>
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{shopProfile?.address || "Professional Tech Solutions"}</p>
-              <p className="text-[10px] text-muted-foreground">{shopProfile?.phone} {shopProfile?.email && `• ${shopProfile.email}`}</p>
-            </div>
-            <div className="text-right space-y-1">
-              <h2 className="text-xl font-black text-amber-600 dark:text-amber-500 uppercase tracking-widest">CREDIT NOTE</h2>
-              <p className="text-sm font-bold text-foreground">#{data.returnNumber}</p>
+        {/* Info Section */}
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">Returned By</p>
+            <p className="font-bold text-sm">{data.customerName || data.customerId}</p>
+          </div>
+          <div className="space-y-2 text-right">
+            <div className="inline-block bg-muted/50 p-3 rounded-lg border">
+              <div className="flex items-center justify-end gap-2 text-muted-foreground mb-1">
+                <Receipt className="h-3.5 w-3.5" />
+                <span className="text-xs font-black uppercase">Ref Invoice</span>
+              </div>
+              <p className="text-sm font-bold text-foreground">#{data.saleId}</p>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {new Date(data.returnDate).toLocaleDateString('en-IN')}
+              </p>
             </div>
           </div>
+        </div>
 
-          {/* Info Section */}
-          <div className="grid grid-cols-2 gap-12 py-10">
-            <div className="space-y-2">
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Returned By</p>
-              <div className="text-sm">
-                <p className="font-black text-foreground">{data.customerName || data.customerId}</p>
-              </div>
-            </div>
-            <div className="space-y-4 text-right">
-              <div className="inline-block bg-muted/50 p-3 rounded-lg border">
-                <div className="flex items-center justify-end gap-2 text-muted-foreground mb-1">
-                  <Receipt className="h-3.5 w-3.5" />
-                  <span className="text-[10px] font-black uppercase">Ref Invoice</span>
-                </div>
-                <p className="text-sm font-black text-foreground">
-                  #{data.saleId}
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                    Date: {new Date(data.returnDate).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Items Table */}
-          <table className="w-full text-left text-xs mb-10">
+        {/* Items Table */}
+        <div className="space-y-2">
+          <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b-2 border-foreground">
-                <th className="py-3 font-black uppercase">Item Description</th>
-                <th className="py-3 font-black uppercase">Condition</th>
-                <th className="py-3 font-black uppercase text-center">Qty</th>
-                <th className="py-3 font-black uppercase text-right">Refund Price</th>
-                <th className="py-3 font-black uppercase text-right">Total</th>
+              <tr className="border-b">
+                <th className="py-2 px-0 font-black uppercase">Item Description</th>
+                <th className="py-2 px-0 font-black uppercase">Condition</th>
+                <th className="py-2 px-0 text-center font-black uppercase">Qty</th>
+                <th className="py-2 px-0 text-right font-black uppercase">Refund Price</th>
+                <th className="py-2 px-0 text-right font-black uppercase">Total</th>
               </tr>
             </thead>
-            <tbody className="divide-y border-b border-border">
+            <tbody className="divide-y">
               {data.items.map((item, idx) => (
                 <tr key={idx} className="hover:bg-muted/50">
-                  <td className="py-4">
-                    <p className="font-bold text-foreground">{item.name}</p>
+                  <td className="py-3 px-0">
+                    <p className="font-bold text-sm">{item.name}</p>
                     <p className="text-[9px] text-muted-foreground uppercase mt-0.5">{item.productId}</p>
                   </td>
-                  <td className="py-4">
+                  <td className="py-3 px-0 text-sm">
                     <span className="px-2 py-1 rounded bg-muted text-[10px] font-bold text-muted-foreground uppercase">
-                        {item.condition}
+                      {item.condition}
                     </span>
                   </td>
-                  <td className="py-4 text-center font-bold text-muted-foreground">{item.quantity}</td>
-                  <td className="py-4 text-right text-muted-foreground">{currency} {item.price.toLocaleString()}</td>
-                  <td className="py-4 text-right font-black text-foreground">{currency} {item.subtotal.toLocaleString()}</td>
+                  <td className="py-3 px-0 text-center font-bold text-sm">{item.quantity}</td>
+                  <td className="py-3 px-0 text-right text-sm text-muted-foreground">{formatCurrency(item.price)}</td>
+                  <td className="py-3 px-0 text-right text-sm font-semibold">{formatCurrency(item.subtotal)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
 
-          {/* Totaling */}
-          <div className="flex justify-end mb-12">
-            <div className="w-72 space-y-2.5">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span className="font-medium">Subtotal Refund</span>
-                <span className="font-bold">{currency} {data.subtotal.toLocaleString()}</span>
+        {/* Totaling */}
+        <div className="space-y-2 border-t pt-4 flex justify-end">
+          <div className="w-64 space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Subtotal Refund</span>
+              <span className="font-semibold">{formatCurrency(data.subtotal)}</span>
+            </div>
+            {data.restockingFee > 0 && (
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Restocking Fee</span>
+                <span className="font-semibold text-destructive">-{formatCurrency(data.restockingFee)}</span>
               </div>
-              {data.restockingFee > 0 && (
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span className="font-medium">Restocking Fee</span>
-                  <span className="font-bold text-destructive">-{currency} {data.restockingFee.toLocaleString()}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-lg font-black text-foreground border-t-2 border-foreground pt-3 mt-3">
-                <span>TOTAL REFUND</span>
-                <span>{currency} {data.totalRefundAmount.toLocaleString()}</span>
-              </div>
+            )}
+            <div className="flex justify-between text-sm font-black border-t pt-2 mt-2">
+              <span>TOTAL REFUND</span>
+              <span>{formatCurrency(data.totalRefundAmount)}</span>
             </div>
           </div>
-
-          {/* Terms & Footer */}
-          <div className="bg-muted/50 p-6 rounded-xl border space-y-3">
-            <h4 className="text-[10px] font-black text-foreground uppercase tracking-widest">Return Policy</h4>
-            {shopProfile?.returnPolicy ? (
-                <p className="text-[10px] text-muted-foreground whitespace-pre-wrap italic">
-                    {shopProfile.returnPolicy}
-                </p>
-            ) : (
-                <ul className="text-[10px] text-muted-foreground space-y-1 list-disc pl-4 italic">
-                <li>Refunds are processed to the original payment method or as store credit.</li>
-                <li>Restocking fees may apply for open-box items.</li>
-                <li>Defective items are subject to inspection before refund approval.</li>
-                </ul>
-            )}
-          </div>
         </div>
-      </div>
 
-      <style jsx global>{`
-        @media print {
-          body * { visibility: hidden; }
-          #printable-return, #printable-return * { visibility: visible; }
-          #printable-return { position: absolute; left: 0; top: 0; width: 100%; }
-        }
-      `}</style>
+      </div>
     </div>
   )
 }

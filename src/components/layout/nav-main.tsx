@@ -56,10 +56,24 @@ export function NavMain({ items }: { items: NavItem[] }) {
           const menuButtonStyle = {
             backgroundColor: isDirectActive ? 'var(--sb-primary, var(--primary))' : 'transparent',
             backgroundImage: isDirectActive ? 'var(--sb-primary-gradient, var(--primary-gradient))' : 'none',
+            backgroundSize: isDirectActive ? '200% auto' : '100% auto',
+            backgroundPosition: isDirectActive ? '-5px center' : 'center',
             color: isDirectActive ? 'var(--sb-primary-foreground, var(--primary-foreground))' : (isParentActive ? 'var(--sb-primary, var(--primary))' : 'inherit'),
             boxShadow: isDirectActive ? 'var(--sb-button-glow, var(--button-glow))' : 'none',
             transitionDuration: 'var(--animation-speed)'
           } as React.CSSProperties;
+
+          const handleDirectActiveHover = (e: React.MouseEvent<HTMLElement>, entering: boolean) => {
+            if (!isDirectActive) return;
+            
+            if (entering) {
+              e.currentTarget.style.backgroundPosition = 'right center';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            } else {
+              e.currentTarget.style.backgroundPosition = '-5px center';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }
+          };
 
           const renderContent = () => (
             <>
@@ -86,7 +100,13 @@ export function NavMain({ items }: { items: NavItem[] }) {
               <SidebarMenuItem key={item.title}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title} className={menuButtonClasses} style={menuButtonStyle}>
+                    <SidebarMenuButton 
+                      tooltip={item.title} 
+                      className={menuButtonClasses} 
+                      style={menuButtonStyle}
+                      onMouseEnter={(e) => handleDirectActiveHover(e, true)}
+                      onMouseLeave={(e) => handleDirectActiveHover(e, false)}
+                    >
                       {item.icon && (
                         <item.icon className={cn(
                           "size-5 shrink-0 transition-transform duration-300", 
@@ -137,7 +157,13 @@ export function NavMain({ items }: { items: NavItem[] }) {
               <Collapsible key={item.title} asChild defaultOpen={sectionActive} className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title} className={menuButtonClasses} style={menuButtonStyle}>
+                    <SidebarMenuButton 
+                      tooltip={item.title} 
+                      className={menuButtonClasses} 
+                      style={menuButtonStyle}
+                      onMouseEnter={(e) => handleDirectActiveHover(e, true)}
+                      onMouseLeave={(e) => handleDirectActiveHover(e, false)}
+                    >
                       {renderContent()}
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
@@ -174,7 +200,14 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
           return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title} className={menuButtonClasses} style={menuButtonStyle}>
+              <SidebarMenuButton 
+                asChild 
+                tooltip={item.title} 
+                className={menuButtonClasses} 
+                style={menuButtonStyle}
+                onMouseEnter={(e) => handleDirectActiveHover(e, true)}
+                onMouseLeave={(e) => handleDirectActiveHover(e, false)}
+              >
                 <Link href={item.url || "#"}>
                   {renderContent()}
                 </Link>

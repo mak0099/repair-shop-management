@@ -34,14 +34,16 @@ interface SelectFieldProps<TFieldValues extends FieldValues> {
   placeholder: string
   searchPlaceholder?: string
   noResultsMessage?: string
-  options: { value: string; label: string }[]
+  options: { value: string; label: string; [key: string]: unknown }[]
   onAdd?: () => void
+  onValueChange?: (value: string) => void
   required?: boolean
   isLoading?: boolean
   disabled?: boolean
   readOnly?: boolean
   className?: string
   isMulti?: boolean
+  renderOption?: (option: { value: string; label: string; [key: string]: unknown }) => React.ReactNode
 }
 
 export function SelectField<TFieldValues extends FieldValues>({
@@ -53,12 +55,14 @@ export function SelectField<TFieldValues extends FieldValues>({
   noResultsMessage = "No results found.",
   options,
   onAdd,
+  onValueChange,
   required,
   isLoading = false,
   disabled = false,
   readOnly = false,
   className,
   isMulti = false,
+  renderOption,
 }: SelectFieldProps<TFieldValues>) {
   const [open, setOpen] = React.useState(false)
   
@@ -76,7 +80,15 @@ export function SelectField<TFieldValues extends FieldValues>({
         : [...currentValues, optionValue]
       field.onChange(newValues)
     } else {
-      field.onChange(optionValue)
+      if (field.value === optionValue && !required) {
+        field.onChange("")
+      } else {
+        field.onChange(optionValue)
+        // Call onValueChange callback after setting the value
+        if (onValueChange) {
+          onValueChange(optionValue)
+        }
+      }
       setOpen(false)
     }
   }
@@ -93,9 +105,9 @@ export function SelectField<TFieldValues extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem className={cn("min-w-0", className)}>
-          <FieldLabel label={label} required={required} readOnly={readOnly} />
+          {label && <FieldLabel label={label} required={required} readOnly={readOnly} />}
 
           {readOnly ? (
             <FormControl>
@@ -117,7 +129,12 @@ export function SelectField<TFieldValues extends FieldValues>({
               </div>
             </FormControl>
           ) : (
-            <div className="flex items-center w-full">
+            <div className={cn(
+              "flex items-center w-full rounded-md border transition-colors",
+              fieldState.error
+                ? "border-red-500 bg-red-50/30"
+                : "border-input"
+            )}>
               <Popover open={open} onOpenChange={setOpen} modal={true}>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -127,8 +144,8 @@ export function SelectField<TFieldValues extends FieldValues>({
                       aria-expanded={open}
                       disabled={isLoading || disabled}
                       className={cn(
-                        "flex flex-1 justify-between min-h-[2.25rem] h-auto px-3 py-2 font-normal shadow-sm transition-all min-w-0",
-                        onAdd && "rounded-r-none border-r-0",
+                        "flex flex-1 justify-between min-h-[2.25rem] h-auto px-3 py-2 font-normal shadow-none transition-all min-w-0 border-l-0 border-r-0 border-t-0 border-b-0",
+                        onAdd && "rounded-r-none",
                         (!field.value || (Array.isArray(field.value) && field.value.length === 0)) && "text-muted-foreground"
                       )}
                     >
@@ -155,11 +172,30 @@ export function SelectField<TFieldValues extends FieldValues>({
                           <span className="truncate block">{field.value ? getSelectedLabel(field.value) : placeholder}</span>
                         )}
                       </span>
-                      {isLoading ? (
-                        <Loader2 className="h-3 w-3 shrink-0 ml-2 animate-spin opacity-50" />
-                      ) : (
-                        <ChevronsUpDown className="h-3 w-3 shrink-0 ml-2 opacity-50" />
-                      )}
+                  <div className="flex items-center shrink-0 ml-2">
+                    {!isMulti && field.value && !required && (
+                      <div
+                        role="button"
+                        className="mr-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer hover:bg-muted p-0.5"
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          field.onChange("")
+                        }}
+                      >
+                        <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      </div>
+                    )}
+                    {isLoading ? (
+                      <Loader2 className="h-3 w-3 animate-spin opacity-50" />
+                    ) : (
+                      <ChevronsUpDown className="h-3 w-3 opacity-50" />
+                    )}
+                  </div>
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -181,14 +217,20 @@ export function SelectField<TFieldValues extends FieldValues>({
                         {options.map((option) => (
                           <CommandItem
                             key={option.value}
-                            value={option.label}
+                            value={option.value}
                             onSelect={() => handleSelect(option.value, field)}
                             className="flex items-center justify-between py-2 cursor-pointer text-sm"
                           >
-                            <span className="truncate">{option.label}</span>
+                            {renderOption ? (
+                              <div className="flex flex-1 min-w-0">
+                                {renderOption(option)}
+                              </div>
+                            ) : (
+                              <span className="truncate">{option.label}</span>
+                            )}
                             <Check
                               className={cn(
-                                "h-4 w-4 text-primary",
+                                "h-4 w-4 text-primary shrink-0 ml-2",
                                 isMulti 
                                   ? (Array.isArray(field.value) && field.value.includes(option.value) ? "opacity-100" : "opacity-0")
                                   : (field.value === option.value ? "opacity-100" : "opacity-0")
@@ -208,7 +250,7 @@ export function SelectField<TFieldValues extends FieldValues>({
                   variant="outline"
                   size="icon"
                   disabled={isLoading || disabled}
-                  className="h-9 w-9 rounded-l-none bg-muted/50 hover:bg-muted shadow-sm shrink-0"
+                  className="h-9 w-9 rounded-l-none bg-muted/50 hover:bg-muted shadow-none border-l-0 border-t-0 border-b-0 shrink-0"
                   onClick={(e) => {
                     e.preventDefault();
                     onAdd();

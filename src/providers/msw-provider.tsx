@@ -1,37 +1,63 @@
 "use client"
 
-import { useState, useEffect, type PropsWithChildren } from "react"
+import { useState, useEffect, type PropsWithChildren, useRef } from "react"
 import { useLoading } from "@/components/shared/loading-context"
 
 const IS_BROWSER = typeof window !== "undefined"
-
-// We only want to mock in development environments.
 const shouldMock = process.env.NEXT_PUBLIC_API_MOCKING === "enabled"
+
+// Suppress Chrome extension "Could not establish connection" errors
+if (IS_BROWSER) {
+  const originalError = console.error
+  console.error = function (...args: any[]) {
+    const message = String(args[0] ?? "")
+    if (
+      message.includes("Could not establish connection") ||
+      message.includes("Receiving end does not exist") ||
+      message.includes("runtime.lastError")
+    ) {
+      return
+    }
+    originalError.apply(console, args)
+  }
+}
 
 export function MSWProvider({ children }: PropsWithChildren) {
   const [isMockingReady, setIsMockingReady] = useState(!shouldMock)
   const { startLoading, stopLoading } = useLoading()
+  const workStartedRef = useRef(false)
 
   useEffect(() => {
-    async function enableApiMocking() {
-      if (IS_BROWSER && shouldMock) {
-        startLoading()
-        const { worker } = await import("@/mocks/browser")
-        // Start the worker and wait for it to be ready.
-        await worker.start({ onUnhandledRequest: "bypass" })
-        setIsMockingReady(true)
-        stopLoading()
-      }
-    }
-    // Only run this if mocking is not already ready
     if (!isMockingReady) {
-      enableApiMocking()
+      const initMocking = async () => {
+        if (workStartedRef.current || !IS_BROWSER || !shouldMock) return
+
+        workStartedRef.current = true
+        startLoading()
+
+        try {
+          const { worker } = await import("@/mocks/browser")
+          await worker.start({
+            onUnhandledRequest: "bypass",
+            serviceWorker: {
+              url: "/mockServiceWorker.js",
+            },
+          })
+          setIsMockingReady(true)
+        } catch (error) {
+          console.error("[MSW] Failed to start:", error)
+          setIsMockingReady(true)
+        } finally {
+          stopLoading()
+        }
+      }
+
+      initMocking()
     }
   }, [isMockingReady, startLoading, stopLoading])
 
-  // If mocking is enabled but not ready yet, don't render children.
   if (!isMockingReady) {
-    return null // The LoadingBar in the layout will be visible
+    return null
   }
 
   return <>{children}</>

@@ -6,6 +6,7 @@ import { GlobalModalProvider } from "@/components/shared/global-modal-context"
 import QueryProvider from "./query-provider"
 import { MSWProvider } from "@/providers/msw-provider"
 import { AcceptanceModalProvider } from "@/features/acceptances/acceptance-modal-context"
+import { TicketWorkspaceModalProvider } from "@/features/acceptances/ticket-workspace-modal-context"
 import { AttributeModalProvider } from "@/features/attributes/attribute-modal-context"
 import { BoxNumberModalProvider } from "@/features/box-numbers/box-number-modal-context"
 import { BrandModalProvider } from "@/features/brands/brand-modal-context"
@@ -28,6 +29,7 @@ import { PurchaseModalProvider } from "@/features/purchases/purchase-modal-conte
 import { KhataModalProvider } from "@/features/khata/khata-modal-context"
 import { LoadingProvider } from "@/components/shared/loading-context"
 import { ThemeProvider } from "./theme-provider"
+import { CurrencyProvider } from "./currency-provider"
 
 // Add all new global providers to this array.
 // The order matters if one provider depends on another.
@@ -38,8 +40,10 @@ const providers = [
   SessionProvider,
   QueryProvider,
   ThemeProvider,
+  CurrencyProvider,
   GlobalModalProvider,
   AcceptanceModalProvider,
+  TicketWorkspaceModalProvider,
   AttributeModalProvider,
   BoxNumberModalProvider,
   BrandModalProvider,

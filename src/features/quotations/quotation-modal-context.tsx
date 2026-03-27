@@ -1,10 +1,12 @@
 "use client"
 
 import { createContext, useContext, useState, ReactNode, useCallback } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { FileText } from "lucide-react"
 import { Quotation } from "./quotations.schema"
 import { QuotationForm } from "./components/quotation-form"
-import { QuotationView } from "./components/quotation-view"
+import { QuotationInvoiceView } from "./components/quotation-invoice-view"
+import { PrintableDialog } from "@/components/shared/printable-dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 interface QuotationModalState {
   isOpen: boolean
@@ -38,11 +40,21 @@ export function QuotationModalProvider({ children }: { children: ReactNode }) {
     <QuotationModalContext.Provider value={{ openModal, closeModal }}>
       {children}
       
-      <Dialog open={state.isOpen} onOpenChange={closeModal}>
-        <DialogContent className="max-w-5xl p-0 overflow-hidden h-[90vh] flex flex-col">
-          {state.isViewMode && state.initialData ? (
-            <QuotationView quotation={state.initialData} />
-          ) : (
+      {state.isViewMode && state.initialData ? (
+        <PrintableDialog
+          isOpen={state.isOpen}
+          onOpenChange={closeModal}
+          title="Quotation / Estimate"
+          icon={<FileText className="h-4 w-4" />}
+          printableElementId="printable-quotation"
+          className="max-w-4xl p-0 overflow-hidden h-[95vh]"
+        >
+          <QuotationInvoiceView quotation={state.initialData} />
+        </PrintableDialog>
+      ) : (
+        <Dialog open={state.isOpen && !state.isViewMode} onOpenChange={closeModal}>
+          <DialogContent className="max-w-4xl p-0 overflow-hidden h-[95vh] flex flex-col">
+            <DialogTitle className="sr-only">Quotation Form</DialogTitle>
             <QuotationForm 
               initialData={state.initialData} 
               onSuccess={(data) => {
@@ -53,9 +65,9 @@ export function QuotationModalProvider({ children }: { children: ReactNode }) {
                 }
               }} 
             />
-          )}
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </QuotationModalContext.Provider>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { format } from "date-fns"
-import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
+import { CalendarIcon, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 import { Control, FieldValues, Path } from "react-hook-form"
 import { useState } from "react"
 
@@ -30,6 +30,7 @@ interface DatePickerFieldProps<TFieldValues extends FieldValues> {
     required?: boolean
     readOnly?: boolean 
     className?: string
+    showTime?: boolean
 }
 
 export function DatePickerField<TFieldValues extends FieldValues>({
@@ -41,8 +42,10 @@ export function DatePickerField<TFieldValues extends FieldValues>({
     required,
     readOnly = false, // ডিফল্ট ভ্যালু false
     className,
+    showTime = false,
 }: DatePickerFieldProps<TFieldValues>) {
     const [open, setOpen] = useState(false)
+    const displayFormat = showTime ? "PPP p" : "PPP" // 'p' for time (e.g., 12:00 AM)
 
     return (
         <FormField
@@ -60,9 +63,9 @@ export function DatePickerField<TFieldValues extends FieldValues>({
                                     !field.value && "text-muted-foreground"
                                 )}
                             >
-                                {field.value ? (
-                                    format(new Date(field.value), "PPP")
-                                ) : (
+                            {field.value ? (
+                                format(new Date(field.value), displayFormat)
+                            ) : (
                                     <span>{placeholder}</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -79,9 +82,9 @@ export function DatePickerField<TFieldValues extends FieldValues>({
                                             !field.value && "text-muted-foreground"
                                         )}
                                     >
-                                        {field.value ? (
-                                            format(new Date(field.value), "PPP")
-                                        ) : (
+                                    {field.value ? (
+                                        format(new Date(field.value), displayFormat)
+                                    ) : (
                                             <span>{placeholder}</span>
                                         )}
                                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -92,10 +95,18 @@ export function DatePickerField<TFieldValues extends FieldValues>({
                                 <DayPicker
                                     mode="single"
                                     selected={field.value ? new Date(field.value) : undefined}
-                                    onSelect={(date) => {
-                                        field.onChange(date)
-                                        setOpen(false)
-                                    }}
+                                onSelect={(date) => {
+                                    if (!date) return;
+                                    if (field.value) {
+                                        const existingDate = new Date(field.value);
+                                        date.setHours(existingDate.getHours());
+                                        date.setMinutes(existingDate.getMinutes());
+                                    }
+                                    field.onChange(date);
+                                    if (!showTime) {
+                                        setOpen(false);
+                                    }
+                                }}
                                     disabled={disabled}
                                     initialFocus
                                     className={cn("p-3", className)}
@@ -135,6 +146,35 @@ export function DatePickerField<TFieldValues extends FieldValues>({
                                         }
                                     }}
                                 /> 
+                            {showTime && (
+                                <div className="p-3 border-t border-border flex items-center justify-between gap-2">
+                                    <div className="flex items-center flex-1">
+                                        <Clock className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                                        <input
+                                            type="time"
+                                            value={field.value ? format(new Date(field.value), "HH:mm") : ""}
+                                            onChange={(e) => {
+                                                const timeValue = e.target.value;
+                                                if (!timeValue) return;
+                                                const [hours, minutes] = timeValue.split(':').map(Number);
+                                                const newDate = field.value ? new Date(field.value) : new Date();
+                                                newDate.setHours(hours);
+                                                newDate.setMinutes(minutes);
+                                                field.onChange(newDate);
+                                            }}
+                                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                        />
+                                    </div>
+                                    <Button 
+                                        type="button" 
+                                        size="sm" 
+                                        className="h-9 px-4 shrink-0"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Done
+                                    </Button>
+                                </div>
+                            )}
                             </PopoverContent>
                         </Popover>
                     )}

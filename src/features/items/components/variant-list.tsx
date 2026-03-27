@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { CurrencyText } from "@/components/shared/data-table-cells"
 import { Item } from "../item.schema"
 import { cn } from "@/lib/utils"
 
@@ -62,11 +63,11 @@ export function VariantList({ variants }: VariantListProps) {
                 </div>
               </TableCell>
               <TableCell className="text-right font-semibold text-foreground">
-                ৳{(item.salePrice || 0).toLocaleString()}
+                <CurrencyText amount={item.salePrice || 0} />
               </TableCell>
               <TableCell className="text-right">
                 <span className="px-2 py-1 rounded-md bg-muted font-bold text-foreground text-xs">
-                  {item.initialStock || 0}
+                  -
                 </span>
               </TableCell>
               <TableCell className="text-center">

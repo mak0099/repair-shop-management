@@ -5,6 +5,7 @@ export const mockSales: Sale[] = [
     id: "inv-001",
     invoiceNumber: "INV-2024-001",
     customerId: "cust-101",
+    customerName: "Rahim Ahmed",
     items: [
       { productId: "p-item-100", name: "iPhone 15 Pro", price: 145000, quantity: 1, subtotal: 145000, type: "PRODUCT", tax: 0, discount: 0 }
     ],
@@ -25,6 +26,7 @@ export const mockSales: Sale[] = [
     id: "inv-002",
     invoiceNumber: "INV-2024-002",
     customerId: null,
+    customerName: undefined,
     items: [
       { productId: "s-item-501", name: "Software Flashing", price: 1000, quantity: 1, subtotal: 1000, type: "SERVICE", tax: 0, discount: 0 }
     ],

@@ -65,7 +65,7 @@ export function CustomerList() {
           <ResourceActions
             resource={row.original}
             resourceName="Customer"
-            resourceTitle={row.original.name}
+            resourceTitle={row.original.name || "Unknown"}
             onView={() => openModal({ initialData: row.original, isViewMode: true })}
             onEdit={() => openModal({ initialData: row.original })}
 

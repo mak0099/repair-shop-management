@@ -50,6 +50,7 @@ import {
   ADMIN_USERS_HREF,
   ADMIN_ROLES_HREF,
   DASHBOARD_OVERVIEW_HREF,
+  FINANCE_BUYBACK_HREF,
 } from "@/config/paths";
 
 export const data = {
@@ -67,13 +68,8 @@ export const data = {
     },
     {
       title: "Repairs (Acceptance)",
-      url: ACCEPTANCES_BASE_HREF,
+      url: ACCEPTANCES_LIST_HREF,
       icon: CheckCircle,
-      items: [
-        { title: "New Acceptance", url: ACCEPTANCES_ADD_HREF },
-        { title: "Acceptance List", url: ACCEPTANCES_LIST_HREF },
-        // { title: "Recycle Bin", url: "/dashboard/acceptances/deleted" },
-      ],
     },
     {
       title: "Inventory & Stock",
@@ -110,6 +106,7 @@ export const data = {
       icon: BarChart3,
       items: [
         { title: "Product Purchases", url: FINANCE_PURCHASE_HREF },
+        { title: "Customer Buybacks", url: FINANCE_BUYBACK_HREF },
         { title: "General Expenses", url: FINANCE_EXPENSES_HREF },
         { title: "Daily Khata", url: FINANCE_KHATA_HREF },
       ],

@@ -38,7 +38,7 @@ export function SalesList() {
           subtitle={
             <div className="flex gap-2 items-center">
               <span className="font-bold text-muted-foreground uppercase tracking-tighter">
-                {row.original.customerId ? `Customer ID: ${row.original.customerId}` : "WALK-IN CUSTOMER"}
+                {row.original.customerName ? row.original.customerName : (row.original.customerId ? `Customer ID: ${row.original.customerId}` : "WALK-IN CUSTOMER")}
               </span>
             </div>
           }
@@ -123,7 +123,7 @@ export function SalesList() {
       addLabel="Open POS Terminal"
       bulkDeleteMutation={bulkDeleteMutation}
       searchPlaceholder="Search invoice number or customer..."
-      initialFilters={{ status: "all" }}
+      initialFilters={{ status: "all", paymentMethod: "all" }}
       filterDefinitions={[
         {
           key: "status",

@@ -12,6 +12,7 @@ const itemApiHooks = createApiHooksFor<Item, ItemFormValues, Partial<ItemFormVal
 export interface ItemOption {
   id: string
   name: string
+  [key: string]: unknown // Support extra fields like salePrice, condition, etc.
 }
 
 export const useItems = itemApiHooks.useGetList

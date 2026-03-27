@@ -20,7 +20,7 @@ export const customerHandlers = [
 
     const filteredData = customers.filter((customer) => {
       const searchMatch =
-        customer.name.toLowerCase().includes(search) ||
+        (customer.name?.toLowerCase() || "").includes(search) ||
         customer.mobile.includes(search) ||
         (customer.email && customer.email.toLowerCase().includes(search))
 
@@ -63,7 +63,7 @@ export const customerHandlers = [
     const search = url.searchParams.get("search")?.toLowerCase() || ""
 
     const filtered = customers.filter(
-      (c) => c.isActive && (c.name.toLowerCase().includes(search) || c.mobile.includes(search))
+      (c) => c.isActive && ((c.name?.toLowerCase() || "").includes(search) || c.mobile.includes(search))
     )
 
     const options = filtered.map((c) => ({

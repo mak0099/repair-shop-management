@@ -15,18 +15,22 @@ interface UserSelectFieldProps<TFieldValues extends FieldValues> {
   required?: boolean
   disabled?: boolean
   readOnly?: boolean
+  canAdd?: boolean
   variant?: "technician" | "all"
+  className?: string
 }
 
 export function UserSelectField<TFieldValues extends FieldValues>({
   name,
   control,
-  label = "User",
+  label = "",
   placeholder = "Select User",
   required = false,
   disabled = false,
   readOnly = false,
+  canAdd = false,
   variant = "all",
+  className,
 }: UserSelectFieldProps<TFieldValues>) {
   const { setValue } = useFormContext<TFieldValues>()
   const { openModal } = useUserModal()
@@ -67,11 +71,12 @@ export function UserSelectField<TFieldValues extends FieldValues>({
         searchPlaceholder="Search users..."
         noResultsMessage="No user found."
         options={userOptions}
-        onAdd={handleAddUser}
+        onAdd={canAdd ? handleAddUser : undefined}
         required={required}
         isLoading={isLoading}
         disabled={disabled}
         readOnly={readOnly}
+        className={className}
       />
     </>
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import Link from "next/link"
 import { Plus, CircleDot, Download, Trash, Loader2 } from "lucide-react"
 import type { ColumnDef, SortingState, Table } from "@tanstack/react-table"
@@ -23,6 +23,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
+
+export interface TabConfig {
+  enabled?: boolean
+  counts?: Record<string, number>
+  selectedValue?: string
+  onChange?: (value: string) => void
+  options?: { label: string; value: string }[]
+  colors?: Record<string, string>
+  filterKey?: string // Auto-calculate counts by grouping data on this field
+  position?: "top" | "bottom" | "left" | "right"
+}
 
 export interface FilterDefinition {
   key: string
@@ -81,6 +92,7 @@ interface ResourceListPageProps<TData extends { id?: string }, TValue> {
     unknown
   >
   config?: ResourceListConfig
+  tabs?: TabConfig
 }
 
 const DEFAULT_INITIAL_FILTERS: ResourceFilters = {
@@ -106,21 +118,38 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
   bulkDeleteMutation,
   bulkStatusUpdateMutation,
   config = {},
+  tabs,
 }: ResourceListPageProps<TData, TValue>) {
   const mergedFilters = { ...DEFAULT_INITIAL_FILTERS, ...initialFilters }
   const [filters, setFilters] = useState<ResourceFilters>(mergedFilters as ResourceFilters)
   const [sorting, setSorting] = useState<SortingState>([])
   const [itemIdsToDelete, setItemIdsToDelete] = useState<string[]>([])
 
-  const apiFilters: ResourceFilters = {
+  const apiFilters: ResourceFilters = useMemo(() => ({
     ...filters,
     _sort: sorting.length > 0 ? sorting[0].id : undefined,
     _order: sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined,
-  }
+  }), [filters, sorting])
+
+  // For tab counts, fetch without the tab filter to show accurate counts for all tabs
+  const countFilters: ResourceFilters = useMemo(() => {
+    const unfiltered = { ...apiFilters }
+    if (tabs?.filterKey) {
+      delete unfiltered[tabs.filterKey]
+    }
+    // Remove pagination and sorting for count query, just get raw counts
+    return { ...unfiltered, page: 1, pageSize: 1000 }
+  }, [apiFilters, tabs?.filterKey])
 
   const { data, isFetching, isError, error } = useResourceQuery(apiFilters)
-  const resources = data?.data || []
-  const meta = data?.meta || { total: resources.length, page: 1, pageSize: filters.pageSize, totalPages: 1 }
+  const { data: countData } = useResourceQuery(countFilters)
+  
+  const resources = useMemo(() => data?.data || [], [data?.data])
+  const countResources = useMemo(() => countData?.data || [], [countData?.data])
+  const meta = useMemo(
+    () => data?.meta || { total: resources.length, page: 1, pageSize: filters.pageSize, totalPages: 1 },
+    [data?.meta, resources.length, filters.pageSize]
+  )
 
   const isFiltered =
     Object.keys(filters).some(
@@ -156,6 +185,34 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
     enableSortingRemoval: sortingConfig.enableRemoval !== false,
     enableRowSelection: rowSelectionConfig.enabled !== false,
   })
+
+  // Auto-calculate tab counts if filterKey is provided
+  const computedTabCounts = useMemo(() => {
+    if (!tabs?.filterKey || tabs?.counts) return tabs?.counts // Use provided counts if available
+    
+    const counts: Record<string, number> = { all: countResources.length }
+    const filterKey = tabs.filterKey
+    
+    // Group resources by filter key and count (using unfiltered data)
+    countResources.forEach((resource) => {
+      const value = (resource as Record<string, unknown>)[filterKey] || "unknown"
+      const key = String(value)
+      counts[key] = (counts[key] || 0) + 1
+    })
+    
+    return counts
+  }, [countResources, tabs?.filterKey, tabs?.counts])
+
+  // Handle tab change - update filter directly
+  const handleTabChange = (value: string) => {
+    // Call the onChange callback if provided
+    tabs?.onChange?.(value)
+    
+    // If filterKey is provided, update the filter automatically
+    if (tabs?.filterKey) {
+      setFilters({ ...filters, [tabs.filterKey]: value, page: 1 })
+    }
+  }
 
   // Hook for passing table instance
   useState(() => { onTableReady?.(table) })
@@ -277,6 +334,7 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
         )}
       </PageHeader>
 
+      {/* Filters + Tabs Section */}
       <DataTableFilterToolbar
         searchQuery={filters.search}
         onSearchChange={(value) => setFilters({ ...filters, search: value, page: 1 })}
@@ -288,6 +346,17 @@ export function ResourceListPage<TData extends { id?: string }, TValue>({
           value: String(filters[def.key] ?? ""),
           onChange: (val: string) => setFilters({ ...filters, [def.key]: val, page: 1 }),
         }))}
+        tabs={tabs?.enabled ? {
+          enabled: true,
+          selectedValue: tabs.selectedValue,
+          onChange: tabs.onChange,
+          options: tabs.options,
+          colors: tabs.colors,
+          counts: tabs.counts,
+          position: tabs.position,
+        } : undefined}
+        onTabChange={handleTabChange}
+        tabCounts={computedTabCounts}
       />
 
       <DataTableCard

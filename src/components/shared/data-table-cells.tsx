@@ -6,6 +6,8 @@ import { CheckCircle, XCircle, ImageIcon } from "lucide-react"
 import { format, isValid } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useShopProfile } from "@/features/shop-profile/shop-profile.api"
+import { useCurrency } from "@/providers/currency-provider"
+import { formatCurrency } from "@/lib/currency-config"
 
 import { cn } from "@/lib/utils"
 
@@ -196,23 +198,24 @@ export interface CurrencyCellProps {
 
 export function CurrencyCell({
   amount,
-  currencyCode,
-  locale = "it-IT",
+  currencyCode: overrideCurrencyCode,
+  locale: overrideLocale,
   className,
   subtitle,
+  minimumFractionDigits,
+  maximumFractionDigits,
 }: CurrencyCellProps) {
-  const { data: shopProfile } = useShopProfile()
-  const currency = currencyCode || shopProfile?.currency || "EUR"
-  const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
-
-  if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
-    return <div className={cn("text-right font-medium text-muted-foreground", className)}>-</div>
+  const { config } = useCurrency()
+  
+  const finalConfig = {
+    ...config,
+    ...(overrideCurrencyCode && { currencyCode: overrideCurrencyCode }),
+    ...(overrideLocale && { locale: overrideLocale }),
+    ...(minimumFractionDigits !== undefined && { minimumFractionDigits }),
+    ...(maximumFractionDigits !== undefined && { maximumFractionDigits }),
   }
-
-  const formatted = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency,
-  }).format(numericAmount)
+  
+  const formatted = formatCurrency(amount, finalConfig)
 
   return (
     <div className={cn("text-right pr-4", className)}>
@@ -226,23 +229,20 @@ export function CurrencyCell({
 
 export function CurrencyText({
   amount,
-  currencyCode,
-  locale = "it-IT",
+  currencyCode: overrideCurrencyCode,
+  locale: overrideLocale,
   minimumFractionDigits,
   maximumFractionDigits,
 }: Pick<CurrencyCellProps, "amount" | "currencyCode" | "locale" | "minimumFractionDigits" | "maximumFractionDigits">) {
-  const { data: shopProfile } = useShopProfile()
-  const currency = currencyCode || shopProfile?.currency || "EUR"
-  const numericAmount = typeof amount === "string" ? parseFloat(amount) : amount
-
-  if (numericAmount === undefined || numericAmount === null || isNaN(numericAmount)) {
-    return <>-</>
+  const { config } = useCurrency()
+  
+  const finalConfig = {
+    ...config,
+    ...(overrideCurrencyCode && { currencyCode: overrideCurrencyCode }),
+    ...(overrideLocale && { locale: overrideLocale }),
+    ...(minimumFractionDigits !== undefined && { minimumFractionDigits }),
+    ...(maximumFractionDigits !== undefined && { maximumFractionDigits }),
   }
 
-  return <>{new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency,
-    minimumFractionDigits,
-    maximumFractionDigits,
-  }).format(numericAmount)}</>
+  return <>{formatCurrency(amount, finalConfig)}</>
 }

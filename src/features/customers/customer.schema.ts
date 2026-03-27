@@ -7,7 +7,9 @@ import { BaseEntity } from "@/types/common";
  * Boolean: isActive and isDealer are strictly boolean.
  */
 export const customerSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().optional(),
+  name: z.string().optional(),
   email: z.string().email("Invalid email address").optional().or(z.literal("")),
   phone: z.string().optional(),
   mobile: z.string().min(1, "Mobile number is required"),

@@ -19,6 +19,7 @@ export const saleItemSchema = z.object({
 
 export const saleSchema = z.object({
   customerId: z.string().optional().nullable(),
+  customerName: z.string().optional(),
   items: z.array(saleItemSchema).min(1, "Cart cannot be empty"),
   subtotal: z.number(),
   totalDiscount: z.number().default(0),

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm, Resolver, useWatch } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
@@ -44,14 +44,23 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerSchema) as unknown as Resolver<CustomerFormValues>,
     defaultValues: initialData || {
-      name: "", mobile: "", email: "", phone: "",
+      firstName: "", lastName: "", name: "", mobile: "", email: "", phone: "",
       fiscalCode: "", vat: "", sdiCode: "", pecEmail: "",
       address: "", location: "", province: "", postalCode: "",
       notes: "", isDealer: false, isActive: true,
     },
   })
 
+  const firstName = useWatch({ control: form.control, name: "firstName" }) || ""
+  const lastName = useWatch({ control: form.control, name: "lastName" }) || ""
   const isDealer = useWatch({ control: form.control, name: "isDealer" })
+
+  useEffect(() => {
+    if (!isViewMode) {
+      const mergedName = [firstName, lastName].filter(Boolean).join(" ")
+      form.setValue("name", mergedName, { shouldValidate: !!mergedName, shouldDirty: true })
+    }
+  }, [firstName, lastName, isViewMode, form])
 
   const onSubmit = (data: CustomerFormValues) => {
     const callbacks = {
@@ -84,7 +93,9 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
 
           <CardContent className={cn("p-6 space-y-6", isViewMode && "pt-12")}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <TextField control={form.control} name="name" label="Full Name" required readOnly={isViewMode} />
+              <TextField control={form.control} name="firstName" label="First Name" required readOnly={isViewMode} />
+              <TextField control={form.control} name="lastName" label="Last Name" readOnly={isViewMode} />
+              <TextField control={form.control} name="name" label="Full Name (Auto)" placeholder="Auto-generated" readOnly />
               <TextField control={form.control} name="mobile" label="Mobile Number" required readOnly={isViewMode} />
               <TextField control={form.control} name="email" label="Email Address" type="email" readOnly={isViewMode} />
             </div>

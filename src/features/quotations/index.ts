@@ -1,7 +1,7 @@
 // Components
 export * from "./components/quotation-list";
 export * from "./components/quotation-form";
-export * from "./components/quotation-view";
+export * from "./components/quotation-invoice-view";
 
 // Context Provider & Hooks
 export * from "./quotation-modal-context";

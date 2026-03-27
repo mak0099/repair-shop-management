@@ -19,6 +19,8 @@ import { ReturnForm } from "@/features/returns"
 import { RegisterForm } from "@/features/register"
 import { PurchaseForm } from "@/features/purchases"
 import { KhataForm } from "@/features/khata"
+import { BuybackForm } from "@/features/buybacks"
+import { TicketWorkspaceModal } from "@/features/acceptances/components/ticket-workspace-modal"
 
 // 1. Define a structure for each modal configuration
 interface ModalConfig {
@@ -106,8 +108,16 @@ const modalRegistry: readonly ModalConfig[] = [
     contentComponent: PurchaseForm,
   },
   {
+    type: "buybackForm",
+    contentComponent: BuybackForm,
+  },
+  {
     type: "khataForm",
     contentComponent: KhataForm,
+  },
+  {
+    type: "ticketWorkspaceForm",
+    contentComponent: TicketWorkspaceModal,
   },
 ] as const // Using 'as const' for better type inference
 

@@ -66,7 +66,7 @@ export function AppTopNav() {
     <header 
       className="sticky top-0 z-50 w-full border-b transition-all duration-500 shadow-sm backdrop-blur-lg"
       style={{ 
-        backgroundColor: 'color-mix(in srgb, var(--tn-top-nav), transparent 15%)',
+        backgroundColor: 'color-mix(in srgb, var(--tn-top-nav), transparent 5%)',
         color: 'var(--tn-top-nav-foreground)',
         borderColor: 'color-mix(in srgb, var(--tn-top-nav-border), transparent 50%)',
         /* লোকাল ভেরিয়েবল স্কোপিং: যাতে ভেতরের সব কম্পোনেন্ট ডার্ক মোডের কালার পায় */
@@ -95,28 +95,46 @@ export function AppTopNav() {
               const isActive = getIsActive(item as NavItem);
               
               const itemBaseClasses = cn(
-                "relative flex flex-col items-center justify-center h-18 w-20 lg:w-24 rounded-2xl px-1 py-1 transition-all duration-300 group overflow-hidden border",
+                "group relative flex flex-col items-center justify-center h-18 w-20 lg:w-24 rounded-2xl px-1 py-1 transition-all duration-300 overflow-hidden border",
                 isActive 
                   ? "shadow-lg" 
                   : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 hover:-translate-y-0.5 hover:shadow-md"
               );
 
               const itemDynamicStyle = {
-                /* ১. সলিড ব্যাকগ্রাউন্ড (ক্লাসিক মোড বা গ্রেডিয়েন্ট লোড না হলে ফলব্যাক) */
+                /* সলিড ব্যাকগ্রাউন্ড */
                 backgroundColor: isActive ? 'var(--primary)' : 'transparent',
-                /* ২. গ্রেডিয়েন্ট থাকলে সলিড কালারের উপরে বসবে */
+                /* স্লাইডিং গ্রেডিয়েন্ট এনিমেশন */
                 backgroundImage: isActive ? 'var(--primary-gradient)' : 'none',
-                /* ৩. টেক্সট কন্ট্রাস্ট নিশ্চিত করা */
+                backgroundSize: isActive ? '200% auto' : '100% auto',
+                backgroundPosition: isActive ? 'left center' : 'center',
+                transitionDuration: 'var(--animation-speed)',
+                /* টেক্সট কন্ট্রাস্ট */
                 color: isActive ? 'var(--primary-foreground)' : 'inherit',
-                boxShadow: isActive ? 'var(--button-glow)' : 'none',
+                /* গ্লো এফেক্ট */
+                boxShadow: isActive ? 'var(--button-glow)' : '0 0 0 0 rgb(0 0 0 / 0)',
                 borderWidth: isActive ? '0' : 'auto',
                 borderColor: isActive ? 'transparent' : 'color-mix(in srgb, var(--tn-top-nav-border), transparent 10%)',
               } as React.CSSProperties;
 
+              const handleHover = (e: React.MouseEvent<HTMLElement>, entering: boolean) => {
+                if (isActive) return; // active state তে হোভার effect এড়িয়ে যাও
+                
+                if (entering) {
+                  e.currentTarget.style.boxShadow = '0 0 16px rgb(var(--primary) / 0.3)';
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                  e.currentTarget.style.backgroundPosition = 'right center';
+                } else {
+                  e.currentTarget.style.boxShadow = '0 0 0 0 rgb(0 0 0 / 0)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.backgroundPosition = 'left center';
+                }
+              };
+
               const renderContent = () => (
                 <>
-                  {item.icon && <item.icon className={cn("h-5 w-5 mb-1 transition-transform group-hover:scale-110", isActive && "animate-pulse-slow")} />}
-                  <span className={cn("text-center text-[11px] font-semibold tracking-wide leading-tight px-1 line-clamp-2")}>
+                  {item.icon && <item.icon className={cn("h-5 w-5 mb-1 transition-transform duration-300 group-hover:scale-110", isActive && "animate-pulse-slow")} />}
+                  <span className={cn("text-center text-[11px] font-semibold tracking-wide leading-tight px-1 line-clamp-2 transition-all duration-300")}>
                     {item.title}
                   </span>
                   {!isActive && (
@@ -128,7 +146,12 @@ export function AppTopNav() {
               return item.items ? (
                 <DropdownMenu key={item.title}>
                   <DropdownMenuTrigger asChild>
-                    <button className={itemBaseClasses} style={itemDynamicStyle}>
+                    <button 
+                      className={itemBaseClasses} 
+                      style={itemDynamicStyle}
+                      onMouseEnter={(e) => handleHover(e, true)}
+                      onMouseLeave={(e) => handleHover(e, false)}
+                    >
                       {renderContent()}
                     </button>
                   </DropdownMenuTrigger>
@@ -166,7 +189,14 @@ export function AppTopNav() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link key={item.title} href={item.url || "#"} className={itemBaseClasses} style={itemDynamicStyle}>
+                <Link 
+                  key={item.title} 
+                  href={item.url || "#"} 
+                  className={itemBaseClasses} 
+                  style={itemDynamicStyle}
+                  onMouseEnter={(e) => handleHover(e as unknown as React.MouseEvent<HTMLElement>, true)}
+                  onMouseLeave={(e) => handleHover(e as unknown as React.MouseEvent<HTMLElement>, false)}
+                >
                   {renderContent()}
                 </Link>
               );

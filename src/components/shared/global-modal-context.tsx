@@ -8,7 +8,13 @@ interface ModalProps {
   onSuccess?: (data?: unknown) => void;
   title?: string;
   description?: string;
+  hideHeader?: boolean;
+  renderHeader?: () => React.ReactNode;
   className?: string;
+  printConfig?: {
+    enabled?: boolean;
+    elementId: string;
+  };
   [key: string]: unknown; // Allow any other props
 }
 
@@ -67,7 +73,7 @@ export function GlobalModalProvider({ children }: { children: ReactNode }) {
   return (
     <GlobalModalContext.Provider value={{ openModal, closeModal }}>
       {children}
-      <Modal title={currentModal?.props.title || "Modal"} description={currentModal?.props.description} isOpen={!!currentModal} onClose={closeModal} className={currentModal?.props.className}>
+      <Modal title={currentModal?.props.title || "Modal"} description={currentModal?.props.description} hideHeader={currentModal?.props.hideHeader as boolean} renderHeader={currentModal?.props.renderHeader as (() => React.ReactNode) | undefined} isOpen={!!currentModal} onClose={closeModal} className={currentModal?.props.className}>
         {renderModalContents()}
       </Modal>
     </GlobalModalContext.Provider>

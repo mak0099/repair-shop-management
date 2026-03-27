@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
@@ -9,22 +9,17 @@ import { DataTableColumnHeader } from "@/components/shared/data-table-column-hea
 import { DateCell, CurrencyCell } from "@/components/shared/data-table-cells"
 import { Badge } from "@/components/ui/badge"
 
-import {
-  useAcceptances,
-  useDeleteAcceptance,
-  useDeleteManyAcceptances,
-  useUpdateManyAcceptances,
-} from "../acceptance.api"
+import { useAcceptances, useDeleteAcceptance, useDeleteManyAcceptances, useUpdateManyAcceptances } from "../acceptance.api"
 import { Acceptance } from "../acceptance.schema"
 import { useAcceptanceModal } from "../acceptance-modal-context"
-import { REPAIR_STATUS_OPTIONS } from "../acceptance.constants"
+import { useTicketWorkspaceModal } from "../ticket-workspace-modal-context"
 import { Customer } from "@/features/customers"
 import { Brand } from "@/features/brands"
 import { Model } from "@/features/models"
 
-import { useCustomerOptions } from "@/features/customers/customer.api"
 import { useBrandOptions } from "@/features/brands/brand.api"
 import { useModelOptions } from "@/features/models/model.api"
+import { REPAIR_STATUS_OPTIONS, getStatusColors, STATUS_COLORS, KANBAN_COLUMNS } from "../acceptance.constants"
 
 interface AcceptanceInList extends Acceptance {
   customer?: Pick<Customer, "id" | "name">
@@ -37,8 +32,9 @@ export function AcceptanceList() {
   const bulkDeleteMutation = useDeleteManyAcceptances()
   const bulkStatusUpdateMutation = useUpdateManyAcceptances()
   const { openModal } = useAcceptanceModal()
+  const { openModal: openWorkspaceModal } = useTicketWorkspaceModal()
+  const [selectedStatus, setSelectedStatus] = useState<string>("all")
 
-  const { data: customers } = useCustomerOptions()
   const { data: brands } = useBrandOptions()
   const { data: models } = useModelOptions()
 
@@ -50,7 +46,7 @@ export function AcceptanceList() {
         cell: ({ row }) => (
           <div
             className="font-medium cursor-pointer hover:underline"
-            onClick={() => openModal({ initialData: row.original, isViewMode: true })}
+            onClick={() => openWorkspaceModal({ initialData: row.original })}
           >
             {row.getValue("acceptanceNumber")}
           </div>
@@ -66,10 +62,6 @@ export function AcceptanceList() {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Acceptance Date" />,
         cell: ({ row }) => <DateCell date={row.getValue("acceptanceDate")} />,
       },
-      // {
-      //   accessorKey: "deviceType",
-      //   header: "Device Type",
-      // },
       {
         accessorKey: "brandId",
         header: "Brand",
@@ -85,7 +77,14 @@ export function AcceptanceList() {
         header: "Repair Status",
         cell: ({ row }) => {
           const status = row.getValue("currentStatus") as string
-          return <Badge variant="outline">{status}</Badge>
+          const colors = getStatusColors(status as keyof typeof STATUS_COLORS)
+          return (
+            <Badge 
+              className={`${colors.bg} ${colors.text} ${colors.accent} border`}
+            >
+              {colors.label}
+            </Badge>
+          )
         },
       },
       {
@@ -101,14 +100,14 @@ export function AcceptanceList() {
             resource={row.original}
             resourceName="Acceptance"
             resourceTitle={row.original.acceptanceNumber}
-            onView={(acceptance) => openModal({ initialData: acceptance, isViewMode: true })}
+            onView={(acceptance) => openWorkspaceModal({ initialData: acceptance })}
             onEdit={(acceptance) => openModal({ initialData: acceptance })}
             deleteMutation={deleteMutation}
           />
         ),
       },
     ],
-    [deleteMutation, openModal]
+    [deleteMutation, openModal, openWorkspaceModal]
   )
 
   return (
@@ -117,33 +116,44 @@ export function AcceptanceList() {
       resourceName="acceptances"
       description="Manage all repair acceptances."
       onAdd={() => openModal()}
-      addLabel="Add New Acceptance"
+      addLabel="New Acceptance"
       columns={columns}
       useResourceQuery={useAcceptances}
       bulkDeleteMutation={bulkDeleteMutation}
       bulkStatusUpdateMutation={bulkStatusUpdateMutation}
       initialFilters={{
-        currentStatus: "all",
+        currentStatus: selectedStatus,
         customerId: "all",
         brandId: "all",
         modelId: "all",
         acceptanceDate: undefined,
       }}
-      searchPlaceholder="Filter by customer name..."
+      searchPlaceholder="Search by No, Customer, Phone"
+      tabs={{
+        enabled: true,
+        position: "bottom",
+        selectedValue: selectedStatus,
+        onChange: setSelectedStatus,
+        filterKey: "currentStatus", // Auto-calculate counts by grouping on currentStatus
+        options: [
+          { label: "All", value: "all" },
+          ...KANBAN_COLUMNS.map((status) => ({
+            label: REPAIR_STATUS_OPTIONS.find(opt => opt.value === status)?.label || status,
+            value: status,
+          })),
+        ],
+        colors: {
+          all: "border-border",
+          ...Object.entries(STATUS_COLORS).reduce(
+            (acc, [status, colors]) => ({
+              ...acc,
+              [status]: colors.accent,
+            }),
+            {}
+          ),
+        },
+      }}
       filterDefinitions={[
-        {
-          key: "currentStatus",
-          title: "Repair Status",
-          options: REPAIR_STATUS_OPTIONS,
-        },
-        {
-          key: "customerId",
-          title: "Customer",
-          options: [
-            { label: "All Customers", value: "all" },
-            ...(customers?.map((c: { id: string; name: string }) => ({ label: c.name, value: c.id })) || []),
-          ],
-        },
         {
           key: "brandId",
           title: "Brand",
@@ -163,7 +173,7 @@ export function AcceptanceList() {
         {
           key: "acceptanceDate",
           title: "Acceptance Date Range",
-          type: "date-range", 
+          type: "date-range",
         },
       ]}
     />

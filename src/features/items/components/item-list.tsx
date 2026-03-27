@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { ResourceListPage } from "@/components/shared/resource-list-page"
@@ -11,6 +11,7 @@ import { ResourceActions } from "@/components/shared/resource-actions"
 
 import { useItems, useDeleteItem, useDeleteManyItems, usePartialUpdateItem } from "../item.api"
 import { Item } from "../item.schema"
+import { ITEM_TYPE_OPTIONS, ITEM_TYPE_COLORS } from "../item.constants"
 import { useItemModal } from "../item-modal-context"
 
 /**
@@ -24,6 +25,9 @@ export function ItemList() {
   const updateMutation = usePartialUpdateItem()
   const bulkDeleteMutation = useDeleteManyItems()
 
+  // Local state for itemType filter (driven by tabs)
+  const [itemTypeFilter, setItemTypeFilter] = useState<string>("all")
+
   const columns: ColumnDef<Item>[] = useMemo(() => [
     {
       accessorKey: "name",
@@ -34,13 +38,17 @@ export function ItemList() {
           isActive={row.original.isActive}
           onClick={() => openModal({ initialData: row.original, isViewMode: true })}
           subtitle={
-            <div className="flex gap-2 items-center">
-              <span className="font-bold uppercase tracking-widest">{row.original.brandId}</span>
-              {row.original.ram && (
-                <span className="text-blue-500 font-medium italic">
-                  ({row.original.ram}/{row.original.rom})
-                </span>
+            <div className="flex flex-col gap-0.5 mt-1">
+              <div className="flex gap-2 items-center">
+              {row.original.subtitle && (
+                <span className="text-[10px] text-muted-foreground">{row.original.subtitle}</span>
               )}
+                {row.original.ram && (
+                  <span className="text-blue-500 font-medium italic">
+                    ({row.original.ram}/{row.original.rom})
+                  </span>
+                )}
+              </div>
             </div>
           }
         />
@@ -51,12 +59,27 @@ export function ItemList() {
       header: "Condition",
       cell: ({ row }) => (
         <Badge
-          variant={row.original.condition === "New" ? "default" : "secondary"}
+          variant={row.original.condition === "NEW" ? "default" : "secondary"}
           className="text-[9px] uppercase font-bold px-1.5 py-0"
         >
           {row.original.condition}
         </Badge>
       )
+    },
+    {
+      accessorKey: "itemType",
+      header: "Type",
+      cell: ({ row }) => {
+        const itemType = (row.original.itemType || "DEVICE") as keyof typeof ITEM_TYPE_COLORS
+        return (
+          <Badge
+            variant="outline"
+            className={`text-[9px] uppercase font-bold px-1.5 py-0 ${ITEM_TYPE_COLORS[itemType].badge}`}
+          >
+            {row.original.itemType || "DEVICE"}
+          </Badge>
+        )
+      }
     },
     {
       accessorKey: "salePrice",
@@ -66,18 +89,6 @@ export function ItemList() {
           amount={row.original.salePrice}
           subtitle={<>Cost: <CurrencyText amount={row.original.purchasePrice} /></>}
         />
-      )
-    },
-    {
-      accessorKey: "initialStock",
-      header: "Qty",
-      cell: ({ row }) => (
-        <div className="flex flex-col">
-          <span className={row.original.initialStock > 0 ? "font-black text-emerald-600" : "font-black text-destructive"}>
-            {row.original.initialStock}
-          </span>
-          <span className="text-[8px] text-slate-300 uppercase font-bold">In Stock</span>
-        </div>
       )
     },
     {
@@ -116,18 +127,36 @@ export function ItemList() {
       addLabel="New Product"
       bulkDeleteMutation={bulkDeleteMutation}
       searchPlaceholder="Search products or SKU..."
-      initialFilters={{ condition: "all" }}
+      initialFilters={{ condition: "all", itemType: itemTypeFilter }}
       filterDefinitions={[
         {
           key: "condition",
           title: "Condition",
           options: [
             { label: "All Condition", value: "all" },
-            { label: "New", value: "New" },
-            { label: "Used", value: "Used" },
+            { label: "New", value: "NEW" },
+            { label: "Used", value: "USED" },
+            { label: "Refurbished", value: "REFURBISHED" },
           ],
-        }
+        },
       ]}
+      tabs={{
+        enabled: true,
+        position: "bottom",
+        selectedValue: itemTypeFilter,
+        onChange: setItemTypeFilter,
+        filterKey: "itemType", // Auto-calculate counts by grouping on itemType
+        options: [
+          { label: "All Types", value: "all" },
+          ...ITEM_TYPE_OPTIONS,
+        ],
+        colors: {
+          all: "border-border",
+          ...Object.fromEntries(
+            Object.entries(ITEM_TYPE_COLORS).map(([key, val]) => [key, val.tab])
+          ),
+        },
+      }}
     />
   )
 }

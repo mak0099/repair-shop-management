@@ -113,7 +113,7 @@ export function AppTopNav() {
                 color: isActive ? 'var(--primary-foreground)' : 'inherit',
                 /* গ্লো এফেক্ট */
                 boxShadow: isActive ? 'var(--button-glow)' : '0 0 0 0 rgb(0 0 0 / 0)',
-                borderWidth: isActive ? '0' : 'auto',
+                borderWidth: isActive ? '0px' : '1px',
                 borderColor: isActive ? 'transparent' : 'color-mix(in srgb, var(--tn-top-nav-border), transparent 10%)',
               } as React.CSSProperties;
 

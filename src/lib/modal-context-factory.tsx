@@ -37,6 +37,7 @@ interface ModalConfig<T = any> {
   modalClassName?: string
   hideHeader?: boolean
   renderHeader?: (data?: T) => React.ReactNode
+  renderFooter?: (data?: T) => React.ReactNode
   addTitle?: string
   addDescription?: string
   editTitle?: string
@@ -61,6 +62,7 @@ export function createModalContext<
     modalClassName,
     hideHeader = false,
     renderHeader,
+    renderFooter,
     printConfig,
     addTitle = `Add New ${featureName}`,
     addDescription = `Create a new ${featureName.toLowerCase()}.`,
@@ -100,6 +102,7 @@ export function createModalContext<
           description,
           hideHeader,
           renderHeader: renderHeader ? () => renderHeader(initialData) : undefined,
+          renderFooter: renderFooter ? () => renderFooter(initialData) : undefined,
           className: modalClassName,
           printConfig,
           initialData,

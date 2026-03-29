@@ -22,7 +22,7 @@ export const formSchema = z.object({
   accessories: z.string().optional(),
   deviceType: z.string().min(1, "Device type is required"),
   currentStatus: z.string().min(1, "Status is required"),
-  defectDescription: z.string().optional(),
+  defectDescription: z.string().trim().min(1, "Defect description is required"),
   notes: z.string().optional(),
   // Removed .default() to prevent "Date | undefined" type mismatch
   acceptanceDate: z.date({ message: "Acceptance date is required" }),

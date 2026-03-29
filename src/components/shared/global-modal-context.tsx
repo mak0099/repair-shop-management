@@ -10,6 +10,7 @@ interface ModalProps {
   description?: string;
   hideHeader?: boolean;
   renderHeader?: () => React.ReactNode;
+  renderFooter?: () => React.ReactNode;
   className?: string;
   printConfig?: {
     enabled?: boolean;
@@ -63,7 +64,7 @@ export function GlobalModalProvider({ children }: { children: ReactNode }) {
       };
 
       return (
-        <div key={`${type}-${index}`} style={{ display: isTopModal ? "block" : "none" }}>
+        <div key={`${type}-${index}`} style={{ display: isTopModal ? "flex" : "none" }} className="flex-col flex-1 min-h-0 w-full h-full">
           <ContentComponent onSuccess={props.onSuccess || handleClose} {...props} />
         </div>
       );
@@ -73,7 +74,7 @@ export function GlobalModalProvider({ children }: { children: ReactNode }) {
   return (
     <GlobalModalContext.Provider value={{ openModal, closeModal }}>
       {children}
-      <Modal title={currentModal?.props.title || "Modal"} description={currentModal?.props.description} hideHeader={currentModal?.props.hideHeader as boolean} renderHeader={currentModal?.props.renderHeader as (() => React.ReactNode) | undefined} isOpen={!!currentModal} onClose={closeModal} className={currentModal?.props.className}>
+      <Modal title={currentModal?.props.title || "Modal"} description={currentModal?.props.description} hideHeader={currentModal?.props.hideHeader as boolean} renderHeader={currentModal?.props.renderHeader as (() => React.ReactNode) | undefined} renderFooter={currentModal?.props.renderFooter as (() => React.ReactNode) | undefined} isOpen={!!currentModal} onClose={closeModal} className={currentModal?.props.className}>
         {renderModalContents()}
       </Modal>
     </GlobalModalContext.Provider>

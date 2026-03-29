@@ -6,7 +6,7 @@ import { useForm, Resolver, useWatch } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Edit3 } from "lucide-react"
+import { Edit3, FileText, Phone, Badge, LockKeyhole } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -117,16 +117,35 @@ export function CustomerForm({ initialData, onSuccess, isViewMode: initialIsView
               <TextField control={form.control} name="postalCode" label="CAP" readOnly={isViewMode} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
-              <TextField control={form.control} name="fiscalCode" label="Codice Fiscale" readOnly={isViewMode} inputClassName="uppercase font-mono tracking-wider" />
-              <TextField control={form.control} name="vat" label="VAT Number (P.IVA)" readOnly={isViewMode} />
-              <TextField control={form.control} name="phone" label="Landline" readOnly={isViewMode} />
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">Tax & Account Information</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">Official identification and contact details</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 bg-primary/8 rounded-lg border border-primary/25 shadow-sm">
+              <TextField control={form.control} name="fiscalCode" label="Codice Fiscale" readOnly={isViewMode} inputClassName="uppercase font-mono tracking-wider text-sm bg-white dark:bg-slate-950 border border-primary/40" />
+              <TextField control={form.control} name="vat" label="VAT Number (P.IVA)" readOnly={isViewMode} inputClassName="bg-white dark:bg-slate-950 border border-primary/40" />
+              <TextField control={form.control} name="phone" label="Landline" readOnly={isViewMode} inputClassName="bg-white dark:bg-slate-950 border border-primary/40" />
             </div>
 
             {isDealer && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 animate-in fade-in zoom-in-95">
-                <TextField control={form.control} name="sdiCode" label="SDI Code" readOnly={isViewMode} inputClassName="uppercase" />
-                <TextField control={form.control} name="pecEmail" label="PEC Email" readOnly={isViewMode} className="md:col-span-2" />
+              <div className="space-y-2 mb-4 mt-6">
+                <div className="flex items-center gap-2">
+                  <Badge className="h-5 w-5 text-amber-600" />
+                  <h3 className="text-sm font-semibold text-foreground">Dealer Profile</h3>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">Pro Account</span>
+                </div>
+                <p className="text-xs text-muted-foreground">Additional credentials for business transactions</p>
+              </div>
+            )}
+
+            {isDealer && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 bg-amber-400/8 rounded-lg border border-amber-400/30 shadow-sm animate-in fade-in zoom-in-95">
+                <TextField control={form.control} name="sdiCode" label="SDI Code" readOnly={isViewMode} inputClassName="uppercase font-mono text-sm bg-white dark:bg-slate-950 border border-amber-400/40" />
+                <TextField control={form.control} name="pecEmail" label="PEC Email" readOnly={isViewMode} inputClassName="bg-white dark:bg-slate-950 border border-amber-400/40" className="md:col-span-2" />
               </div>
             )}
 
